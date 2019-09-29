@@ -1,3 +1,5 @@
+project(vecmath CXX)
+
 cmake_minimum_required(VERSION 3.12)
 
 set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)

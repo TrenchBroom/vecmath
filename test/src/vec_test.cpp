@@ -553,7 +553,7 @@ namespace vm {
 
         ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f::zero()));
         ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f(2.0f, 34.233f, -10003.0002f)));
-        ASSERT_EQ(vec3f::pos_z, cross(vec3f::pos_x(), vec3f::pos_y()));
+        ASSERT_EQ(vec3f::pos_z(), cross(vec3f::pos_x(), vec3f::pos_y()));
         ASSERT_VEC_EQ(vec3f(-2735141.499f, 282853.508f, 421.138f), cross(vec3f(12.302f, -0.0017f, 79898.3f), vec3f(2.0f, 34.233f, -10003.0002f)));
 
         const vec3f t1(7.0f, 4.0f, 0.0f);
@@ -751,16 +751,148 @@ namespace vm {
     }
 
     TEST(vec_test, is_parallel) {
-        constexpr auto result = is_parallel(vec3f::zero(), vec3f::zero());
-        ASSERT_FALSE(result);
+        constexpr auto result = is_parallel(vec3f::pos_x(), vec3f::pos_x());
+        ASSERT_TRUE(result);
 
-        ASSERT_FALSE(is_parallel(vec3f::zero(), vec3f::zero()));
-        ASSERT_TRUE(is_parallel(vec3f::pos_x, vec3f::pos_x));
-        ASSERT_TRUE(is_parallel(vec3f::pos_x, vec3f::neg_x));
+        ASSERT_TRUE(is_parallel(vec3f::pos_x(), vec3f::pos_x()));
+        ASSERT_TRUE(is_parallel(vec3f::pos_x(), vec3f::neg_x()));
         ASSERT_TRUE(is_parallel(vec3f::one(), vec3f::one()));
         ASSERT_TRUE(is_parallel(vec3f::one(), normalize(vec3f::one())));
     }
 
+    // ========== rounding and error correction ==========
+
+    TEST(vec_test, floor) {
+        constexpr auto result = floor(vec3f::pos_x());
+        ASSERT_EQ(vec3f::pos_x(), result);
+
+        ASSERT_EQ(vec3f::pos_x(), floor(vec3f::pos_x()));
+        ASSERT_EQ(vec3f::one(), floor(vec3f::one()));
+        ASSERT_EQ(vec3f::zero(), floor(vec3f::zero()));
+        ASSERT_EQ(vec3f::zero(), floor(normalize(vec3f::one())));
+        ASSERT_EQ(vec3f::zero(), floor(vec3f(0.4, 0.4, 0.4)));
+        ASSERT_EQ(vec3f(0, 0, 0), floor(vec3f(0.4, 0.5, 0.4)));
+        ASSERT_EQ(vec3f(-1, -1, -1), floor(vec3f(-0.4, -0.5, -0.4)));
+    }
+
+    TEST(vec_test, ceil) {
+        constexpr auto result = ceil(vec3f::pos_x());
+        ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()));
+
+        ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()));
+        ASSERT_EQ(vec3f::one(), ceil(vec3f::one()));
+        ASSERT_EQ(vec3f::zero(), ceil(vec3f::zero()));
+        ASSERT_EQ(vec3f::one(), ceil(normalize(vec3f::one())));
+        ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.4, 0.4)));
+        ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.5, 0.4)));
+        ASSERT_EQ(vec3f::zero(), ceil(vec3f(-0.4, -0.5, -0.4)));
+        ASSERT_EQ(vec3f(-1, -1, -1), ceil(vec3f(-1.4, -1.5, -1.4)));
+    }
+
+    TEST(vec_test, trunc) {
+        constexpr auto result = trunc(vec3f::pos_x());
+        ASSERT_EQ(vec3f::pos_x(), result);
+
+        ASSERT_EQ(vec3f::pos_x(), trunc(vec3f::pos_x()));
+        ASSERT_EQ(vec3f::one(), trunc(vec3f::one()));
+        ASSERT_EQ(vec3f::zero(), trunc(vec3f::zero()));
+        ASSERT_EQ(vec3f::zero(), trunc(normalize(vec3f::one())));
+        ASSERT_EQ(vec3f::zero(), trunc(normalize(-vec3f::one())));
+        ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.4, 0.4)));
+        ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.5, 0.4)));
+        ASSERT_EQ(vec3f::zero(), trunc(vec3f(-0.4, -0.5, -0.4)));
+        ASSERT_EQ(vec3f(-1, -1, -1), trunc(vec3f(-1.4, -1.5, -1.4)));
+    }
+
+    TEST(vec_test, round) {
+        constexpr auto result = round(vec3f::pos_x());
+        ASSERT_EQ(vec3f::pos_x(), result);
+
+        ASSERT_EQ(vec3f::pos_x(), round(vec3f::pos_x()));
+        ASSERT_EQ(vec3f::one(), round(vec3f::one()));
+        ASSERT_EQ(vec3f::zero(), round(vec3f::zero()));
+        ASSERT_EQ(vec3f::one(), round(normalize(vec3f::one())));
+        ASSERT_EQ(vec3f::zero(), round(vec3f(0.4, 0.4, 0.4)));
+        ASSERT_EQ(vec3f(0, 1, 0), round(vec3f(0.4, 0.5, 0.4)));
+        ASSERT_EQ(vec3f(0, -1, 0), round(vec3f(-0.4, -0.5, -0.4)));
+    }
+
+    TEST(vec_test, snapDown) {
+        constexpr auto result = snapDown(vec3f::zero(), vec3f::one());
+        ASSERT_EQ( vec3f::zero(), result);
+
+        ASSERT_EQ( vec3f::zero(), snapDown(vec3f::zero(), vec3f::one()));
+        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
+        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-0.4, -0.5, -0.6), vec3f::one()));
+        ASSERT_EQ(+vec3f::one(),  snapDown(vec3f(+1.4, +1.5, +1.6), vec3f::one()));
+        ASSERT_EQ(-vec3f::one(),  snapDown(vec3f(-1.4, -1.5, -1.6), vec3f::one()));
+        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 2, 2)));
+        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 2, 2)));
+        ASSERT_EQ( vec3f(0, +1, +1), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 1, 1)));
+        ASSERT_EQ( vec3f(0, -1, -1), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 1, 1)));
+    }
+
+    TEST(vec_test, snapUp) {
+        constexpr auto result = snapUp(vec3f::zero(), vec3f::one());
+        ASSERT_EQ( vec3f::zero(), result);
+
+        ASSERT_EQ( vec3f::zero(), snapUp(vec3f::zero(), vec3f::one()));
+        ASSERT_EQ(+vec3f::one(),  snapUp(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
+        ASSERT_EQ(-vec3f::one(),  snapUp(vec3f(-0.4, -0.5, -0.6), vec3f::one()));
+        ASSERT_EQ(+vec3f(+2, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f::one()));
+        ASSERT_EQ(-vec3f(+2, +2, +2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f::one()));
+        ASSERT_EQ( vec3f(+3, +3, +3), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 3, 3)));
+        ASSERT_EQ( vec3f(-3, -3, -3), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 3, 3)));
+        ASSERT_EQ( vec3f(+3, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 1, 1)));
+        ASSERT_EQ( vec3f(-3, -2, -2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 1, 1)));
+    }
+
+    TEST(vec_test, snap) {
+        constexpr auto result = snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f));
+        ASSERT_EQ(vec2f( 8.0f,  0.0f), result);
+
+        ASSERT_EQ(vec2f( 8.0f,  0.0f), snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f)));
+        ASSERT_EQ(vec2f( 8.0f, -6.0f), snap(vec2f( 7.0f, -5.0f), vec2f(-4.0f, -2.0f)));
+        ASSERT_EQ(vec2f(-8.0f,  6.0f), snap(vec2f(-7.0f,  5.0f), vec2f(-4.0f, -2.0f)));
+    }
+
+    TEST(vec_test, correct) {
+        constexpr auto result = correct(vec3f(1.1, 2.2, 3.3));
+        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), result);
+
+        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3)));
+        ASSERT_EQ(vec3f(1, 2, 3), correct(vec3f(1.1, 2.2, 3.3), 0, 0.4f));
+        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3), 1, 0.4f));
+    }
+
+    TEST(vec_test, between) {
+        constexpr auto result = is_between(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0));
+        ASSERT_TRUE(result);
+
+        ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0)));
+        ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(2, 0, 0), vec3f(0, 0, 0)));
+        ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
+        ASSERT_TRUE(is_between(vec3f(0, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
+        ASSERT_FALSE(is_between(vec3f(2, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
+    }
+
+    TEST(vec_test, average) {
+        constexpr auto vecs = std::array { vec3f(1, 1, 1), vec3f(1, 1, 1), vec3f(2, 2, 2) };
+        constexpr auto result = average(std::begin(vecs), std::end(vecs));
+        ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), result);
+
+        ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), average(std::begin(vecs), std::end(vecs)));
+    }
+
+    TEST(vec_test, measure_angle) {
+        constexpr auto result = measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z());
+        ASSERT_FLOAT_EQ(0.0f, result);
+
+        ASSERT_FLOAT_EQ(0.0f, measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z()));
+        ASSERT_FLOAT_EQ(Cf::piOverTwo(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
+        ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
+        ASSERT_FLOAT_EQ(3.0f * Cf::piOverTwo(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
+    }
 
     /*
 
@@ -829,7 +961,7 @@ namespace vm {
     // ========== accessing major component / axis ==========
 
     TEST(vec_test, majorComponent) {
-        ASSERT_EQ(0, majorComponent(vec3f::pos_x, 0));
+        ASSERT_EQ(0, majorComponent(vec3f::pos_x(), 0));
         ASSERT_EQ(0, majorComponent(vec3f::neg_x, 0));
         ASSERT_EQ(1, majorComponent(vec3f::pos_y, 0));
         ASSERT_EQ(1, majorComponent(vec3f::neg_y, 0));
@@ -842,33 +974,33 @@ namespace vm {
     }
 
     TEST(vec_test, majorAxis) {
-        ASSERT_EQ(vec3f::pos_x, majorAxis(vec3f::pos_x, 0));
+        ASSERT_EQ(vec3f::pos_x(), majorAxis(vec3f::pos_x(), 0));
         ASSERT_EQ(vec3f::neg_x, majorAxis(vec3f::neg_x, 0));
         ASSERT_EQ(vec3f::pos_y, majorAxis(vec3f::pos_y, 0));
         ASSERT_EQ(vec3f::neg_y, majorAxis(vec3f::neg_y, 0));
         ASSERT_EQ(vec3f::pos_z, majorAxis(vec3f::pos_z, 0));
         ASSERT_EQ(vec3f::neg_z, majorAxis(vec3f::neg_z, 0));
 
-        ASSERT_EQ(vec3f::pos_x, majorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
+        ASSERT_EQ(vec3f::pos_x(), majorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
         ASSERT_EQ(vec3f::pos_z, majorAxis(vec3f(3.0f, -1.0f, 2.0f), 1));
         ASSERT_EQ(vec3f::neg_y, majorAxis(vec3f(3.0f, -1.0f, 2.0f), 2));
     }
 
     TEST(vec_test, absMajorAxis) {
-        ASSERT_EQ(vec3f::pos_x, absMajorAxis(vec3f::pos_x, 0));
-        ASSERT_EQ(vec3f::pos_x, absMajorAxis(vec3f::neg_x, 0));
+        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f::pos_x(), 0));
+        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f::neg_x, 0));
         ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f::pos_y, 0));
         ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f::neg_y, 0));
         ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f::pos_z, 0));
         ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f::neg_z, 0));
 
-        ASSERT_EQ(vec3f::pos_x, absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
+        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
         ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 1));
         ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 2));
     }
 
     TEST(vec_test, firstComponent) {
-        ASSERT_EQ(0, firstComponent(vec3f::pos_x));
+        ASSERT_EQ(0, firstComponent(vec3f::pos_x()));
         ASSERT_EQ(0, firstComponent(vec3f::neg_x));
         ASSERT_EQ(1, firstComponent(vec3f::pos_y));
         ASSERT_EQ(1, firstComponent(vec3f::neg_y));
@@ -887,14 +1019,14 @@ namespace vm {
     }
 
     TEST(vec_test, firstAxis) {
-        ASSERT_EQ(vec3f::pos_x, firstAxis(vec3f::pos_x));
+        ASSERT_EQ(vec3f::pos_x(), firstAxis(vec3f::pos_x()));
         ASSERT_EQ(vec3f::neg_x, firstAxis(vec3f::neg_x));
         ASSERT_EQ(vec3f::pos_y, firstAxis(vec3f::pos_y));
         ASSERT_EQ(vec3f::neg_y, firstAxis(vec3f::neg_y));
         ASSERT_EQ(vec3f::pos_z, firstAxis(vec3f::pos_z));
         ASSERT_EQ(vec3f::neg_z, firstAxis(vec3f::neg_z));
 
-        ASSERT_EQ(vec3f::pos_x, firstAxis(vec3f(3.0f, -1.0f, 2.0f)));
+        ASSERT_EQ(vec3f::pos_x(), firstAxis(vec3f(3.0f, -1.0f, 2.0f)));
     }
 
     TEST(vec_test, secondAxis) {
@@ -906,106 +1038,6 @@ namespace vm {
     }
 
 
-    // ========== rounding and error correction ==========
-
-    TEST(vec_test, floor) {
-        ASSERT_EQ(vec3f::pos_x, floor(vec3f::pos_x));
-        ASSERT_EQ(vec3f::one(), floor(vec3f::one()));
-        ASSERT_EQ(vec3f::zero(), floor(vec3f::zero()));
-        ASSERT_EQ(vec3f::zero(), floor(normalize(vec3f::one())));
-        ASSERT_EQ(vec3f::zero(), floor(vec3f(0.4, 0.4, 0.4)));
-        ASSERT_EQ(vec3f(0, 0, 0), floor(vec3f(0.4, 0.5, 0.4)));
-        ASSERT_EQ(vec3f(-1, -1, -1), floor(vec3f(-0.4, -0.5, -0.4)));
-    }
-
-    TEST(vec_test, ceil) {
-        ASSERT_EQ(vec3f::pos_x, ceil(vec3f::pos_x));
-        ASSERT_EQ(vec3f::one(), ceil(vec3f::one()));
-        ASSERT_EQ(vec3f::zero(), ceil(vec3f::zero()));
-        ASSERT_EQ(vec3f::one(), ceil(normalize(vec3f::one())));
-        ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.4, 0.4)));
-        ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.5, 0.4)));
-        ASSERT_EQ(vec3f::zero(), ceil(vec3f(-0.4, -0.5, -0.4)));
-        ASSERT_EQ(vec3f(-1, -1, -1), ceil(vec3f(-1.4, -1.5, -1.4)));
-    }
-
-    TEST(vec_test, trunc) {
-        ASSERT_EQ(vec3f::pos_x, trunc(vec3f::pos_x));
-        ASSERT_EQ(vec3f::one(), trunc(vec3f::one()));
-        ASSERT_EQ(vec3f::zero(), trunc(vec3f::zero()));
-        ASSERT_EQ(vec3f::zero(), trunc(normalize(vec3f::one())));
-        ASSERT_EQ(vec3f::zero(), trunc(normalize(-vec3f::one())));
-        ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.4, 0.4)));
-        ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.5, 0.4)));
-        ASSERT_EQ(vec3f::zero(), trunc(vec3f(-0.4, -0.5, -0.4)));
-        ASSERT_EQ(vec3f(-1, -1, -1), trunc(vec3f(-1.4, -1.5, -1.4)));
-    }
-
-    TEST(vec_test, round) {
-        ASSERT_EQ(vec3f::pos_x, round(vec3f::pos_x));
-        ASSERT_EQ(vec3f::one(), round(vec3f::one()));
-        ASSERT_EQ(vec3f::zero(), round(vec3f::zero()));
-        ASSERT_EQ(vec3f::one(), round(normalize(vec3f::one())));
-        ASSERT_EQ(vec3f::zero(), round(vec3f(0.4, 0.4, 0.4)));
-        ASSERT_EQ(vec3f(0, 1, 0), round(vec3f(0.4, 0.5, 0.4)));
-        ASSERT_EQ(vec3f(0, -1, 0), round(vec3f(-0.4, -0.5, -0.4)));
-    }
-
-    TEST(vec_test, snapDown) {
-        ASSERT_EQ( vec3f::zero(), snapDown(vec3f::zero(), vec3f::one()));
-        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
-        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-0.4, -0.5, -0.6), vec3f::one()));
-        ASSERT_EQ(+vec3f::one(),  snapDown(vec3f(+1.4, +1.5, +1.6), vec3f::one()));
-        ASSERT_EQ(-vec3f::one(),  snapDown(vec3f(-1.4, -1.5, -1.6), vec3f::one()));
-        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 2, 2)));
-        ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 2, 2)));
-        ASSERT_EQ( vec3f(0, +1, +1), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 1, 1)));
-        ASSERT_EQ( vec3f(0, -1, -1), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 1, 1)));
-    }
-
-    TEST(vec_test, snapUp) {
-        ASSERT_EQ( vec3f::zero(), snapUp(vec3f::zero(), vec3f::one()));
-        ASSERT_EQ(+vec3f::one(),  snapUp(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
-        ASSERT_EQ(-vec3f::one(),  snapUp(vec3f(-0.4, -0.5, -0.6), vec3f::one()));
-        ASSERT_EQ(+vec3f(+2, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f::one()));
-        ASSERT_EQ(-vec3f(+2, +2, +2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f::one()));
-        ASSERT_EQ( vec3f(+3, +3, +3), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 3, 3)));
-        ASSERT_EQ( vec3f(-3, -3, -3), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 3, 3)));
-        ASSERT_EQ( vec3f(+3, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 1, 1)));
-        ASSERT_EQ( vec3f(-3, -2, -2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 1, 1)));
-    }
-
-    TEST(vec_test, snap) {
-        ASSERT_EQ(vec2f( 8.0f,  0.0f), snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f)));
-        ASSERT_EQ(vec2f( 8.0f, -6.0f), snap(vec2f( 7.0f, -5.0f), vec2f(-4.0f, -2.0f)));
-        ASSERT_EQ(vec2f(-8.0f,  6.0f), snap(vec2f(-7.0f,  5.0f), vec2f(-4.0f, -2.0f)));
-    }
-
-    TEST(vec_test, correct) {
-        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3)));
-        ASSERT_EQ(vec3f(1, 2, 3), correct(vec3f(1.1, 2.2, 3.3), 0, 0.4f));
-        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3), 1, 0.4f));
-    }
-
-    TEST(vec_test, between) {
-        ASSERT_TRUE(between(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0)));
-        ASSERT_TRUE(between(vec3f(1, 0, 0), vec3f(2, 0, 0), vec3f(0, 0, 0)));
-        ASSERT_TRUE(between(vec3f(1, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
-        ASSERT_TRUE(between(vec3f(0, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
-        ASSERT_FALSE(between(vec3f(2, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
-    }
-
-    TEST(vec_test, average) {
-        const auto vecs = std::vector<vec3f>{ vec3f(1, 1, 1), vec3f(1, 1, 1), vec3f(2, 2, 2) };
-        ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), average(std::begin(vecs), std::end(vecs)));
-    }
-
-    TEST(vec_test, measureAngle) {
-        ASSERT_FLOAT_EQ(measureAngle(vec3f::pos_x, vec3f::pos_x, vec3f::pos_z), 0.0f);
-        ASSERT_FLOAT_EQ(measureAngle(vec3f::pos_y, vec3f::pos_x, vec3f::pos_z), Cf::piOverTwo());
-        ASSERT_FLOAT_EQ(measureAngle(vec3f::neg_x, vec3f::pos_x, vec3f::pos_z), Cf::pi());
-        ASSERT_FLOAT_EQ(measureAngle(vec3f::neg_y, vec3f::pos_x, vec3f::pos_z), 3.0f * Cf::piOverTwo());
-    }
 
     // ========== operations on vectors of vectors ==========
 

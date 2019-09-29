@@ -150,7 +150,7 @@ namespace vm {
      * @return the minimum of the absolute given values
      */
     template <typename T>
-    constexpr T absMin(const T lhs, const T rhs) {
+    constexpr T abs_min(const T lhs, const T rhs) {
         if (abs(lhs) < abs(rhs)) {
             return lhs;
         } else {
@@ -168,7 +168,7 @@ namespace vm {
      * @return the maximum of the absolute given values
      */
     template <typename T>
-    constexpr T absMax(const T lhs, const T rhs) {
+    constexpr T abs_max(const T lhs, const T rhs) {
         if (abs(lhs) > abs(rhs)) {
             return lhs;
         } else {
@@ -186,10 +186,10 @@ namespace vm {
      * @return the minimum of the given values, or NaN if both given values are NaN
      */
     template <typename T>
-    constexpr T safeMin(const T lhs, const T rhs) {
-        if (isnan(lhs)) {
+    constexpr T safe_min(const T lhs, const T rhs) {
+        if (is_nan(lhs)) {
             return rhs;
-        } else if (isnan(rhs)) {
+        } else if (is_nan(rhs)) {
             return lhs;
         } else {
             return min(lhs, rhs);
@@ -206,10 +206,10 @@ namespace vm {
      * @return the maximum of the given values, or NaN if both given values are NaN
      */
     template <typename T>
-    constexpr T safeMax(const T lhs, const T rhs) {
-        if (isnan(lhs)) {
+    constexpr T safe_max(const T lhs, const T rhs) {
+        if (is_nan(lhs)) {
             return rhs;
-        } else if (isnan(rhs)) {
+        } else if (is_nan(rhs)) {
             return lhs;
         } else {
             return max(lhs, rhs);
@@ -225,7 +225,7 @@ namespace vm {
      * @return the absolute difference of the given values
      */
     template <typename T>
-    constexpr T absDifference(const T lhs, const T rhs) {
+    constexpr T abs_difference(const T lhs, const T rhs) {
         return abs(abs(lhs) - abs(rhs));
     }
 
@@ -355,7 +355,7 @@ namespace vm {
      */
     template <typename T>
     constexpr T mix(const T x, const T y, const T a) {
-        return (T(1.0)-a) * x + a * y;
+        return (static_cast<T>(1.0)-a) * x + a * y;
     }
 
     /**
@@ -384,7 +384,7 @@ namespace vm {
     template <typename T>
     constexpr T round(const T v) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return v > 0.0 ? floor(v + static_cast<T>(0.5)) : ceil(v - static_cast<T>(0.5));
+        return v > static_cast<T>(0.0) ? floor(v + static_cast<T>(0.5)) : ceil(v - static_cast<T>(0.5));
     }
 
     /**
@@ -397,9 +397,9 @@ namespace vm {
      * @return the rounded value
      */
     template <typename T>
-    constexpr T roundUp(const T v) {
+    constexpr T round_up(const T v) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return v < 0.0 ? floor(v) : ceil(v);
+        return v < static_cast<T>(0.0) ? floor(v) : ceil(v);
     }
 
     /**
@@ -412,11 +412,11 @@ namespace vm {
      * @return the rounded value
      */
     template <typename T>
-    constexpr T roundDown(const T v) {
+    constexpr T round_down(const T v) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         // this is equivalent to calling trunc
         // we keep this function for consistency because there is no equivalent function to roundUp
-        return v > 0.0 ? floor(v) : ceil(v);
+        return v > static_cast<T>(0.0) ? floor(v) : ceil(v);
     }
 
     /**
@@ -446,7 +446,7 @@ namespace vm {
     constexpr T snapUp(const T v, const T grid) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         assert(grid > 0.0);
-        return grid * roundUp(v / grid);
+        return grid * round_up(v / grid);
     }
 
     /**
@@ -461,7 +461,7 @@ namespace vm {
     constexpr T snapDown(const T v, const T grid) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         assert(grid > 0.0);
-        return grid * roundDown(v / grid);
+        return grid * round_down(v / grid);
     }
 
     /**
@@ -496,7 +496,7 @@ namespace vm {
      * @return true if the distance of the given values is less than the given epsilon and false otherwise
      */
     template <typename T>
-    constexpr bool isEqual(const T lhs, const T rhs, const T epsilon) {
+    constexpr bool is_equal(const T lhs, const T rhs, const T epsilon) {
         return abs(lhs - rhs) <= epsilon;
     }
 
@@ -509,7 +509,7 @@ namespace vm {
      * @return true if the distance of the given argument to 0 is less than the given epsilon
      */
     template <typename T>
-    constexpr bool isZero(const T v, const T epsilon) {
+    constexpr bool is_zero(const T v, const T epsilon) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         return abs(v) <= epsilon;
     }
@@ -541,7 +541,7 @@ namespace vm {
      * @return the converted angle in radians
      */
     template <typename T>
-    constexpr T toRadians(const T d) {
+    constexpr T to_radians(const T d) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         return d * constants<T>::piOverStraightAngle();
     }
@@ -554,7 +554,7 @@ namespace vm {
      * @return the converted angle in degrees
      */
     template <typename T>
-    constexpr T toDegrees(const T r) {
+    constexpr T to_degrees(const T r) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         return r * constants<T>::straightAngleOverPi();
     }
@@ -567,7 +567,7 @@ namespace vm {
      * @return the normalized angle
      */
     template <typename T>
-    constexpr T normalizeRadians(T angle) {
+    constexpr T normalize_radians(T angle) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         constexpr T z = static_cast<T>(0.0);
         constexpr T o = constants<T>::twoPi();
@@ -585,7 +585,7 @@ namespace vm {
      * @return the normalized angle
      */
     template <typename T>
-    constexpr T normalizeDegrees(T angle) {
+    constexpr T normalize_degrees(T angle) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         constexpr T z = static_cast<T>(0.0);
         constexpr T o = static_cast<T>(360.0);
@@ -638,7 +638,7 @@ namespace vm {
      * @return the smallest floating point value greater than the given value
      */
     template <typename T>
-    constexpr T nextgreater(const T value) {
+    T nextgreater(const T value) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         // TODO: does MSC not implement cmath correctly?
 #ifdef _MSC_VER
@@ -670,11 +670,11 @@ namespace vm {
         // adapted from https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c
 
         // normal form: x^2 + px + q = 0
-        const auto p = b / (T(2.0) * a);  // actually p/2
+        const auto p = b / (static_cast<T>(2.0) * a);  // actually p/2
         const auto q = c / a;
         const auto D = p * p - q;
 
-        if (isZero(D, epsilon)) {
+        if (is_zero(D, epsilon)) {
             return std::make_tuple(1, std::array<T,2>({
                 -p,
                 nan<T>()
@@ -685,7 +685,7 @@ namespace vm {
                 nan<T>()
             }));
         } else {
-            const auto D2 = std::sqrt(D);
+            const auto D2 = sqrt(D);
             return std::make_tuple(2, std::array<T,2>({
                  D2 - p,
                 -D2 - p
@@ -710,7 +710,7 @@ namespace vm {
      * @return a tuple of the number of solutions and the solutions
      */
     template <typename T>
-    constexpr std::tuple<size_t, std::array<T,3>> solveCubic(const T a, const T b, const T c, const T d, const T epsilon) {
+    std::tuple<size_t, std::array<T,3>> solveCubic(const T a, const T b, const T c, const T d, const T epsilon) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
         // adapted from https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c
@@ -730,8 +730,8 @@ namespace vm {
 
         size_t num = 0;
         auto solutions = std::array<T, 3>();
-        if (isZero(D, epsilon)) {
-            if (isZero(q, epsilon)) {
+        if (is_zero(D, epsilon)) {
+            if (is_zero(q, epsilon)) {
                 // one triple solution
                 num = 1;
                 solutions = {
@@ -800,7 +800,7 @@ namespace vm {
      * @return a tuple of the number of solutions and the solutions
      */
     template <typename T>
-    constexpr std::tuple<size_t, std::array<T,4>> solveQuartic(const T a, const T b, const T c, const T d, const T e, const T epsilon) {
+    std::tuple<size_t, std::array<T,4>> solveQuartic(const T a, const T b, const T c, const T d, const T e, const T epsilon) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
         // adapted from https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c
@@ -818,7 +818,7 @@ namespace vm {
 
         size_t num = 0;
         auto solutions = std::array<T,4>();
-        if (isZero(r, epsilon)) {
+        if (is_zero(r, epsilon)) {
             // no absolute term: y(y^3 + py + q) = 0
             const auto [num3, solutions3] = solveCubic(T(1.0), T(0.0), p, q, epsilon);
             for (size_t i = 0; i < num3; ++i) {
@@ -846,7 +846,7 @@ namespace vm {
             auto u =      z * z - r;
             auto v = T(2.0) * z - p;
 
-            if (isZero(u, epsilon)) {
+            if (is_zero(u, epsilon)) {
                 u = T(0.0);
             } else if (u > T(0.0)) {
                 u = std::sqrt(u);
@@ -854,7 +854,7 @@ namespace vm {
                 return std::make_tuple(0, std::array<T,4>({ nan<T>(), nan<T>(), nan<T>(), nan<T>() }));
             }
 
-            if (isZero(v, epsilon)) {
+            if (is_zero(v, epsilon)) {
                 v = T(0.0);
             } else if (v > T(0.0)) {
                 v = std::sqrt(v);

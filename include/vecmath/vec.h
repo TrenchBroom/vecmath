@@ -850,7 +850,7 @@ namespace vm {
     constexpr vec<T,S> abs_min(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = absMin(lhs[i], rhs[i]);
+            result[i] = abs_min(lhs[i], rhs[i]);
         }
         return result;
     }
@@ -868,7 +868,7 @@ namespace vm {
     constexpr vec<T,S> abs_max(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = absMax(lhs[i], rhs[i]);
+            result[i] = abs_max(lhs[i], rhs[i]);
         }
         return result;
     }
@@ -1098,7 +1098,7 @@ namespace vm {
      */
     template <typename T, size_t S>
     constexpr bool is_unit(const vec<T,S>& v, const T epsilon) {
-        return isEqual(length(v), T(1.0), epsilon);
+        return is_equal(length(v), T(1.0), epsilon);
     }
 
     /**
@@ -1113,7 +1113,7 @@ namespace vm {
     template <typename T, size_t S>
     constexpr bool is_zero(const vec<T,S>& v, const T epsilon) {
         for (size_t i = 0; i < S; ++i) {
-            if (!isZero(v[i], epsilon)) {
+            if (!is_zero(v[i], epsilon)) {
                 return false;
             }
         }
@@ -1301,7 +1301,7 @@ namespace vm {
             l += ba * ba;
         }
 
-        return isZero(j * j - k * l, epsilon);
+        return is_zero(j * j - k * l, epsilon);
     }
 
     /**
@@ -1318,7 +1318,237 @@ namespace vm {
     template <typename T, size_t S>
     constexpr bool is_parallel(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
         const T cos = dot(normalize(lhs), normalize(rhs));
-        return isEqual(abs(cos), T(1.0), epsilon);
+        return is_equal(abs(cos), T(1.0), epsilon);
+    }
+
+    /* ========== rounding and error correction ========== */
+
+    /**
+     * Returns a vector with each component set to the largest integer value not greater than the value of the
+     * corresponding component of the given vector.
+     *
+     * @tparam T the component type, which must be a floating point type
+     * @tparam S the number of components
+     * @param v the value
+     * @return a vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> floor(const vec<T,S>& v) {
+        static_assert(std::is_floating_point<T>::value, "T must be a float point type");
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = floor(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector with each component set to the smallest integer value not less than the value of the
+     * corresponding component of the given vector.
+     *
+     * @tparam T the component type, which must be a floating point type
+     * @tparam S the number of components
+     * @param v the value
+     * @return a vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> ceil(const vec<T,S>& v) {
+        static_assert(std::is_floating_point<T>::value, "T must be a float point type");
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = ceil(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector with each component set to the nearest integer which is not greater in magnitude than the
+     * corresponding component of the given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to truncate
+     * @return the truncated vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> trunc(const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = trunc(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component is the rounded value of the corresponding component of the given
+     * vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to round
+     * @return the rounded vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> round(const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = round(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Rounds the components of the given vector down to multiples of the components of the given vector m.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to round down
+     * @param m the multiples to round down to
+     * @return the rounded vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> snapDown(const vec<T,S>& v, const vec<T,S>& m) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = snapDown(v[i], m[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Rounds the components of the given vector up to multiples of the components of the given vector m.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to round down
+     * @param m the multiples to round up to
+     * @return the rounded vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> snapUp(const vec<T,S>& v, const vec<T,S>& m) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = snapUp(v[i], m[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Rounds the components of the given vector to multiples of the components of the given vector m.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to round down
+     * @param m the multiples to round to
+     * @return the rounded vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> snap(const vec<T,S>& v, const vec<T,S>& m) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = snap(v[i], m[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Corrects the given vector's components to the given number of decimal places.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to correct
+     * @param decimals the number of decimal places to keep
+     * @param epsilon the epsilon value
+     * @return the corrected vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> correct(const vec<T,S>& v, const size_t decimals = 0, const T epsilon = constants<T>::correctEpsilon()) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = correct(v[i], decimals, epsilon);
+        }
+        return result;
+    }
+
+    /**
+     * Given three colinear points, this function checks whether the first point is contained in a segment formed by the
+     * other two points.
+     *
+     * The result is undefined for the case of non-colinear points.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param p the point to check
+     * @param start the segment start
+     * @param end the segment end
+     * @return true if the given point is contained within the segment
+     */
+    template <typename T, size_t S>
+    constexpr bool is_between(const vec<T,S>& p, const vec<T,S>& start, const vec<T,S>& end) {
+        assert(is_colinear(p, start, end));
+
+        if (p == start || p == end) {
+            return true;
+        } else {
+            const auto toStart = start - p;
+            const auto toEnd   =   end - p;
+
+            const auto d = dot(toEnd, normalize(toStart));
+            return d < T(0.0);
+        }
+    }
+
+    /**
+     * Computes the average of the given range of elements, using the given function to transform an element into a vector.
+     *
+     * @tparam I the type of the range iterators
+     * @tparam G the type of the transformation function from a range element to a vector type
+     * @param cur the start of the range
+     * @param end the end of the range
+     * @param get the transformation function, defaults to identity
+     * @return the average of the vectors obtained from the given range of elements
+     */
+    template <typename I, typename G = identity>
+    constexpr auto average(I cur, I end, const G& get = G()) -> typename std::remove_reference<decltype(get(*cur))>::type {
+        assert(cur != end);
+
+        using T = typename std::remove_reference<decltype(get(*cur))>::type::type;
+
+        auto result = get(*cur++);
+        auto count = T(1.0);
+        while (cur != end) {
+            result = result + get(*cur++);
+            count = count + T(1.0);
+        }
+        return result / count;
+    }
+
+    /**
+     * Computes the CCW angle between axis and vector in relation to the given up vector. All vectors are expected to be
+     * normalized. The CCW angle is the angle by which the given axis must be rotated in CCW direction about the given up
+     * vector so that it becomes identical to the given vector.
+     *
+     * @tparam T the coordinate type
+     * @param v the vector
+     * @param axis the axis
+     * @param up the up vector
+     * @return the CCW angle
+     */
+    template <typename T>
+    constexpr T measure_angle(const vec<T,3>& v, const vec<T,3>& axis, const vec<T,3>& up) {
+        const auto cos = dot(v, axis);
+        if (is_equal(cos, T(+1.0), vm::constants<T>::almostZero())) {
+            return T(0.0);
+        } else if (is_equal(cos, T(-1.0), vm::constants<T>::almostZero())) {
+            return constants<T>::pi();
+        } else {
+            const auto perp = cross(axis, v);
+            if (dot(perp, up) >= T(0.0)) {
+                return std::acos(cos);
+            } else {
+                return constants<T>::twoPi() - std::acos(cos);
+            }
+        }
     }
 
     /* ========== stream operators ========== */
