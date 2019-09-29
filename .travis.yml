@@ -1,0 +1,27 @@
+language: cpp
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+            - sourceline: "ppa:beineri/opt-qt595-xenial"
+          packages:
+            - g++-7 build-essential cmake ninja-build cppcheck
+    - os: linux
+      dist: xenial
+      env: TB_GCC8=true
+      addons:
+        apt:
+          sources:
+            - sourceline: "ppa:ubuntu-toolchain-r/test"
+            - sourceline: "ppa:beineri/opt-qt595-xenial"
+          packages:
+            - g++-8 build-essential cmake ninja-build cppcheck
+    - os: osx
+      osx_image: xcode10.2
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./travis-macos.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./travis-linux.sh; fi
