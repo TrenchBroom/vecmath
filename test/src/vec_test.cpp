@@ -21,6 +21,7 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
+#include <vecmath/vec_ext.h>
 
 #include "test_utils.h"
 
@@ -894,6 +895,22 @@ namespace vm {
         ASSERT_FLOAT_EQ(3.0f * Cf::piOverTwo(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
     }
 
+    // ========== operations on vectors of vectors ==========
+
+    TEST(vec_ext_test, operator_plus_vector) {
+        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
+        const auto exp = std::vector<vec3f>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
+        ASSERT_EQ(exp, in + vec3f(-1, +1, -2));
+        ASSERT_EQ(exp, vec3f(-1, +1, -2) + in);
+    }
+
+    TEST(vec_ext_test, operator_multiply_vector) {
+        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
+        const auto exp = std::vector<vec3f>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
+        ASSERT_EQ(exp, in * 3.0f);
+        ASSERT_EQ(exp, 3.0f * in);
+    }
+
     /*
 
 
@@ -954,105 +971,6 @@ namespace vm {
         result.clear();
         vec3f::parseAll("1.0 3 3.5, 2.0 2.0 2.0", std::back_inserter(result));
         ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
-    }
-
-
-
-    // ========== accessing major component / axis ==========
-
-    TEST(vec_test, majorComponent) {
-        ASSERT_EQ(0, majorComponent(vec3f::pos_x(), 0));
-        ASSERT_EQ(0, majorComponent(vec3f::neg_x, 0));
-        ASSERT_EQ(1, majorComponent(vec3f::pos_y, 0));
-        ASSERT_EQ(1, majorComponent(vec3f::neg_y, 0));
-        ASSERT_EQ(2, majorComponent(vec3f::pos_z, 0));
-        ASSERT_EQ(2, majorComponent(vec3f::neg_z, 0));
-
-        ASSERT_EQ(0, majorComponent(vec3f(3.0f, -1.0f, 2.0f), 0));
-        ASSERT_EQ(2, majorComponent(vec3f(3.0f, -1.0f, 2.0f), 1));
-        ASSERT_EQ(1, majorComponent(vec3f(3.0f, -1.0f, 2.0f), 2));
-    }
-
-    TEST(vec_test, majorAxis) {
-        ASSERT_EQ(vec3f::pos_x(), majorAxis(vec3f::pos_x(), 0));
-        ASSERT_EQ(vec3f::neg_x, majorAxis(vec3f::neg_x, 0));
-        ASSERT_EQ(vec3f::pos_y, majorAxis(vec3f::pos_y, 0));
-        ASSERT_EQ(vec3f::neg_y, majorAxis(vec3f::neg_y, 0));
-        ASSERT_EQ(vec3f::pos_z, majorAxis(vec3f::pos_z, 0));
-        ASSERT_EQ(vec3f::neg_z, majorAxis(vec3f::neg_z, 0));
-
-        ASSERT_EQ(vec3f::pos_x(), majorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
-        ASSERT_EQ(vec3f::pos_z, majorAxis(vec3f(3.0f, -1.0f, 2.0f), 1));
-        ASSERT_EQ(vec3f::neg_y, majorAxis(vec3f(3.0f, -1.0f, 2.0f), 2));
-    }
-
-    TEST(vec_test, absMajorAxis) {
-        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f::pos_x(), 0));
-        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f::neg_x, 0));
-        ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f::pos_y, 0));
-        ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f::neg_y, 0));
-        ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f::pos_z, 0));
-        ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f::neg_z, 0));
-
-        ASSERT_EQ(vec3f::pos_x(), absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 0));
-        ASSERT_EQ(vec3f::pos_z, absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 1));
-        ASSERT_EQ(vec3f::pos_y, absMajorAxis(vec3f(3.0f, -1.0f, 2.0f), 2));
-    }
-
-    TEST(vec_test, firstComponent) {
-        ASSERT_EQ(0, firstComponent(vec3f::pos_x()));
-        ASSERT_EQ(0, firstComponent(vec3f::neg_x));
-        ASSERT_EQ(1, firstComponent(vec3f::pos_y));
-        ASSERT_EQ(1, firstComponent(vec3f::neg_y));
-        ASSERT_EQ(2, firstComponent(vec3f::pos_z));
-        ASSERT_EQ(2, firstComponent(vec3f::neg_z));
-
-        ASSERT_EQ(0, firstComponent(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-    TEST(vec_test, secondComponent) {
-        ASSERT_EQ(2, secondComponent(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-    TEST(vec_test, thirdComponent) {
-        ASSERT_EQ(1, thirdComponent(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-    TEST(vec_test, firstAxis) {
-        ASSERT_EQ(vec3f::pos_x(), firstAxis(vec3f::pos_x()));
-        ASSERT_EQ(vec3f::neg_x, firstAxis(vec3f::neg_x));
-        ASSERT_EQ(vec3f::pos_y, firstAxis(vec3f::pos_y));
-        ASSERT_EQ(vec3f::neg_y, firstAxis(vec3f::neg_y));
-        ASSERT_EQ(vec3f::pos_z, firstAxis(vec3f::pos_z));
-        ASSERT_EQ(vec3f::neg_z, firstAxis(vec3f::neg_z));
-
-        ASSERT_EQ(vec3f::pos_x(), firstAxis(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-    TEST(vec_test, secondAxis) {
-        ASSERT_EQ(vec3f::pos_z, secondAxis(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-    TEST(vec_test, thirdAxis) {
-        ASSERT_EQ(vec3f::neg_y, thirdAxis(vec3f(3.0f, -1.0f, 2.0f)));
-    }
-
-
-
-    // ========== operations on vectors of vectors ==========
-
-    TEST(vec_test, addList) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        ASSERT_EQ(exp, in + vec3f(-1, +1, -2));
-        ASSERT_EQ(exp, vec3f(-1, +1, -2) + in);
-    }
-
-    TEST(vec_test, scalarMultiplyList) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        ASSERT_EQ(exp, in * 3.0f);
-        ASSERT_EQ(exp, 3.0f * in);
     }
     */
 }
