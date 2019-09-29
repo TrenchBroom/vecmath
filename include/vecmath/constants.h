@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TRENCHBROOM_CONSTANTS_H
-#define TRENCHBROOM_CONSTANTS_H
+#ifndef VECMATH_CONSTANTS_H
+#define VECMATH_CONSTANTS_H
 
 namespace vm {
     template <typename T>
@@ -160,4 +160,4 @@ namespace vm {
     using Cd = constants<double>;
 }
 
-#endif //TRENCHBROOM_CONSTANTS_H
+#endif //VECMATH_CONSTANTS_H

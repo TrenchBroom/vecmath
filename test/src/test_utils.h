@@ -17,8 +17,8 @@
  along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRENCHBROOM_TEST_UTILS_H
-#define TRENCHBROOM_TEST_UTILS_H
+#ifndef VECMATH_TEST_UTILS_H
+#define VECMATH_TEST_UTILS_H
 
 #include <vecmath/forward.h>
 
@@ -47,4 +47,4 @@ void ASSERT_MAT_NE(const vm::mat<T,R,C>& lhs, const vm::mat<T,R,C>& rhs) {
     ASSERT_FALSE(is_equal(lhs, rhs, static_cast<T>(0.001)));
 }
 
-#endif //TRENCHBROOM_TEST_UTILS_H
+#endif //VECMATH_TEST_UTILS_H

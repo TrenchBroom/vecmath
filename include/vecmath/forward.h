@@ -17,8 +17,8 @@
  along with TrenchBroom. If not,see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRENCHBROOM_FORWARD_H
-#define TRENCHBROOM_FORWARD_H
+#ifndef VECMATH_FORWARD_H
+#define VECMATH_FORWARD_H
 
 #include <cstddef>
 
@@ -115,4 +115,4 @@ namespace vm {
     using polygon3d = polygon<double,3>;
 }
 
-#endif //TRENCHBROOM_FORWARD_H
+#endif //VECMATH_FORWARD_H

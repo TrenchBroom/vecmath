@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TRENCHBROOM_VEC_EXT_H
-#define TRENCHBROOM_VEC_EXT_H
+#ifndef VECMATH_VEC_EXT_H
+#define VECMATH_VEC_EXT_H
 
 #include "vec.h"
 
@@ -92,4 +92,4 @@ namespace vm {
     }
 }
 
-#endif //TRENCHBROOM_VEC_EXT_H
+#endif //VECMATH_VEC_EXT_H

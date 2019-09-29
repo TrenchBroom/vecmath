@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef TRENCHBROOM_VEC_H
-#define TRENCHBROOM_VEC_H
+#ifndef VECMATH_VEC_H
+#define VECMATH_VEC_H
 
 #include "constants.h"
 #include "scalar.h"
