@@ -1,0 +1,1338 @@
+/*
+Copyright (C) 2010-2017 Kristian Duske
+
+This file is part of TrenchBroom.
+
+TrenchBroom is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+TrenchBroom is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef TRENCHBROOM_VEC_H
+#define TRENCHBROOM_VEC_H
+
+#include "constants.h"
+#include "scalar.h"
+#include "utils.h"
+
+#include <array>
+#include <cassert>
+#include <cstddef>
+#include <ostream>
+#include <type_traits>
+
+namespace vm {
+    template <typename T, std::size_t S>
+    class vec {
+    public:
+        using float_type = vec<float, S>;
+        using type = T;
+        static constexpr std::size_t size = S;
+    public:
+        /**
+         * The vector components.
+         */
+        std::array<T,S> v;
+    public:
+        /* ========== constructors and assignment operators ========== */
+
+        /**
+         * Creates a new vector with all components initialized to 0.
+         */
+        constexpr vec() :
+        v{} {}
+
+        // Copy and move constructors
+        vec(const vec<T,S>& other) = default;
+        vec(vec<T,S>&& other) noexcept = default;
+
+        // Assignment operators
+        vec<T,S>& operator=(const vec<T,S>& other) = default;
+        vec<T,S>& operator=(vec<T,S>&& other) noexcept = default;
+
+        /**
+         * Creates a new vector from the values in the given array.
+         *
+         * @param values the values
+         */
+        constexpr explicit vec(const std::array<T, S>& values) :
+        v(values) {}
+
+        /**
+         * Creates a new vector from the values in the given initializer list. If the given list has fewer elements than
+         * the size of this vector, then the remaining components are set to 0. If the given list has more elements than
+         * the size of this vector, then the surplus elements are ignored.
+         *
+         * @param values the values
+         */
+        constexpr explicit vec(std::initializer_list<T> values) :
+            v{ to_array<T,S>(values) } {}
+
+        /**
+         * Creates a new vector with the components initialized to the given values. The values are converted
+         * to the component type T using static_cast. The number of values must match the number of components S.
+         *
+         * @tparam A1 the type of the first value
+         * @tparam Args the types of the remaining values
+         * @param a1 the first value
+         * @param args the remaining values
+         */
+        template <typename A1, typename... Args>
+        constexpr explicit vec(const A1 a1, const Args... args) :
+        v{ { static_cast<T>(a1), static_cast<T>(args)... } } {
+            static_assert(sizeof...(args) == S-1, "Wrong number of parameters");
+        }
+
+        /**
+         * Creates a new vector with the components initialized to the values of the corresponding components of the
+         * given vector. If the given vector has a different component type, its components are converted using
+         * static_cast.
+         *
+         * @tparam U the component type of the given vector
+         * @param other the vector to copy
+         */
+        template <typename U>
+        constexpr explicit vec(const vec<U, S>& other) :
+        v { cast_array<T>(other.v) } {}
+
+        /**
+         * Creates a new vector by copying the values of the given vector of smaller size and filling up the remaining
+         * members using the remaining given values. The components of the given vector and the remaining given values
+         * are converted to the component type T using static_cast.
+         *
+         * @tparam U the component type of the given vector
+         * @tparam SS the number of components of the given vector
+         * @tparam A1 the type of the first given remaining value
+         * @tparam Args the types of the other given remaining values
+         * @param other the vector whose values to copy
+         * @param a1 the first given remaining value
+         * @param args the other given remaining values
+         */
+        template <typename U, std::size_t SS, typename A1, typename... Args>
+        constexpr vec(const vec<U, SS>& other, const A1 a1, const Args... args) :
+            v { concat(cast_array<T>(other.v), std::array<T, sizeof...(Args)+1>{ static_cast<T>(a1), static_cast<T>(args)... }) } {
+                static_assert(SS + sizeof...(Args) + 1 == S, "Wrong number of parameters");
+            }
+    public:
+        /* ========== factory methods ========== */
+        /**
+         * Returns a vector where all components are set to the given value.
+         *
+         * @param value the value to set
+         * @return the newly created vector
+         */
+        static constexpr vec<T,S> fill(const T value) {
+            vec<T,S> result;
+            for (size_t i = 0; i < S; ++i) {
+                result[i] = value;
+            }
+            return result;
+        }
+
+        /**
+         * Returns a vector with the component at the given index set to 1, and all others set to 0.
+         *
+         * @param index the index of the component to set to 1
+         * @return the newly created vector
+         */
+        static constexpr vec<T,S> axis(const std::size_t index) {
+            vec<T,S> axis;
+            axis[index] = static_cast<T>(1.0);
+            return axis;
+        }
+    public:
+        /* ========== accessors ========== */
+
+        /**
+         * Returns a copy of the component at the given index. The index is not checked at runtime.
+         *
+         * @param index the index of the component
+         * @return a copy of the compononent at the given index
+         */
+        constexpr T operator[](const std::size_t i) const {
+            return v[i];
+        }
+
+        /**
+         * Returns a reference to the component at the given index. The index is not checked at runtime.
+         *
+         * @param index the index of the component
+         * @return a reference to the compononent at the given index
+         */
+        constexpr T& operator[](const std::size_t i) {
+            return v[i];
+        }
+
+
+        /**
+         * Returns the value of the first component.
+         *
+         * @return the value of the first component
+         */
+        template <size_t SS = S>
+        constexpr T x(typename std::enable_if<SS >= 1>::type* = 0) const {
+            static_assert(S > 0);
+            return v[0];
+        }
+
+        /**
+         * Returns the value of the second component.
+         *
+         * @return the value of the second component
+         */
+        template <size_t SS = S>
+        constexpr T y(typename std::enable_if<SS >= 2>::type* = 0) const {
+            static_assert(S > 1);
+            return v[1];
+        }
+
+        /**
+         * Returns the value of the third component.
+         *
+         * @return the value of the third component
+         */
+        template <size_t SS = S>
+        constexpr T z (typename std::enable_if<SS >= 3>::type* = 0) const {
+            static_assert(S > 2);
+            // cppcheck-suppress arrayIndexOutOfBounds
+            return v[2];
+        }
+
+        /**
+         * Returns the value of the fourth component.
+         *
+         * @return the value of the fourth component
+         */
+        template <size_t SS = S>
+        constexpr T w(typename std::enable_if<SS >= 4>::type* = 0) const {
+            static_assert(S > 3);
+            // cppcheck-suppress arrayIndexOutOfBounds
+            return v[3];
+        }
+
+        /**
+         * Returns a vector with the values of the first and second component.
+         *
+         * @return a vector with the values of the first and second component
+         */
+        constexpr vec<T,2> xy() const {
+            static_assert(S > 1);
+            return vec<T,2>(x(), y());
+        }
+
+        /**
+         * Returns a vector with the values of the first and third component.
+         *
+         * @return a vector with the values of the first and third component
+         */
+        constexpr vec<T,2> xz() const {
+            static_assert(S > 1);
+            return vec<T,2>(x(), z());
+        }
+
+        /**
+         * Returns a vector with the values of the second and third component.
+         *
+         * @return a vector with the values of the second and third component
+         */
+        constexpr vec<T,2> yz() const {
+            static_assert(S > 1);
+            return vec<T,2>(y(), z());
+        }
+
+        /**
+         * Returns a vector with the values of the first three components.
+         *
+         * @return a vector with the values of the first three components
+         */
+        constexpr vec<T,3> xyz() const {
+            static_assert(S > 2);
+            return vec<T,3>(x(), y(), z());
+        }
+
+        /**
+         * Returns a vector with the values of the first four components.
+         *
+         * @return a vector with the values of the first four components
+         */
+        constexpr vec<T,4> xyzw() const {
+            static_assert(S > 3);
+            return vec<T,4>(x(), y(), z(), w());
+        }
+    public:
+        static constexpr vec<T,S> pos_x() {
+            constexpr auto result = axis(0);
+            return result;
+        }
+
+        static constexpr vec<T,S> pos_y() {
+            constexpr auto result = axis(1);
+            return result;
+        }
+
+        static constexpr vec<T,S> pos_z() {
+            constexpr auto result = axis(2);
+            return result;
+        }
+
+        static constexpr vec<T,S> neg_x() {
+            constexpr auto result = -axis(0);
+            return result;
+        }
+
+        static constexpr vec<T,S> neg_y() {
+            constexpr auto result = -axis(1);
+            return result;
+        }
+
+        static constexpr vec<T,S> neg_z() {
+            constexpr auto result = -axis(2);
+            return result;
+        }
+
+        static constexpr vec<T,S> zero() {
+            constexpr auto result = fill(static_cast<T>(0));
+            return result;
+        }
+
+        static constexpr vec<T,S> one() {
+            constexpr auto result = fill(static_cast<T>(1));
+            return result;
+        }
+
+        static constexpr vec<T,S> nan() {
+            constexpr auto result = fill(std::numeric_limits<T>::quiet_NaN());
+            return result;
+        }
+
+        static constexpr vec<T,S> min() {
+            constexpr auto result = fill(std::numeric_limits<T>::min());
+            return result;
+        }
+
+        static constexpr const vec<T,S> max() {
+            constexpr auto result = fill(std::numeric_limits<T>::max());
+            return result;
+        }
+    };
+
+    /* ========== comparison operators ========== */
+
+    /**
+     * Lexicographically compares the given components of the vectors using the given epsilon.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return -1 if the left hand size is less than the right hand size, +1 if the left hand size is greater than the right hand size, and 0 if both sides are equal
+     */
+    template <typename T, size_t S>
+    constexpr int compare(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = T(0.0)) {
+        for (size_t i = 0; i < S; ++i) {
+            // NaN handling: sort NaN's above non-NaN's, otherwise they would compare equal to any non-nan value since
+            // both the < and > tests below fail. Note that this function will compare NaN and nan as equal.
+            const bool lhsIsNaN = (lhs[i] != lhs[i]);
+            const bool rhsIsNaN = (rhs[i] != rhs[i]);
+            if (!lhsIsNaN && rhsIsNaN) {
+                return -1;
+            } else if (lhsIsNaN && !rhsIsNaN) {
+                return 1;
+            }
+
+            if (lhs[i] < rhs[i] - epsilon) {
+                return -1;
+            } else if (lhs[i] > rhs[i] + epsilon) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Performs a pairwise lexicographical comparison of the pairs of vectors given by the two ranges. This function iterates over
+     * both ranges in a parallel fashion, and compares the two current elements lexicagraphically until one range ends.
+     * If the end of a range is reached, that range is considered less if the end of the other range has not yet been
+     * reached. Otherwise, the two ranges of the same length, and are considered to be identical.
+     *
+     * @tparam T the type of the epsilon parameter
+     * @tparam I the range iterator type
+     * @param lhsCur the beginning of the left hand range
+     * @param lhsEnd the end of the left hand range
+     * @param rhsCur the beginning of the right hand range
+     * @param rhsEnd the end of the right hand range
+     * @param epsilon the epsilon value for component wise comparison
+     * @return -1 if the left hand range is less than the right hand range, +1 if the left hand range is greater than the right hand range, and 0 if both ranges are equal
+     */
+    template <typename T, typename I>
+    constexpr int compare(I lhsCur, I lhsEnd, I rhsCur, I rhsEnd, const T epsilon = static_cast<T>(0.0)) {
+        while (lhsCur != lhsEnd && rhsCur != rhsEnd) {
+            const auto cmp = compare(*lhsCur, *rhsCur, epsilon);
+            if (cmp < 0) {
+                return -1;
+            } else if (cmp > 0) {
+                return +1;
+            }
+            ++lhsCur;
+            ++rhsCur;
+        }
+
+        if (rhsCur != rhsEnd) {
+            return -1;
+        } else if (lhsCur != lhsEnd) {
+            return +1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Checks whether the given vectors are component wise equal up to the given epsilon.
+     *
+     * Unline the equality operator ==, this function takes an epsilon value into account.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @param epsilon the epsilon value
+     * @return true if the given vectors are component wise equal up to the given epsilon value
+     */
+    template <typename T, size_t S>
+    constexpr bool is_equal(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon) {
+        return compare(lhs, rhs, epsilon) == 0;
+    }
+
+    /**
+     * Compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) == 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given vectors have equal values for each component, and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool operator==(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) == 0;
+    }
+
+    /**
+     * Compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) != 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given vectors do not have equal values for each component, and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool operator!=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) != 0;
+    }
+
+    /**
+     * Lexicographically compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) < 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given left hand vector is less than the given right hand vector
+     */
+    template <typename T, size_t S>
+    constexpr bool operator<(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) < 0;
+    }
+
+    /**
+     * Lexicographically compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) <= 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given left hand vector is less than or equal to the given right hand vector
+     */
+    template <typename T, size_t S>
+    constexpr bool operator<=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) <= 0;
+    }
+
+    /**
+     * Lexicographically compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) > 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given left hand vector is greater than than the given right hand vector
+     */
+    template <typename T, size_t S>
+    constexpr bool operator>(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) > 0;
+    }
+
+    /**
+     * Lexicographically compares the given vectors component wise. Equivalent to compare(lhs, rhs, 0.0) >= 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return true if the given left hand vector is greater than or equal to than the given right hand vector
+     */
+    template <typename T, size_t S>
+    constexpr bool operator>=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return compare(lhs, rhs) >= 0;
+    }
+
+    /* ========== sorting and finding components ========== */
+
+    /**
+     * Returns an array of indices of the given vector. The indices are ordered by the values of their their
+     * corresponding components in the given vector, in ascending order. The algorithm used to sort the indices is not
+     * stable.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector to sort
+     * @return the sorted array of indices
+     */
+    template <typename T, size_t S>
+    constexpr std::array<std::size_t, S> sorted_index_sequence(const vec<T,S>& vector) {
+        constexpr auto cmp = [](const auto l, const auto r) {
+            return l < r;
+        };
+        return sort(vector.v, cmp);
+    }
+
+    /**
+     * Returns the given vector with its components sorted by their values in ascending order. The algorithm used to
+     * sort the indices is not stable.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector to sort
+     * @return the sorted vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> sort(const vec<T,S>& vector) {
+        return vec<T,S> { get_elements(vector.v, sorted_index_sequence(vector)) };
+    }
+
+    /**
+     * Returns an array of indices of the given vector. The indices are ordered by the absolute value of their
+     * corresponding components in the given vector, in ascending order. The algorithm used to sort the indices is not
+     * stable.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector to sort
+     * @return the sorted vector
+     */
+    template <typename T, size_t S>
+    constexpr std::array<std::size_t, S> abs_sorted_index_sequence(const vec<T,S>& vector) {
+        constexpr auto cmp = [](const auto l, const auto r) {
+            return abs(l) < abs(r);
+        };
+        return sort(vector.v, cmp);
+    }
+
+    /**
+     * Returns the given vector with its components sorted by their absolute values in ascending order. The algorithm
+     * used to sort the indices is not stable.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector to sort
+     * @return the sorted vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> abs_sort(const vec<T,S>& vector) {
+        return vec<T,S> { get_elements(vector.v, abs_sorted_index_sequence(vector)) };
+    }
+
+    /**
+     * Returns the index of the k-largest component of the given vector. If there are multiple such components,
+     * then an index of any such component may be returned.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector
+     * @param k the value of k
+     * @return the index of a k-largest component of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr std::size_t find_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
+        assert(k < S);
+        return sorted_index_sequence(vector)[S - k - 1u];
+    }
+
+    /**
+     * Returns the index of the k-largest absolute component of the given vector. If there are multiple such components,
+     * then an index of any such component may be returned.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector
+     * @param k the value of k
+     * @return the index of a k-largest absolute component of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr std::size_t find_abs_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
+        assert(k < S);
+        return abs_sorted_index_sequence(vector)[S - k - 1u];
+    }
+
+    /**
+     * Returns the value of the k-largest component of the given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector
+     * @param k the value of k
+     * @return the value of a k-largest component value of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr T get_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
+        return vector[sorted_index_sequence(vector)[S - k - 1u]];
+    }
+
+    /**
+     * Returns the value of the k-largest absolute component of the given vector. If there are multiple such components,
+     * then any such component value may be returned.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector
+     * @param k the value of k
+     * @return the value of a k-largest component of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr T get_abs_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
+        return vector[abs_sorted_index_sequence(vector)[S - k - 1u]];
+    }
+
+    /* ========== arithmetic operators ========== */
+
+    /**
+     * Returns a copy of this vector.
+     *
+     * @return the copy
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator+(const vec<T,S>& vector) {
+        return vector;
+    }
+
+    /**
+     * Returns an inverted copy of this vector. The copy is inverted by negating every component.
+     *
+     * @return the inverted copy
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator-(const vec<T,S>& vector) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = -vector[i];
+        }
+        return result;
+    }
+
+
+    /**
+     * Returns the sum of the given vectors, which is computed by adding all of their components.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the sum of the given two vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator+(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] + rhs[i];
+        }
+        return result;
+    }
+
+    /**
+     * Returns the difference of the given vectors, which is computed by subtracting the corresponding components
+     * of the right hand vector from the components of the left hand vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the difference of the given two vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator-(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] - rhs[i];
+        }
+        return result;
+    }
+
+    /**
+     * Returns the product of the given vectors, which is computed by multiplying the corresponding components
+     * of the right hand vector with the components of the left hand vector. Note that this does not compute
+     * either the inner (or dot) product or the outer (or cross) product.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the product of the given two vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator*(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] * rhs[i];
+        }
+        return result;
+    }
+
+    /**
+     * Returns the product of the given vector and scalar factor, which is computed by multiplying each component of the
+     * vector with the factor.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the vector
+     * @param rhs the scalar
+     * @return the scalar product of the given vector with the given factor
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator*(const vec<T,S>& lhs, const T rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] * rhs;
+        }
+        return result;
+    }
+
+
+    /**
+     * Returns the product of the given vector and scalar factor, which is computed by multiplying each component of the
+     * vector with the factor.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the scalar
+     * @param rhs the vector
+     * @return the scalar product of the given vector with the given factor
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator*(const T lhs, const vec<T,S>& rhs) {
+        return vec<T,S>(rhs) * lhs;
+    }
+
+    /**
+     * Returns the division of the given vectors, which is computed by dividing the corresponding components
+     * of the left hand vector by the components of the right hand vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the division of the given two vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator/(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] / rhs[i];
+        }
+        return result;
+    }
+
+    /**
+     * Returns the division of the given vector and scalar factor, which is computed by dividing each component of the
+     * vector by the factor.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the vector
+     * @param rhs the scalar
+     * @return the scalar division of the given vector with the given factor
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator/(const vec<T,S>& lhs, const T rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs[i] / rhs;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the division of the given vector and scalar factor, which is computed by dividing the factor by each
+     * component.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the scalar
+     * @param rhs the vector
+     * @return the scalar division of the given factor with the given vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> operator/(const T lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = lhs / rhs[i];
+        }
+        return result;
+    }
+
+    /* ========== arithmetic functions ========== */
+
+    /**
+     * Returns a vector where each component is the minimum of the corresponding components of the given vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @return the component wise minimum of the given vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> min(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = min(lhs[i], rhs[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component is the maximum of the corresponding components of the given vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @return the component wise maximum of the given vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> max(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = max(lhs[i], rhs[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component is the absolute minimum of the corresponding components of the given vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @return the component wise absolute minimum of the given vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> abs_min(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = absMin(lhs[i], rhs[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component is the absolute maximum of the corresponding components of the given vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @return the component wise absolute maximum of the given vectors
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> abs_max(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = absMax(lhs[i], rhs[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector with each component clamped to the ranges defined in by the corresponding components of the
+     * given minimum and maximum vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the value to clamp
+     * @param minVal the minimum values
+     * @param maxVal the maximum values
+     * @return the clamped vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> clamp(const vec<T,S>& v, const vec<T,S>& minVal, const vec<T,S>& maxVal) {
+        return min(max(v, minVal), maxVal);
+    }
+
+    /**
+     * Returns a vector where each component is the absolute value of the corresponding component of the the
+     * given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to make absolute
+     * @return the absolute vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> abs(const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = abs(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component indicates the sign of the corresponding components of the given vector.
+     *
+     * For each component, the returned vector has a value of
+     * - -1 if the corresponding component of the given vector is less than 0
+     * - +1 if the corresponding component of the given vector is greater than 0
+     * -  0 if the corresponding component of the given vector is equal to 0
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v a vector
+     * @return a vector indicating the signs of the components of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> sign(const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = sign(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector where each component is set to 0 if the corresponding component of the given vector is less than
+     * the corresponding component of the given edge vector, and 1 otherwise.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v a vector
+     * @param e the edge vector
+     * @return a vector indicating whether the given value is less than the given edge value or not
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> step(const vec<T,S>& e, const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = step(e[i], v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Performs performs smooth Hermite interpolation for each component x of the given vector between 0 and 1 when
+     * e0[i] < v[i] < e1[i].
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param e0 the lower edge values
+     * @param e1 the upper edge values
+     * @param v the vector to interpolate
+     * @return the interpolated vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> smoothstep(const vec<T,S>& e0, const vec<T,S>& e1, const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = smoothstep(e0[i], e1[i], v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the dot product (also called inner product) of the two given vectors.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the dot product of the given vectors
+     */
+    template <typename T, size_t S>
+    constexpr T dot(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        auto result = static_cast<T>(0.0);
+        for (size_t i = 0; i < S; ++i) {
+            result += (lhs[i] * rhs[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the cross product (also called outer product) of the two given 3d vectors.
+     *
+     * @tparam T the component type
+     * @param lhs the left hand vector
+     * @param rhs the right hand vector
+     * @return the cross product of the given vectors
+     */
+    template <typename T>
+    constexpr vec<T,3> cross(const vec<T, 3>& lhs, const vec<T, 3>& rhs) {
+        return vec<T,3>(lhs[1] * rhs[2] - lhs[2] * rhs[1],
+            lhs[2] * rhs[0] - lhs[0] * rhs[2],
+            lhs[0] * rhs[1] - lhs[1] * rhs[0]);
+    }
+
+    /**
+     * Returns the squared length of the given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vec the vector to normalize
+     * @return the squared length of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr T squared_length(const vec<T,S>& vec) {
+        return dot(vec, vec);
+    }
+
+    /**
+     * Returns the length of the given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vec the vector to return the length of
+     * @return the length of the given vector
+     */
+    template <typename T, size_t S>
+    constexpr T length(const vec<T,S>& vec) {
+        return sqrt(squared_length(vec));
+    }
+
+    /**
+     * Normalizes the given vector.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vec the vector to return the squared length of
+     * @return the normalized vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> normalize(const vec<T,S>& vec) {
+        return vec / length(vec);
+    }
+
+    /**
+     * Rearranges the components of the given vector depending on the value of the axis parameter as follows:
+     *
+     * - 1: x y z -> y z x
+     * - 2: x y z -> z x y
+     * - 3: x y z -> x y z
+     *
+     * @tparam T the component type
+     * @param point the point to swizzle
+     * @param axis the axis
+     * @return the swizzled point
+     */
+    template <typename T>
+    constexpr vec<T,3> swizzle(const vec<T,3>& point, const size_t axis) {
+        assert(axis <= 3);
+        switch (axis) {
+            case 0: // x y z -> y z x
+                return vec<T,3>(point.y(), point.z(), point.x());
+            case 1: // x y z -> z x y
+                return vec<T,3>(point.z(), point.x(), point.y());
+            default:
+                return point;
+        }
+    }
+
+    /**
+     * Rearranges the components of the given vector depending on the value of the axis parameter so that it undoes
+     * the effect of calling swizzle.
+     *
+     * @tparam T the component type
+     * @param point the point to swizzle
+     * @param axis the axis
+     * @return the unswizzled point
+     */
+    template <typename T>
+    constexpr vec<T,3> unswizzle(const vec<T,3>& point, const size_t axis) {
+        assert(axis <= 3);
+        switch (axis) {
+            case 0:
+                return vec<T,3>(point.z(), point.x(), point.y());
+            case 1:
+                return vec<T,3>(point.y(), point.z(), point.x());
+            default:
+                return point;
+        }
+    }
+
+    /**
+     * Checks whether the given vector has unit length (1).
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to check
+     * @param epsilon the epsilon value
+     * @return true if the given vector has a length of 1 and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool is_unit(const vec<T,S>& v, const T epsilon) {
+        return isEqual(length(v), T(1.0), epsilon);
+    }
+
+    /**
+     * Checks whether the given vector has a length of 0.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to check
+     * @param epsilon the epsilon value
+     * @return true if the given vector has a length of 0 and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool is_zero(const vec<T,S>& v, const T epsilon) {
+        for (size_t i = 0; i < S; ++i) {
+            if (!isZero(v[i], epsilon)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks whether the given vector NaN as any component.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to check
+     * @return true if the given vector has NaN as any component
+     */
+    template <typename T, size_t S>
+    constexpr bool is_nan(const vec<T,S>& v) {
+        for (size_t i = 0; i < S; ++i) {
+            if (is_nan(v[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether each component of the given vector is within a distance of epsilon around an integral value.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector to check
+     * @param epsilon the epsilon value
+     * @return true if all components of the given vector are integral under the above definition
+     */
+    template <typename T, size_t S>
+    constexpr bool is_integral(const vec<T,S>& v, const T epsilon = static_cast<T>(0.0)) {
+        for (size_t i = 0; i < S; ++i) {
+            if (abs(v[i] - round(v[i])) > epsilon) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Mixes the given two vectors using the given factors. For each component i of the given vectors, the corresponding
+     * component of the result is computed as
+     *
+     *   (1 - f[i]) * lhs[i] + f * rhs[i]
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @param f the mixing factors
+     * @return the mixed vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> mix(const vec<T,S>& lhs, const vec<T,S>& rhs, const vec<T,S>& f) {
+        return (vec<T,S>::one() - f) * lhs + f * rhs;
+    }
+
+    /**
+     * Returns a vector with each component set to the fractional part of the corresponding component of the given
+     * vector.
+     *
+     * Note that this function differs from GLSL's fract, which behaves wrongly for negative values. Return 0.9 for
+     * fract(-0.1). This function will correctly return -0.1 in this case.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the vector
+     * @return the fractional vector
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> fract(const vec<T,S>& v) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = fract(v[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a vector with each component set to the floating point remainder of the division of v over f. So for each
+     * component i, it holds that result[i] = mod(v[i], f[i]).
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param v the dividend
+     * @param f the divisor
+     * @return the fractional remainder
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S> mod(const vec<T,S>& v, const vec<T,S>& f) {
+        vec<T,S> result;
+        for (size_t i = 0; i < S; ++i) {
+            result[i] = mod(v[i], f[i]);
+        }
+        return result;
+    }
+
+    /**
+     * Computes the distance between two given points.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first point
+     * @param rhs the second point
+     * @return the distance between the given points
+     */
+    template <typename T, size_t S>
+    constexpr T distance(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return length(lhs - rhs);
+    }
+
+    /**
+     * Computes the squared distance between two given points.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first point
+     * @param rhs the second point
+     * @return the squared distance between the given points
+     */
+    template <typename T, size_t S>
+    constexpr T squared_distance(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+        return squared_length(lhs - rhs);
+    }
+
+    /**
+     * Converts the given point in cartesian coordinates to homogeneous coordinates by embedding the point into
+     * a vector with a size increased by 1 and setting the last component to 1.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param point the point in cartesian coordinates
+     * @return the point in homogeneous coordinates
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S+1> to_homogeneous_coords(const vec<T,S>& point) {
+        return vec<T,S+1>(point, static_cast<T>(1.0));
+    }
+
+    /**
+     * Converts the given point in homogeneous coordinates to cartesian coordinates by dividing all but the last
+     * component by the value of the last component.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param point the point in homogeneous coordinates
+     * @return the point in cartesian coordinates
+     */
+    template <typename T, size_t S>
+    constexpr vec<T,S-1> to_cartesian_coords(const vec<T,S>& point) {
+        vec<T,S-1> result;
+        for (size_t i = 0; i < S-1; ++i) {
+            result[i] = point[i] / point[S-1];
+        }
+        return result;
+    }
+
+    /**
+     * Checks whether the given three points are colinear.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param a the first point
+     * @param b the second point
+     * @param c the third point
+     * @param epsilon the epsilon value
+     * @return true if the given three points are colinear, and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool is_colinear(const vec<T,S>& a, const vec<T,S>& b, const vec<T,S>& c, const T epsilon = constants<T>::colinearEpsilon()) {
+        // see http://math.stackexchange.com/a/1778739
+
+        T j = 0.0;
+        T k = 0.0;
+        T l = 0.0;
+        for (size_t i = 0; i < S; ++i) {
+            const T ac = a[i] - c[i];
+            const T ba = b[i] - a[i];
+            j += ac * ba;
+            k += ac * ac;
+            l += ba * ba;
+        }
+
+        return isZero(j * j - k * l, epsilon);
+    }
+
+    /**
+     * Checks whether the given vectors are parallel. Two vectors are considered to be parallel if and only if they point
+     * in the same or in opposite directions.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param lhs the first vector
+     * @param rhs the second vector
+     * @param epsilon the epsilon value
+     * @return true if the given vectors are parallel, and false otherwise
+     */
+    template <typename T, size_t S>
+    constexpr bool is_parallel(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
+        const T cos = dot(normalize(lhs), normalize(rhs));
+        return isEqual(abs(cos), T(1.0), epsilon);
+    }
+
+    /* ========== stream operators ========== */
+
+    template <typename T, size_t S>
+    std::ostream& operator<<(std::ostream& stream, const vec<T,S>& vec) {
+        if (S > 0) {
+            stream << vec[0];
+            for (size_t i = 1; i < S; ++i) {
+                stream << " " << vec[i];
+            }
+        }
+        return stream;
+    }
+}
+
+#endif
