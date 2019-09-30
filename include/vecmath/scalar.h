@@ -42,19 +42,6 @@ namespace vm {
         }
     };
 
-    template <typename T>
-    constexpr T sqrt_nr(const T x, const T curr, const T prev) {
-        return curr == prev ? curr : sqrt_nr(x, static_cast<T>(0.5) * (curr + x / curr), curr);
-    }
-
-    template <typename T>
-    constexpr T sqrt(const T x) {
-        static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return x >= static_cast<T>(0.0) && x < std::numeric_limits<T>::infinity()
-               ? sqrt_nr(x, x, static_cast<T>(0.0))
-               : std::numeric_limits<T>::quiet_NaN();
-    }
-
     /**
      * Checks whether the given float is NaN.
      *
@@ -648,6 +635,39 @@ namespace vm {
 #endif
     }
 
+    template <typename T>
+    constexpr T sqrt_c_nr(const T x, const T curr, const T prev) {
+        return curr == prev ? curr : sqrt_c_nr(x, static_cast<T>(0.5) * (curr + x / curr), curr);
+    }
+
+    /**
+     * Computes the square root of the given value at compile time.
+     *
+     * @tparam T the argument type, which must be a floating point type
+     * @param value the value or NaN if an error occurs
+     * @return the square root of the value
+     */
+    template <typename T>
+    constexpr T sqrt_c(const T value) {
+        static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+        return value >= static_cast<T>(0.0) && value < std::numeric_limits<T>::infinity()
+               ? sqrt_c_nr(value, value, static_cast<T>(0.0))
+               : std::numeric_limits<T>::quiet_NaN();
+    }
+
+    /**
+     * Computes the square root of the given value.
+     *
+     * @tparam T the argument type, which must be a floating point type
+     * @param value the value or NaN if an error occurs
+     * @return the square root of the value
+     */
+    template <typename T>
+    T sqrt(const T value) {
+        static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
+        return std::sqrt(value);
+    }
+
     /**
      * Solves a quadratic polynomial with the given coefficients and returns up to two solutions.
      *
@@ -664,7 +684,7 @@ namespace vm {
      * @return a tuple of the number of solutions and the solutions
      */
     template <typename T>
-    constexpr std::tuple<size_t, std::array<T,2>> solveQuadratic(const T a, const T b, const T c, const T epsilon) {
+    std::tuple<size_t, std::array<T,2>> solveQuadratic(const T a, const T b, const T c, const T epsilon) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
 
         // adapted from https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c
@@ -751,8 +771,8 @@ namespace vm {
             }
         } else if (D < T(0.0)) {
             // casus irreducibilis: three real solutions
-            const auto phi = T(1.0 / 3.0) * std::acos(-q / std::sqrt(-p3));
-            const auto t   = T(2.0) * std::sqrt(-p);
+            const auto phi = T(1.0 / 3.0) * std::acos(-q / sqrt(-p3));
+            const auto t   = T(2.0) * sqrt(-p);
             num = 3;
             solutions = {
                  t * std::cos(phi),
@@ -761,7 +781,7 @@ namespace vm {
             };
         } else {
             // one real solution
-            const auto D2 =  std::sqrt(D);
+            const auto D2 =  sqrt(D);
             const auto u  =  std::cbrt(D2 - q);
             const auto v  = -std::cbrt(D2 + q);
             num = 1;
@@ -849,7 +869,7 @@ namespace vm {
             if (is_zero(u, epsilon)) {
                 u = T(0.0);
             } else if (u > T(0.0)) {
-                u = std::sqrt(u);
+                u = sqrt(u);
             } else {
                 return std::make_tuple(0, std::array<T,4>({ nan<T>(), nan<T>(), nan<T>(), nan<T>() }));
             }
@@ -857,7 +877,7 @@ namespace vm {
             if (is_zero(v, epsilon)) {
                 v = T(0.0);
             } else if (v > T(0.0)) {
-                v = std::sqrt(v);
+                v = sqrt(v);
             } else {
                 return std::make_tuple(0, std::array<T,4>({ nan<T>(), nan<T>(), nan<T>(), nan<T>() }));
             }

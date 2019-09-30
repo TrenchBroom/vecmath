@@ -597,10 +597,9 @@ namespace vm {
     TEST(scalar_test, solveQuadratic) {
         using c = constants<double>;
 
-        constexpr auto result = solveQuadratic(1.0, 6.0, -16.0, c::almostZero());
         assertSolution(
             { 2, { 2.0, -8.0 } },
-            result
+            solveQuadratic(1.0, 6.0, -16.0, c::almostZero())
         );
         assertSolution(
             { 2, { -1.0, -9.0 } },

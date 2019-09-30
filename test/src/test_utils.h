@@ -22,6 +22,12 @@
 
 #include <vecmath/forward.h>
 
+#define CE_ASSERT_TRUE(expr) { constexpr auto r = (expr); ASSERT_TRUE(r); }
+#define CE_ASSERT_FALSE(expr) { constexpr auto r = (expr); ASSERT_FALSE(r); }
+#define CE_ASSERT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_EQ((exp), r); }
+#define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_FLOAT_EQ((exp), r); }
+#define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_VEC_EQ((exp), r); }
+
 template <typename T, size_t S>
 void ASSERT_VEC_EQ(const vm::vec<T,S>& lhs, const vm::vec<T,S>& rhs) {
     ASSERT_TRUE(is_equal(lhs, rhs, static_cast<T>(0.001)));

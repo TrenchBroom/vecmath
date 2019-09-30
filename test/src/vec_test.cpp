@@ -157,9 +157,7 @@ namespace vm {
     // ========== comparison operators ==========
 
     TEST(vec_test, compare) {
-        // constexpr evaluation
-        constexpr auto result = compare(vec3f::zero(), vec3f::zero());
-        ASSERT_EQ( 0, result);
+        CE_ASSERT_EQ( 0, compare(vec3f::zero(), vec3f::zero()))
 
         ASSERT_EQ( 0, compare(vec3f::zero(), vec3f::zero()));
         ASSERT_EQ(-1, compare(vec3f::zero(), vec3f::one()));
@@ -189,9 +187,7 @@ namespace vm {
         constexpr auto r2 = std::array { vec3f(1, 2, 3), vec3f(2, 2, 3) };
         constexpr auto r3 = std::array { vec3f(2, 2, 3) };
 
-        // constexpr evaluation
-        constexpr auto result = compare<float>(std::begin(r1), std::end(r1), std::begin(r1), std::end(r1));
-        ASSERT_EQ( 0, result);
+        CE_ASSERT_EQ(0, compare<float>(std::begin(r1), std::end(r1), std::begin(r1), std::end(r1)))
 
         // same length
         ASSERT_EQ( 0, compare<float>(std::begin(r1), std::end(r1), std::begin(r1), std::end(r1)));
@@ -208,9 +204,7 @@ namespace vm {
     }
 
     TEST(vec_test, is_equal) {
-        // constexpr evaluation
-        constexpr auto result = is_equal(vec2f::zero(), vec2f::zero(), 0.0f);
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(is_equal(vec2f::zero(), vec2f::zero(), 0.0f))
 
         ASSERT_TRUE(is_equal(vec2f::zero(), vec2f::zero(), 0.0f));
         ASSERT_FALSE(is_equal(vec2f::zero(), vec2f::one(), 0.0f));
@@ -228,9 +222,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_equal) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) == vec3f(2, 2, 2);
-        ASSERT_FALSE(result);
+        CE_ASSERT_FALSE(vec3f(1, 2, 3) == vec3f(2, 2, 2))
 
         ASSERT_FALSE(vec3f(1, 2, 3) == vec3f(2, 2, 2));
         ASSERT_TRUE (vec3f(1, 2, 3) == vec3f(1, 2, 3));
@@ -245,9 +237,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_not_equal) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) != vec3f(2, 2, 2);
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(vec3f(1, 2, 3) != vec3f(2, 2, 2))
 
         ASSERT_TRUE (vec3f(1, 2, 3) != vec3f(2, 2, 2));
         ASSERT_FALSE(vec3f(1, 2, 3) != vec3f(1, 2, 3));
@@ -262,9 +252,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_less_than) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) < vec3f(2, 2, 2);
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(vec3f(1, 2, 3) < vec3f(2, 2, 2));
 
         ASSERT_TRUE (vec3f(1, 2, 3) < vec3f(2, 2, 2));
         ASSERT_FALSE(vec3f(1, 2, 3) < vec3f(1, 2, 3));
@@ -272,9 +260,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_less_than_or_equal) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) <= vec3f(2, 2, 2);
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(vec3f(1, 2, 3) <= vec3f(2, 2, 2))
 
         ASSERT_TRUE (vec3f(1, 2, 3) <= vec3f(2, 2, 2));
         ASSERT_TRUE (vec3f(1, 2, 3) <= vec3f(1, 2, 3));
@@ -282,9 +268,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_greater_than) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) > vec3f(2, 2, 2);
-        ASSERT_FALSE(result);
+        CE_ASSERT_FALSE(vec3f(1, 2, 3) > vec3f(2, 2, 2))
 
         ASSERT_FALSE(vec3f(1, 2, 3) > vec3f(2, 2, 2));
         ASSERT_FALSE(vec3f(1, 2, 3) > vec3f(1, 2, 3));
@@ -292,9 +276,7 @@ namespace vm {
     }
 
     TEST(vec_test, operator_greater_than_or_equal) {
-        // constexpr evaluation
-        constexpr auto result = vec3f(1, 2, 3) >= vec3f(2, 2, 2);
-        ASSERT_FALSE(result);
+        CE_ASSERT_FALSE(vec3f(1, 2, 3) >= vec3f(2, 2, 2))
 
         ASSERT_FALSE(vec3f(1, 2, 3) >= vec3f(2, 2, 2));
         ASSERT_TRUE (vec3f(1, 2, 3) >= vec3f(1, 2, 3));
@@ -304,9 +286,7 @@ namespace vm {
     /* ========== sorting and finding components ========== */
 
     TEST(vec_test, sort) {
-        // constexpr evaluation
-        constexpr auto result = sort(vec3f(2, 1, 3));
-        ASSERT_EQ(vec3f(1, 2, 3), result);
+        CE_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(2, 1, 3)))
 
         ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(1, 2, 3)));
         ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(1, 3, 2)));
@@ -317,9 +297,7 @@ namespace vm {
     }
 
     TEST(vec_test, abs_sort) {
-        // constexpr evaluation
-        constexpr auto result = abs_sort(vec3f(-2, 1, 3));
-        ASSERT_EQ(vec3f(1, -2, 3), result);
+        CE_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f(-2, 1, 3)))
 
         ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 1, -2,  3)));
         ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 1,  3, -2)));
@@ -330,9 +308,7 @@ namespace vm {
     }
 
     TEST(vec_test, find_max_component) {
-        // constexpr evaluation
-        constexpr auto result = find_max_component(vec3f::pos_y(), 0);
-        ASSERT_EQ(1u, result);
+        CE_ASSERT_EQ(1u, find_max_component(vec3f::pos_y(), 0))
 
         ASSERT_EQ(0u, find_max_component(vec3f::pos_x(), 0));
         ASSERT_NE(0u, find_max_component(vec3f::neg_x(), 0));
@@ -347,9 +323,7 @@ namespace vm {
     }
 
     TEST(vec_test, find_abs_max_component) {
-        // constexpr evaluation
-        constexpr auto result = find_abs_max_component(vec3f::pos_y(), 0);
-        ASSERT_EQ(1u, result);
+        CE_ASSERT_EQ(1u, find_abs_max_component(vec3f::pos_y(), 0))
 
         ASSERT_EQ(0u, find_abs_max_component(vec3f::pos_x(), 0));
         ASSERT_EQ(0u, find_abs_max_component(vec3f::neg_x(), 0));
@@ -364,9 +338,7 @@ namespace vm {
     }
 
     TEST(vec_test, get_max_component) {
-        // constexpr evaluation
-        constexpr auto result = get_max_component(vec3f::pos_y(), 0);
-        ASSERT_EQ(1.0f, result);
+        CE_ASSERT_EQ(1.0f, get_max_component(vec3f::pos_y(), 0))
 
         ASSERT_EQ(1.0f, get_max_component(vec3f::pos_x(), 0));
         ASSERT_EQ(0.0f, get_max_component(vec3f::neg_x(), 0));
@@ -381,9 +353,7 @@ namespace vm {
     }
 
     TEST(vec_test, get_abs_max_component) {
-        // constexpr evaluation
-        constexpr auto result = get_abs_max_component(vec3f::neg_x(), 0);
-        ASSERT_EQ(-1.0f, result);
+        CE_ASSERT_EQ(-1.0f, get_abs_max_component(vec3f::neg_x(), 0))
 
         ASSERT_EQ( 1.0f, get_abs_max_component(vec3f::pos_x(), 0));
         ASSERT_EQ(-1.0f, get_abs_max_component(vec3f::neg_x(), 0));
@@ -400,58 +370,46 @@ namespace vm {
     // ========== arithmetic operators ==========
 
     TEST(vec_test, operator_unary_plus) {
-        constexpr auto result = +vec3f(+1.0f, -2.0f, +3.0f);
-        ASSERT_EQ(vec3f(+1.0f, -2.0f, +3.0f), result);
+        CE_ASSERT_EQ(vec3f(+1.0f, -2.0f, +3.0f), +vec3f(+1.0f, -2.0f, +3.0f))
         ASSERT_EQ(vec3f(+1.0f, -2.0f, +3.0f), +vec3f(+1.0f, -2.0f, +3.0f));
     }
 
     TEST(vec_test, operator_unary_minus) {
-        constexpr auto result = -vec3f(+1.0f, -2.0f, +3.0f);
-        ASSERT_EQ(vec3f(-1.0f, +2.0f, -3.0f), result);
+        CE_ASSERT_EQ(vec3f(-1.0f, +2.0f, -3.0f), -vec3f(+1.0f, -2.0f, +3.0f))
         ASSERT_EQ(vec3f(-1.0f, +2.0f, -3.0f), -vec3f(+1.0f, -2.0f, +3.0f));
     }
 
     TEST(vec_test, operator_binary_plus) {
-        constexpr auto result = vec3f(1.0f, 2.0f, 3.0f) + vec3f(3.0f, 2.0f, 1.0f);
-        ASSERT_EQ(result, vec3f(1.0f, 2.0f, 3.0f) + vec3f(3.0f, 2.0f, 1.0f));
+        CE_ASSERT_EQ(vec3f(4.0f, 4.0f, 4.0f), vec3f(1.0f, 2.0f, 3.0f) + vec3f(3.0f, 2.0f, 1.0f))
         ASSERT_EQ(vec3f(4.0f, 4.0f, 4.0f), vec3f(1.0f, 2.0f, 3.0f) + vec3f(3.0f, 2.0f, 1.0f));
     }
 
     TEST(vec_test, operator_binary_minus) {
-        constexpr auto result = vec3f(2.0f, 3.0f,  1.0f) - vec3f(1.0f, 2.0f,  2.0f);
-        ASSERT_EQ(vec3f(1.0f, 1.0f, -1.0f), result);
+        CE_ASSERT_EQ(vec3f(1.0f, 1.0f, -1.0f), vec3f(2.0f, 3.0f,  1.0f) - vec3f(1.0f, 2.0f,  2.0f))
         ASSERT_EQ(vec3f(1.0f, 1.0f, -1.0f), vec3f(2.0f, 3.0f,  1.0f) - vec3f(1.0f, 2.0f,  2.0f));
     }
 
     TEST(vec_test, operator_multiply_vectors) {
-        constexpr auto result = vec3f(2.0f, 3.0f, -1.0f) * vec3f(1.0f, 2.0f,  2.0f);
-        ASSERT_EQ(vec3f(2.0f, 6.0f, -2.0f), result);
+        CE_ASSERT_EQ(vec3f(2.0f, 6.0f, -2.0f), vec3f(2.0f, 3.0f, -1.0f) * vec3f(1.0f, 2.0f,  2.0f))
         ASSERT_EQ(vec3f(2.0f, 6.0f, -2.0f), vec3f(2.0f, 3.0f, -1.0f) * vec3f(1.0f, 2.0f,  2.0f));
     }
 
     TEST(vec_test, operator_multiply_scalar) {
-        constexpr auto result1 = vec3f(2.0f, 3.0f, 1.0f) * 3.0f;
-        ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), result1);
-
-        constexpr auto result2 = 3.0f * vec3f(2.0f, 3.0f, 1.0f);
-        ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), result2);
+        CE_ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), vec3f(2.0f, 3.0f, 1.0f) * 3.0f)
+        CE_ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), 3.0f * vec3f(2.0f, 3.0f, 1.0f))
 
         ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), vec3f(2.0f, 3.0f, 1.0f) * 3.0f);
         ASSERT_EQ(vec3f(6.0f, 9.0f, 3.0f), 3.0f * vec3f(2.0f, 3.0f, 1.0f));
     }
 
     TEST(vec_test, operator_divide_vectors) {
-        constexpr auto result = vec3f(2.0f, 12.0f,  2.0f) / vec3f(1.0f,  2.0f, -1.0f);
-        ASSERT_EQ(vec3f(2.0f,  6.0f, -2.0f), result);
+        CE_ASSERT_EQ(vec3f(2.0f,  6.0f, -2.0f), vec3f(2.0f, 12.0f,  2.0f) / vec3f(1.0f,  2.0f, -1.0f))
         ASSERT_EQ(vec3f(2.0f,  6.0f, -2.0f), vec3f(2.0f, 12.0f,  2.0f) / vec3f(1.0f,  2.0f, -1.0f));
     }
 
     TEST(vec_test, operator_divide_scalar) {
-        constexpr auto result1 = vec3f(2.0f, 36.0f, 4.0f) / 2.0f;
-        ASSERT_EQ(vec3f(1.0f, 18.0f, 2.0f), result1);
-
-        constexpr auto result2 = 8.0f / vec3f(2.0f, 8.0f, -4.0f);
-        ASSERT_EQ(vec3f(4.0f, 1.0f, -2.0f), result2);
+        CE_ASSERT_EQ(vec3f(1.0f, 18.0f, 2.0f), vec3f(2.0f, 36.0f, 4.0f) / 2.0f)
+        CE_ASSERT_EQ(vec3f(4.0f, 1.0f, -2.0f), 8.0f / vec3f(2.0f, 8.0f, -4.0f))
 
         ASSERT_EQ(vec3f(1.0f, 18.0f, 2.0f), vec3f(2.0f, 36.0f, 4.0f) / 2.0f);
         ASSERT_EQ(vec3f(4.0f, 1.0f, -2.0f), 8.0f / vec3f(2.0f, 8.0f, -4.0f));
@@ -460,8 +418,10 @@ namespace vm {
     // ========== arithmetic functions ==========
 
     TEST(vec_test, min) {
-        constexpr auto result = min(vec3f(+2, +2, +2), vec3f(+3, +3, +3));
-        ASSERT_EQ(vec3f(+2, +2, +2), result);
+        CE_ASSERT_EQ(vec3f(+2, +2, +2), min(vec3f(+2, +2, +2), vec3f(+3, +3, +3)))
+        CE_ASSERT_EQ(vec3f(-2, -2, -2), min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
+        CE_ASSERT_EQ(vec3f(+1, +2, +1), min(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
+        CE_ASSERT_EQ(vec3f(-2, -3, -2), min(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
 
         ASSERT_EQ(vec3f(+2, +2, +2), min(vec3f(+2, +2, +2), vec3f(+3, +3, +3)));
         ASSERT_EQ(vec3f(-2, -2, -2), min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)));
@@ -470,8 +430,10 @@ namespace vm {
     }
 
     TEST(vec_test, max) {
-        constexpr auto result = max(vec3f(+2, +2, +2), vec3f(+3, +3, +3));
-        ASSERT_EQ(vec3f(+3, +3, +3), result);
+        CE_ASSERT_EQ(vec3f(+3, +3, +3), max(vec3f(+2, +2, +2), vec3f(+3, +3, +3)))
+        CE_ASSERT_EQ(vec3f(-1, -1, -1), max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
+        CE_ASSERT_EQ(vec3f(+2, +3, +2), max(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
+        CE_ASSERT_EQ(vec3f(-1, -2, -1), max(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
 
         ASSERT_EQ(vec3f(+3, +3, +3), max(vec3f(+2, +2, +2), vec3f(+3, +3, +3)));
         ASSERT_EQ(vec3f(-1, -1, -1), max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)));
@@ -480,8 +442,10 @@ namespace vm {
     }
 
     TEST(vec_test, abs_min) {
-        constexpr auto result = abs_min(vec3f(+2, +2, +2), vec3f(+3, +3, +3));
-        ASSERT_EQ(vec3f(+2, +2, +2), result);
+        CE_ASSERT_EQ(vec3f(+2, +2, +2), abs_min(vec3f(+2, +2, +2), vec3f(+3, +3, +3)))
+        CE_ASSERT_EQ(vec3f(-1, -1, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
+        CE_ASSERT_EQ(vec3f(+1, +2, +1), abs_min(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
+        CE_ASSERT_EQ(vec3f(-1, -2, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
 
         ASSERT_EQ(vec3f(+2, +2, +2), abs_min(vec3f(+2, +2, +2), vec3f(+3, +3, +3)));
         ASSERT_EQ(vec3f(-1, -1, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)));
@@ -490,8 +454,10 @@ namespace vm {
     }
 
     TEST(vec_test, abs_max) {
-        constexpr auto result = abs_max(vec3f(+2, +2, +2), vec3f(+3, +3, +3));
-        ASSERT_EQ(vec3f(+3, +3, +3), result);
+        CE_ASSERT_EQ(vec3f(+3, +3, +3), abs_max(vec3f(+2, +2, +2), vec3f(+3, +3, +3)))
+        CE_ASSERT_EQ(vec3f(-2, -2, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
+        CE_ASSERT_EQ(vec3f(+2, +3, +2), abs_max(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
+        CE_ASSERT_EQ(vec3f(-2, -3, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
 
         ASSERT_EQ(vec3f(+3, +3, +3), abs_max(vec3f(+2, +2, +2), vec3f(+3, +3, +3)));
         ASSERT_EQ(vec3f(-2, -2, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)));
@@ -500,16 +466,17 @@ namespace vm {
     }
 
     TEST(vec_test, abs) {
-        constexpr auto result = abs(vec3f(1, -2, -3));
-        ASSERT_EQ(vec3f(1, 2, 3), result);
+        CE_ASSERT_EQ(vec3f(1, 2, 3), abs(vec3f(1, -2, -3)))
+        CE_ASSERT_EQ(vec3f(0, 2, 3), abs(vec3f(0, -2, -3)))
 
         ASSERT_EQ(vec3f(1, 2, 3), abs(vec3f(1, -2, -3)));
         ASSERT_EQ(vec3f(0, 2, 3), abs(vec3f(0, -2, -3)));
     }
 
     TEST(vec_test, sign) {
-        constexpr auto result = sign(vec3d::one());
-        ASSERT_EQ(vec3d(+1, +1, +1), result);
+        CE_ASSERT_EQ(vec3d(+1, +1, +1), sign(vec3d::one()))
+        CE_ASSERT_EQ(vec3d( 0,  0,  0), sign(vec3d::zero()))
+        CE_ASSERT_EQ(vec3d(-1, -1, -1), sign(-vec3d::one()))
 
         ASSERT_EQ(vec3d(+1, +1, +1), sign(vec3d::one()));
         ASSERT_EQ(vec3d( 0,  0,  0), sign(vec3d::zero()));
@@ -517,8 +484,11 @@ namespace vm {
     }
 
     TEST(vec_test, step) {
-        constexpr auto result = step(+vec3d::one(), vec3d::zero());
-        ASSERT_VEC_EQ(vec3d(0, 0, 0), result);
+        CE_ASSERT_VEC_EQ(vec3d(0, 0, 0), step(+vec3d::one(), vec3d::zero()))
+        CE_ASSERT_VEC_EQ(vec3d(1, 1, 1), step(+vec3d::one(), vec3d::one()))
+        CE_ASSERT_VEC_EQ(vec3d(0, 0, 1), step(+vec3d::one(), vec3d(-1, 0, 1)))
+        CE_ASSERT_VEC_EQ(vec3d(1, 1, 1), step(-vec3d::one(), vec3d(-1, 0, 1)))
+        CE_ASSERT_VEC_EQ(vec3d(0, 1, 1), step(-vec3d::one(), vec3d(-2, 0, 1)))
 
         ASSERT_VEC_EQ(vec3d(0, 0, 0), step(+vec3d::one(), vec3d::zero()));
         ASSERT_VEC_EQ(vec3d(1, 1, 1), step(+vec3d::one(), vec3d::one()));
@@ -528,8 +498,13 @@ namespace vm {
     }
 
     TEST(vec_test, smoothstep) {
-        constexpr auto result = smoothstep(vec3d::zero(), vec3d::one(), vec3d(-1.0 , -1.0, -1.0));
-        ASSERT_VEC_EQ(vec3d(0.0,     0.0, 0.0),     result);
+        CE_ASSERT_VEC_EQ(vec3d(0.0,     0.0, 0.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d(-1.0 , -1.0, -1.0)))
+        CE_ASSERT_VEC_EQ(vec3d(0.0,     0.0, 0.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d( 0.0 ,  0.0,  0.0)))
+        CE_ASSERT_VEC_EQ(vec3d(1.0,     1.0, 1.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d(+1.0 , +1.0, +1.0)))
+        CE_ASSERT_VEC_EQ(vec3d(1.0,     1.0, 1.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d(+2.0 , +2.0, +2.0)))
+        CE_ASSERT_VEC_EQ(vec3d(0.0,     0.0, 1.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d(-1.0 ,  0.0, +2.0)))
+        CE_ASSERT_VEC_EQ(vec3d(0.0,     0.5, 1.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d( 0.0 , +0.5, +1.0)))
+        CE_ASSERT_VEC_EQ(vec3d(0.15625, 0.5, 0.84375), smoothstep(vec3d::zero(), vec3d::one(), vec3d(+0.25, +0.5, +0.75)))
 
         ASSERT_VEC_EQ(vec3d(0.0,     0.0, 0.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d(-1.0 , -1.0, -1.0)));
         ASSERT_VEC_EQ(vec3d(0.0,     0.0, 0.0),     smoothstep(vec3d::zero(), vec3d::one(), vec3d( 0.0 ,  0.0,  0.0)));
@@ -541,33 +516,31 @@ namespace vm {
     }
 
     TEST(vec_test, dot) {
-        constexpr auto result = dot(vec3f(2.3f, 8.7878f, -2323.0f), vec3f(4.333f, -2.0f, 322.0f));
-        ASSERT_FLOAT_EQ(-748013.6097f, result);
-
-        ASSERT_FLOAT_EQ(-748013.6097f, dot(vec3f(2.3f, 8.7878f, -2323.0f), vec3f(4.333f, -2.0f, 322.0f)));
-        ASSERT_FLOAT_EQ(0.0f, dot(vec3f(2.3f, 8.7878f, -2323.0f), vec3f::zero()));
+        CE_ASSERT_FLOAT_EQ(-748013.6097f, dot(vec3f(2.3f, 8.7878f, -2323.0f), vec3f(4.333f, -2.0f, 322.0f)))
+        CE_ASSERT_FLOAT_EQ(0.0f, dot(vec3f(2.3f, 8.7878f, -2323.0f), vec3f::zero()))
     }
 
     TEST(vec_test, cross) {
-        constexpr auto result = cross(vec3f::zero(), vec3f::zero());
-        ASSERT_EQ(vec3f::zero(), result);
+        CE_ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f::zero()))
+        CE_ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f(2.0f, 34.233f, -10003.0002f)))
+        CE_ASSERT_EQ(vec3f::pos_z(), cross(vec3f::pos_x(), vec3f::pos_y()))
+        CE_ASSERT_VEC_EQ(vec3f(-2735141.499f, 282853.508f, 421.138f), cross(vec3f(12.302f, -0.0017f, 79898.3f), vec3f(2.0f, 34.233f, -10003.0002f)))
 
         ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f::zero()));
         ASSERT_EQ(vec3f::zero(), cross(vec3f::zero(), vec3f(2.0f, 34.233f, -10003.0002f)));
         ASSERT_EQ(vec3f::pos_z(), cross(vec3f::pos_x(), vec3f::pos_y()));
         ASSERT_VEC_EQ(vec3f(-2735141.499f, 282853.508f, 421.138f), cross(vec3f(12.302f, -0.0017f, 79898.3f), vec3f(2.0f, 34.233f, -10003.0002f)));
 
-        const vec3f t1(7.0f, 4.0f, 0.0f);
-        const vec3f t2(-2.0f, 22.0f, 0.0f);
-
-        const vec3f c1 = normalize(cross(t1, t2));
-        const vec3f c2 = normalize(cross(normalize(t1), normalize(t2)));
-        ASSERT_VEC_EQ(c1, c2);
+        constexpr auto t1 = vec3f(7.0f, 4.0f, 0.0f);
+        constexpr auto t2 = vec3f(-2.0f, 22.0f, 0.0f);
+        CE_ASSERT_VEC_EQ(normalize_c(cross(t1, t2)), normalize_c(cross(normalize_c(t1), normalize_c(t2))))
+        ASSERT_VEC_EQ(normalize(cross(t1, t2)), normalize(cross(normalize(t1), normalize(t2))));
     }
 
     TEST(vec_test, squared_length) {
-        constexpr auto result = squared_length(vec3f::zero());
-        ASSERT_FLOAT_EQ(0.0f, result);
+        CE_ASSERT_FLOAT_EQ(0.0f, squared_length(vec3f::zero()))
+        CE_ASSERT_FLOAT_EQ(1.0f, squared_length(vec3f::pos_x()))
+        CE_ASSERT_FLOAT_EQ(5396411.51542884f, squared_length(vec3f(2.3f, 8.7878f, -2323.0f)))
 
         ASSERT_FLOAT_EQ(0.0f, squared_length(vec3f::zero()));
         ASSERT_FLOAT_EQ(1.0f, squared_length(vec3f::pos_x()));
@@ -575,18 +548,18 @@ namespace vm {
     }
 
     TEST(vec_test, length) {
-        constexpr auto result = length(vec3f::zero());
-        ASSERT_FLOAT_EQ(0.0f, result);
-
         ASSERT_FLOAT_EQ(0.0f, length(vec3f::zero()));
         ASSERT_FLOAT_EQ(1.0f, length(vec3f::pos_x()));
         ASSERT_FLOAT_EQ(std::sqrt(5396411.51542884f), length(vec3f(2.3f, 8.7878f, -2323.0f)));
     }
 
-    TEST(vec_test, normalize) {
-        constexpr auto result = normalize(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), result);
+    TEST(vec_test, length_c) {
+        CE_ASSERT_FLOAT_EQ(0.0f, length_c(vec3f::zero()))
+        CE_ASSERT_FLOAT_EQ(1.0f, length_c(vec3f::pos_x()))
+        CE_ASSERT_FLOAT_EQ(std::sqrt(5396411.51542884f), length_c(vec3f(2.3f, 8.7878f, -2323.0f)))
+    }
 
+    TEST(vec_test, normalize) {
         ASSERT_EQ(vec3f::pos_x(), normalize(vec3f::pos_x()));
         ASSERT_EQ(vec3f::neg_x(), normalize(vec3f::neg_x()));
 
@@ -596,10 +569,21 @@ namespace vm {
         ASSERT_VEC_EQ((v2 / length(v2)), normalize(v2));
     }
 
+    TEST(vec_test, normalize_c) {
+        CE_ASSERT_EQ(vec3f::pos_x(), normalize_c(vec3f::pos_x()))
+        CE_ASSERT_EQ(vec3f::neg_x(), normalize_c(vec3f::neg_x()))
+
+        constexpr vec3f v1(2.3f, 8.7878f, -2323.0f);
+        constexpr vec3f v2(4.333f, -2.0f, 322.0f);
+        CE_ASSERT_VEC_EQ((v1 / length(v1)), normalize_c(v1))
+        CE_ASSERT_VEC_EQ((v2 / length(v2)), normalize_c(v2))
+    }
+
 
     TEST(vec_test, swizzle) {
-        constexpr auto result = swizzle(vec3d(1, 2, 3), 0);
-        ASSERT_EQ(vec3d(2, 3, 1), result);
+        CE_ASSERT_EQ(vec3d(2, 3, 1), swizzle(vec3d(1, 2, 3), 0));
+        CE_ASSERT_EQ(vec3d(3, 1, 2), swizzle(vec3d(1, 2, 3), 1));
+        CE_ASSERT_EQ(vec3d(1, 2, 3), swizzle(vec3d(1, 2, 3), 2));
 
         ASSERT_EQ(vec3d(2, 3, 1), swizzle(vec3d(1, 2, 3), 0));
         ASSERT_EQ(vec3d(3, 1, 2), swizzle(vec3d(1, 2, 3), 1));
@@ -607,8 +591,7 @@ namespace vm {
     }
 
     TEST(vec_test, unswizzle) {
-        constexpr auto result = unswizzle(swizzle(vec3d(1, 2, 3), 0), 0);
-        ASSERT_EQ(vec3d(1, 2, 3), result);
+        CE_ASSERT_EQ(vec3d(1, 2, 3), unswizzle(swizzle(vec3d(1, 2, 3), 0), 0));
 
         for (size_t i = 0; i < 3; ++i) {
             ASSERT_EQ(vec3d(1, 2, 3), unswizzle(swizzle(vec3d(1, 2, 3), i), i));
@@ -616,9 +599,6 @@ namespace vm {
     }
 
     TEST(vec_test, is_unit) {
-        constexpr auto result = is_unit(vec3f::pos_x(), vm::Cf::almostZero());
-        ASSERT_TRUE(result);
-
         ASSERT_TRUE(is_unit(vec3f::pos_x(), vm::Cf::almostZero()));
         ASSERT_TRUE(is_unit(vec3f::pos_y(), vm::Cf::almostZero()));
         ASSERT_TRUE(is_unit(vec3f::pos_z(), vm::Cf::almostZero()));
@@ -630,25 +610,44 @@ namespace vm {
         ASSERT_FALSE(is_unit(vec3f::zero(), vm::Cf::almostZero()));
     }
 
+    TEST(vec_test, is_unit_c) {
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_x(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_y(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_z(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_x(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_y(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_z(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(normalize_c(vec3f::one()), vm::Cf::almostZero()))
+        CE_ASSERT_FALSE(is_unit_c(vec3f::one(), vm::Cf::almostZero()))
+        CE_ASSERT_FALSE(is_unit_c(vec3f::zero(), vm::Cf::almostZero()))
+    }
+
     TEST(vec_test, is_zero) {
-        constexpr auto result = is_zero(vec3f::zero(), vm::Cf::almostZero());
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(is_zero(vec3f::zero(), vm::Cf::almostZero()))
+        CE_ASSERT_FALSE(is_zero(vec3f::pos_x(), vm::Cf::almostZero()))
 
         ASSERT_TRUE(is_zero(vec3f::zero(), vm::Cf::almostZero()));
         ASSERT_FALSE(is_zero(vec3f::pos_x(), vm::Cf::almostZero()));
     }
 
     TEST(vec_test, is_nan) {
-        constexpr auto result = is_nan(vec3f::nan());
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(is_nan(vec3f::nan()))
+        CE_ASSERT_FALSE(is_nan(vec3f::pos_x()))
 
         ASSERT_TRUE(is_nan(vec3f::nan()));
         ASSERT_FALSE(is_nan(vec3f::pos_x()));
     }
 
     TEST(vec_test, is_integral) {
-        constexpr auto result = is_integral(vec3f::pos_x());
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(is_integral(vec3f::pos_x()))
+        CE_ASSERT_TRUE(is_integral(vec3f::pos_y()))
+        CE_ASSERT_TRUE(is_integral(vec3f::pos_z()))
+        CE_ASSERT_TRUE(is_integral(vec3f::neg_x()))
+        CE_ASSERT_TRUE(is_integral(vec3f::neg_y()))
+        CE_ASSERT_TRUE(is_integral(vec3f::neg_z()))
+        CE_ASSERT_TRUE(is_integral(vec3f::one()))
+        CE_ASSERT_TRUE(is_integral(vec3f::zero()))
+        CE_ASSERT_FALSE(is_integral(normalize_c(vec3f::one())))
 
         ASSERT_TRUE(is_integral(vec3f::pos_x()));
         ASSERT_TRUE(is_integral(vec3f::pos_y()));
@@ -662,8 +661,9 @@ namespace vm {
     }
 
     TEST(vec_test, mix) {
-        constexpr auto result = mix(vec3d::zero(), vec3d::one(), vec3d::zero());
-        ASSERT_EQ(vec3d::zero(), result);
+        CE_ASSERT_EQ(vec3d::zero(), mix(vec3d::zero(), vec3d::one(), vec3d::zero()))
+        CE_ASSERT_EQ(vec3d::one(), mix(vec3d::zero(), vec3d::one(), vec3d::one()))
+        CE_ASSERT_EQ(vec3d::one() / 2.0, mix(vec3d::zero(), vec3d::one(), vec3d::one() / 2.0))
 
         ASSERT_EQ(vec3d::zero(), mix(vec3d::zero(), vec3d::one(), vec3d::zero()));
         ASSERT_EQ(vec3d::one(), mix(vec3d::zero(), vec3d::one(), vec3d::one()));
@@ -671,8 +671,11 @@ namespace vm {
     }
 
     TEST(vec_test, clamp) {
-        constexpr auto result = clamp(vec3d::one(), vec3d::zero(), vec3d(2, 2, 2));
-        ASSERT_EQ(vec3d::one(), result);
+        CE_ASSERT_EQ(vec3d::one(), clamp(vec3d::one(), vec3d::zero(), vec3d(2, 2, 2)))
+        CE_ASSERT_EQ(vec3d::one(), clamp(vec3d::one(), vec3d::zero(), vec3d::one()))
+        CE_ASSERT_EQ(vec3d::zero(), clamp(vec3d::zero(), vec3d::zero(), vec3d::one()))
+        CE_ASSERT_EQ(vec3d(1, 0, 0), clamp(vec3d(2, 0, -1), vec3d::zero(), vec3d::one()))
+        CE_ASSERT_EQ(vec3d(2, 0, -1), clamp(vec3d(2, 0, -1), vec3d(1, 0, -2), vec3d(3, 1, 1)))
 
         ASSERT_EQ(vec3d::one(), clamp(vec3d::one(), vec3d::zero(), vec3d(2, 2, 2)));
         ASSERT_EQ(vec3d::one(), clamp(vec3d::one(), vec3d::zero(), vec3d::one()));
@@ -682,8 +685,10 @@ namespace vm {
     }
 
     TEST(vec_test, fract) {
-        constexpr auto result = fract(vec3d::zero());
-        ASSERT_VEC_EQ(vec3d::zero(), result);
+        CE_ASSERT_VEC_EQ(vec3d::zero(), fract(vec3d::zero()))
+        CE_ASSERT_VEC_EQ(vec3d(0.1, 0.7, 0.99999), fract(vec3d(0.1, 0.7, 0.99999)))
+        CE_ASSERT_VEC_EQ(vec3d(-0.1, 0.7, -0.99999), fract(vec3d(-0.1, 0.7, -0.99999)))
+        CE_ASSERT_VEC_EQ(vec3d(-0.3, 0.7, 0.99999), fract(vec3d(-1.3, 0.7, 1.99999)))
 
         ASSERT_VEC_EQ(vec3d::zero(), fract(vec3d::zero()));
         ASSERT_VEC_EQ(vec3d(0.1, 0.7, 0.99999), fract(vec3d(0.1, 0.7, 0.99999)));
@@ -692,8 +697,9 @@ namespace vm {
     }
 
     TEST(vec_test, mod) {
-        constexpr auto result = mod(vec3d::one(), vec3d::one());
-        ASSERT_VEC_EQ(vec3d::zero(), result);
+        CE_ASSERT_VEC_EQ(vec3d::zero(), mod(vec3d::one(), vec3d::one()))
+        CE_ASSERT_VEC_EQ(vec3d::zero(), mod(vec3d(2, -1, 0), vec3d::one()))
+        CE_ASSERT_VEC_EQ(vec3d(0.5, -0.5, 0.5), mod(vec3d(6.5, -6.5, 6.5), vec3d(2, 2, -2)))
 
         ASSERT_VEC_EQ(vec3d::zero(), mod(vec3d::one(), vec3d::one()));
         ASSERT_VEC_EQ(vec3d::zero(), mod(vec3d(2, -1, 0), vec3d::one()));
@@ -704,45 +710,50 @@ namespace vm {
         constexpr auto v1 = vec3f(2.3f, 8.7878f, -2323.0f);
         constexpr auto v2 = vec3f(4.333f, -2.0f, 322.0f);
 
-        constexpr auto result = squared_distance(v1, v1);
-        ASSERT_FLOAT_EQ(0.0f, result);
-
         ASSERT_FLOAT_EQ(0.0f, squared_distance(v1, v1));
         ASSERT_FLOAT_EQ(squared_length(v1), squared_distance(v1, vec3f::zero()));
         ASSERT_FLOAT_EQ(squared_length(v1 - v2), squared_distance(v1, v2));
+
+        CE_ASSERT_FLOAT_EQ(0.0f, squared_distance(v1, v1))
+        CE_ASSERT_FLOAT_EQ(squared_length(v1), squared_distance(v1, vec3f::zero()))
+        CE_ASSERT_FLOAT_EQ(squared_length(v1 - v2), squared_distance(v1, v2))
     }
 
     TEST(vec_test, distance) {
         constexpr auto v1 = vec3f(2.3f, 8.7878f, -2323.0f);
         constexpr auto v2 = vec3f(4.333f, -2.0f, 322.0f);
 
-        constexpr auto result = distance(v1, v1);
-        ASSERT_FLOAT_EQ(0.0f, result);
-
         ASSERT_FLOAT_EQ(0.0f, distance(v1, v1));
         ASSERT_FLOAT_EQ(length(v1), distance(v1, vec3f::zero()));
         ASSERT_FLOAT_EQ(length(v1 - v2), distance(v1, v2));
     }
 
-    TEST(vec_test, to_homogeneous_coords) {
-        constexpr auto result = to_homogeneous_coords(vec3f(1, 2, 3));
-        ASSERT_EQ(vec4f(1, 2, 3, 1), result);
+    TEST(vec_test, distance_c) {
+        constexpr auto v1 = vec3f(2.3f, 8.7878f, -2323.0f);
+        constexpr auto v2 = vec3f(4.333f, -2.0f, 322.0f);
 
+        CE_ASSERT_FLOAT_EQ(0.0f, distance_c(v1, v1))
+        CE_ASSERT_FLOAT_EQ(length_c(v1), distance_c(v1, vec3f::zero()))
+        CE_ASSERT_FLOAT_EQ(length_c(v1 - v2), distance_c(v1, v2))
+    }
+
+    TEST(vec_test, to_homogeneous_coords) {
+        CE_ASSERT_EQ(vec4f(1, 2, 3, 1), to_homogeneous_coords(vec3f(1, 2, 3)))
         ASSERT_EQ(vec4f(1, 2, 3, 1), to_homogeneous_coords(vec3f(1, 2, 3)));
     }
 
     TEST(vec_test, to_cartesian_coords) {
         constexpr auto v = vec4f(2.0f, 4.0f, 8.0f, 2.0f);
-
-        constexpr auto result = to_cartesian_coords(v);
-        ASSERT_EQ(vec3f(1.0f, 2.0f, 4.0f), result);
-
+        CE_ASSERT_EQ(vec3f(1.0f, 2.0f, 4.0f), to_cartesian_coords(v))
         ASSERT_EQ(vec3f(1.0f, 2.0f, 4.0f), to_cartesian_coords(v));
     }
 
     TEST(vec_test, is_colinear) {
-        constexpr auto result = is_colinear(vec3d::zero(), vec3d::zero(), vec3d::zero());
-        ASSERT_TRUE(result);
+        CE_ASSERT_TRUE(is_colinear(vec3d::zero(), vec3d::zero(), vec3d::zero()))
+        CE_ASSERT_TRUE(is_colinear(vec3d::one(),  vec3d::one(),  vec3d::one()))
+        CE_ASSERT_TRUE(is_colinear(vec3d(0.0, 0.0, 0.0), vec3d(0.0, 0.0, 1.0), vec3d(0.0, 0.0, 2.0)))
+        CE_ASSERT_FALSE(is_colinear(vec3d(0.0, 0.0, 0.0), vec3d(1.0, 0.0, 0.0), vec3d(0.0, 1.0, 0.0)))
+        CE_ASSERT_FALSE(is_colinear(vec3d(0.0, 0.0, 0.0), vec3d(10.0, 0.0, 0.0), vec3d(0.0, 1.0, 0.0)))
 
         ASSERT_TRUE(is_colinear(vec3d::zero(), vec3d::zero(), vec3d::zero()));
         ASSERT_TRUE(is_colinear(vec3d::one(),  vec3d::one(),  vec3d::one()));
@@ -752,20 +763,29 @@ namespace vm {
     }
 
     TEST(vec_test, is_parallel) {
-        constexpr auto result = is_parallel(vec3f::pos_x(), vec3f::pos_x());
-        ASSERT_TRUE(result);
-
         ASSERT_TRUE(is_parallel(vec3f::pos_x(), vec3f::pos_x()));
         ASSERT_TRUE(is_parallel(vec3f::pos_x(), vec3f::neg_x()));
         ASSERT_TRUE(is_parallel(vec3f::one(), vec3f::one()));
         ASSERT_TRUE(is_parallel(vec3f::one(), normalize(vec3f::one())));
     }
 
+    TEST(vec_test, is_parallel_c) {
+        CE_ASSERT_TRUE(is_parallel_c(vec3f::pos_x(), vec3f::pos_x()))
+        CE_ASSERT_TRUE(is_parallel_c(vec3f::pos_x(), vec3f::neg_x()))
+        CE_ASSERT_TRUE(is_parallel_c(vec3f::one(), vec3f::one()))
+        CE_ASSERT_TRUE(is_parallel_c(vec3f::one(), normalize_c(vec3f::one())))
+    }
+
     // ========== rounding and error correction ==========
 
     TEST(vec_test, floor) {
-        constexpr auto result = floor(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), result);
+        CE_ASSERT_EQ(vec3f::pos_x(), floor(vec3f::pos_x()))
+        CE_ASSERT_EQ(vec3f::one(), floor(vec3f::one()))
+        CE_ASSERT_EQ(vec3f::zero(), floor(vec3f::zero()))
+        CE_ASSERT_EQ(vec3f::zero(), floor(normalize_c(vec3f::one())))
+        CE_ASSERT_EQ(vec3f::zero(), floor(vec3f(0.4, 0.4, 0.4)))
+        CE_ASSERT_EQ(vec3f(0, 0, 0), floor(vec3f(0.4, 0.5, 0.4)))
+        CE_ASSERT_EQ(vec3f(-1, -1, -1), floor(vec3f(-0.4, -0.5, -0.4)))
 
         ASSERT_EQ(vec3f::pos_x(), floor(vec3f::pos_x()));
         ASSERT_EQ(vec3f::one(), floor(vec3f::one()));
@@ -777,8 +797,14 @@ namespace vm {
     }
 
     TEST(vec_test, ceil) {
-        constexpr auto result = ceil(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), result);
+        CE_ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()))
+        CE_ASSERT_EQ(vec3f::one(), ceil(vec3f::one()))
+        CE_ASSERT_EQ(vec3f::zero(), ceil(vec3f::zero()))
+        CE_ASSERT_EQ(vec3f::one(), ceil(normalize_c(vec3f::one())))
+        CE_ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.4, 0.4)))
+        CE_ASSERT_EQ(vec3f::one(), ceil(vec3f(0.4, 0.5, 0.4)))
+        CE_ASSERT_EQ(vec3f::zero(), ceil(vec3f(-0.4, -0.5, -0.4)))
+        CE_ASSERT_EQ(vec3f(-1, -1, -1), ceil(vec3f(-1.4, -1.5, -1.4)))
 
         ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()));
         ASSERT_EQ(vec3f::one(), ceil(vec3f::one()));
@@ -791,8 +817,15 @@ namespace vm {
     }
 
     TEST(vec_test, trunc) {
-        constexpr auto result = trunc(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), result);
+        CE_ASSERT_EQ(vec3f::pos_x(), trunc(vec3f::pos_x()))
+        CE_ASSERT_EQ(vec3f::one(), trunc(vec3f::one()))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(vec3f::zero()))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(normalize_c(vec3f::one())))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(normalize_c(-vec3f::one())))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.4, 0.4)))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(vec3f(0.4, 0.5, 0.4)))
+        CE_ASSERT_EQ(vec3f::zero(), trunc(vec3f(-0.4, -0.5, -0.4)))
+        CE_ASSERT_EQ(vec3f(-1, -1, -1), trunc(vec3f(-1.4, -1.5, -1.4)))
 
         ASSERT_EQ(vec3f::pos_x(), trunc(vec3f::pos_x()));
         ASSERT_EQ(vec3f::one(), trunc(vec3f::one()));
@@ -806,8 +839,13 @@ namespace vm {
     }
 
     TEST(vec_test, round) {
-        constexpr auto result = round(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), result);
+        CE_ASSERT_EQ(vec3f::pos_x(), round(vec3f::pos_x()))
+        CE_ASSERT_EQ(vec3f::one(), round(vec3f::one()))
+        CE_ASSERT_EQ(vec3f::zero(), round(vec3f::zero()))
+        CE_ASSERT_EQ(vec3f::one(), round(normalize_c(vec3f::one())))
+        CE_ASSERT_EQ(vec3f::zero(), round(vec3f(0.4, 0.4, 0.4)))
+        CE_ASSERT_EQ(vec3f(0, 1, 0), round(vec3f(0.4, 0.5, 0.4)))
+        CE_ASSERT_EQ(vec3f(0, -1, 0), round(vec3f(-0.4, -0.5, -0.4)))
 
         ASSERT_EQ(vec3f::pos_x(), round(vec3f::pos_x()));
         ASSERT_EQ(vec3f::one(), round(vec3f::one()));
@@ -819,8 +857,15 @@ namespace vm {
     }
 
     TEST(vec_test, snapDown) {
-        constexpr auto result = snapDown(vec3f::zero(), vec3f::one());
-        ASSERT_EQ( vec3f::zero(), result);
+        CE_ASSERT_EQ( vec3f::zero(), snapDown(vec3f::zero(), vec3f::one()))
+        CE_ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+0.4, +0.5, +0.6), vec3f::one()))
+        CE_ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-0.4, -0.5, -0.6), vec3f::one()))
+        CE_ASSERT_EQ(+vec3f::one(),  snapDown(vec3f(+1.4, +1.5, +1.6), vec3f::one()))
+        CE_ASSERT_EQ(-vec3f::one(),  snapDown(vec3f(-1.4, -1.5, -1.6), vec3f::one()))
+        CE_ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 2, 2)))
+        CE_ASSERT_EQ( vec3f::zero(), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 2, 2)))
+        CE_ASSERT_EQ( vec3f(0, +1, +1), snapDown(vec3f(+1.4, +1.5, +1.6), vec3f(2, 1, 1)))
+        CE_ASSERT_EQ( vec3f(0, -1, -1), snapDown(vec3f(-1.4, -1.5, -1.6), vec3f(2, 1, 1)))
 
         ASSERT_EQ( vec3f::zero(), snapDown(vec3f::zero(), vec3f::one()));
         ASSERT_EQ( vec3f::zero(), snapDown(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
@@ -834,8 +879,15 @@ namespace vm {
     }
 
     TEST(vec_test, snapUp) {
-        constexpr auto result = snapUp(vec3f::zero(), vec3f::one());
-        ASSERT_EQ( vec3f::zero(), result);
+        CE_ASSERT_EQ( vec3f::zero(), snapUp(vec3f::zero(), vec3f::one()))
+        CE_ASSERT_EQ(+vec3f::one(),  snapUp(vec3f(+0.4, +0.5, +0.6), vec3f::one()))
+        CE_ASSERT_EQ(-vec3f::one(),  snapUp(vec3f(-0.4, -0.5, -0.6), vec3f::one()))
+        CE_ASSERT_EQ(+vec3f(+2, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f::one()))
+        CE_ASSERT_EQ(-vec3f(+2, +2, +2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f::one()))
+        CE_ASSERT_EQ( vec3f(+3, +3, +3), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 3, 3)))
+        CE_ASSERT_EQ( vec3f(-3, -3, -3), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 3, 3)))
+        CE_ASSERT_EQ( vec3f(+3, +2, +2), snapUp(vec3f(+1.4, +1.5, +1.6), vec3f(3, 1, 1)))
+        CE_ASSERT_EQ( vec3f(-3, -2, -2), snapUp(vec3f(-1.4, -1.5, -1.6), vec3f(3, 1, 1)))
 
         ASSERT_EQ( vec3f::zero(), snapUp(vec3f::zero(), vec3f::one()));
         ASSERT_EQ(+vec3f::one(),  snapUp(vec3f(+0.4, +0.5, +0.6), vec3f::one()));
@@ -849,8 +901,9 @@ namespace vm {
     }
 
     TEST(vec_test, snap) {
-        constexpr auto result = snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f));
-        ASSERT_EQ(vec2f( 8.0f,  0.0f), result);
+        CE_ASSERT_EQ(vec2f( 8.0f,  0.0f), snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f)))
+        CE_ASSERT_EQ(vec2f( 8.0f, -6.0f), snap(vec2f( 7.0f, -5.0f), vec2f(-4.0f, -2.0f)))
+        CE_ASSERT_EQ(vec2f(-8.0f,  6.0f), snap(vec2f(-7.0f,  5.0f), vec2f(-4.0f, -2.0f)))
 
         ASSERT_EQ(vec2f( 8.0f,  0.0f), snap(vec2f( 7.0f, -3.0f), vec2f( 4.0f, 12.0f)));
         ASSERT_EQ(vec2f( 8.0f, -6.0f), snap(vec2f( 7.0f, -5.0f), vec2f(-4.0f, -2.0f)));
@@ -858,18 +911,16 @@ namespace vm {
     }
 
     TEST(vec_test, correct) {
-        constexpr auto result = correct(vec3f(1.1, 2.2, 3.3));
-        ASSERT_EQ(vec3f(1.1, 2.2, 3.3), result);
+        CE_ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3)))
+        CE_ASSERT_EQ(vec3f(1, 2, 3), correct(vec3f(1.1, 2.2, 3.3), 0, 0.4f))
+        CE_ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3), 1, 0.4f))
 
         ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3)));
         ASSERT_EQ(vec3f(1, 2, 3), correct(vec3f(1.1, 2.2, 3.3), 0, 0.4f));
         ASSERT_EQ(vec3f(1.1, 2.2, 3.3), correct(vec3f(1.1, 2.2, 3.3), 1, 0.4f));
     }
 
-    TEST(vec_test, between) {
-        constexpr auto result = is_between(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0));
-        ASSERT_TRUE(result);
-
+    TEST(vec_test, is_between) {
         ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0)));
         ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(2, 0, 0), vec3f(0, 0, 0)));
         ASSERT_TRUE(is_between(vec3f(1, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
@@ -877,18 +928,21 @@ namespace vm {
         ASSERT_FALSE(is_between(vec3f(2, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)));
     }
 
+    TEST(vec_test, is_between_c) {
+        CE_ASSERT_TRUE(is_between_c(vec3f(1, 0, 0), vec3f(0, 0, 0), vec3f(2, 0, 0)))
+        CE_ASSERT_TRUE(is_between_c(vec3f(1, 0, 0), vec3f(2, 0, 0), vec3f(0, 0, 0)))
+        CE_ASSERT_TRUE(is_between_c(vec3f(1, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)))
+        CE_ASSERT_TRUE(is_between_c(vec3f(0, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)))
+        CE_ASSERT_FALSE(is_between_c(vec3f(2, 0, 0), vec3f(1, 0, 0), vec3f(0, 0, 0)))
+    }
+
     TEST(vec_test, average) {
         constexpr auto vecs = std::array { vec3f(1, 1, 1), vec3f(1, 1, 1), vec3f(2, 2, 2) };
-        constexpr auto result = average(std::begin(vecs), std::end(vecs));
-        ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), result);
-
+        CE_ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), average(std::begin(vecs), std::end(vecs)))
         ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), average(std::begin(vecs), std::end(vecs)));
     }
 
     TEST(vec_test, measure_angle) {
-        constexpr auto result = measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z());
-        ASSERT_FLOAT_EQ(0.0f, result);
-
         ASSERT_FLOAT_EQ(0.0f, measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::piOverTwo(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
