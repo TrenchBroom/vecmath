@@ -29,6 +29,6 @@ cmake --build . --config Release || exit 1
 
 BUILD_DIR=$(pwd)
 
-cd "$BUILD_DIR/test/test"
+cd "$BUILD_DIR/test"
 ./vecmath-test || exit 1
 cd "$BUILD_DIR"

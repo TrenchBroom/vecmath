@@ -18,17 +18,17 @@ mkdir build
 cd build
 cmake .. -GNinja -DCMAKE_BUILD_TYPE="Release" || exit 1 # FIXME: Restore -DCMAKE_CXX_FLAGS="-Werror"
 
-cmake --build . --target cppcheck
-if [[ $? -ne 0 ]] ; then
-    echo
-    echo "cppcheck detected issues, see below"
-    echo
-
-    cat cppcheck-errors.txt
-    echo
-
-    exit 1
-fi
+# cmake --build . --target cppcheck
+# if [[ $? -ne 0 ]] ; then
+#    echo
+#    echo "cppcheck detected issues, see below"
+#    echo
+#
+#    cat cppcheck-errors.txt
+#    echo
+#
+#    exit 1
+#fi
 
 cmake --build . --config "Release" || exit 1
 
