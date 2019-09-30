@@ -10,4 +10,5 @@ target_include_directories(vecmath INTERFACE
         $<BUILD_INTERFACE:${VECMATH_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:vecmath/include/vecmath>)
 
+add_subdirectory(lib)
 add_subdirectory(test)

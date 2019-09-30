@@ -17,5 +17,4 @@ target_sources(vecmath-test PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/run_all.cpp"
         )
 
-find_package(GTest REQUIRED)
-target_link_libraries(vecmath-test GTest::GTest vecmath)
+target_link_libraries(vecmath-test gtest vecmath)
