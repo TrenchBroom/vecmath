@@ -739,9 +739,13 @@ namespace vm {
     template <typename T>
     constexpr T sqrt_c(const T value) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return value >= static_cast<T>(0.0) && value < std::numeric_limits<T>::infinity()
-               ? sqrt_c_nr(value, value, static_cast<T>(0.0))
-               : std::numeric_limits<T>::quiet_NaN();
+        if (value == std::numeric_limits<T>::infinity()) {
+            return std::numeric_limits<T>::infinity();
+        } else if (value >= static_cast<T>(0.0)) {
+            return sqrt_c_nr(value, value, static_cast<T>(0.0));
+        } else {
+            return std::numeric_limits<T>::quiet_NaN();
+        }
     }
 
     /**
