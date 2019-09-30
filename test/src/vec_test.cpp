@@ -778,7 +778,7 @@ namespace vm {
 
     TEST(vec_test, ceil) {
         constexpr auto result = ceil(vec3f::pos_x());
-        ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()));
+        ASSERT_EQ(vec3f::pos_x(), result);
 
         ASSERT_EQ(vec3f::pos_x(), ceil(vec3f::pos_x()));
         ASSERT_EQ(vec3f::one(), ceil(vec3f::one()));

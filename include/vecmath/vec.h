@@ -155,7 +155,7 @@ namespace vm {
         /**
          * Returns a copy of the component at the given index. The index is not checked at runtime.
          *
-         * @param index the index of the component
+         * @param i the index of the component
          * @return a copy of the compononent at the given index
          */
         constexpr T operator[](const std::size_t i) const {
@@ -165,7 +165,7 @@ namespace vm {
         /**
          * Returns a reference to the component at the given index. The index is not checked at runtime.
          *
-         * @param index the index of the component
+         * @param i the index of the component
          * @return a reference to the compononent at the given index
          */
         constexpr T& operator[](const std::size_t i) {
@@ -179,7 +179,7 @@ namespace vm {
          * @return the value of the first component
          */
         template <size_t SS = S>
-        constexpr T x(typename std::enable_if<SS >= 1>::type* = 0) const {
+        constexpr T x(typename std::enable_if<SS >= 1>::type* = nullptr) const {
             static_assert(S > 0);
             return v[0];
         }
@@ -190,7 +190,7 @@ namespace vm {
          * @return the value of the second component
          */
         template <size_t SS = S>
-        constexpr T y(typename std::enable_if<SS >= 2>::type* = 0) const {
+        constexpr T y(typename std::enable_if<SS >= 2>::type* = nullptr) const {
             static_assert(S > 1);
             return v[1];
         }
@@ -201,7 +201,7 @@ namespace vm {
          * @return the value of the third component
          */
         template <size_t SS = S>
-        constexpr T z (typename std::enable_if<SS >= 3>::type* = 0) const {
+        constexpr T z (typename std::enable_if<SS >= 3>::type* = nullptr) const {
             static_assert(S > 2);
             // cppcheck-suppress arrayIndexOutOfBounds
             return v[2];
@@ -213,7 +213,7 @@ namespace vm {
          * @return the value of the fourth component
          */
         template <size_t SS = S>
-        constexpr T w(typename std::enable_if<SS >= 4>::type* = 0) const {
+        constexpr T w(typename std::enable_if<SS >= 4>::type* = nullptr) const {
             static_assert(S > 3);
             // cppcheck-suppress arrayIndexOutOfBounds
             return v[3];

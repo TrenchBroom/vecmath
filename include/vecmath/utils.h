@@ -70,7 +70,7 @@ namespace vm {
     template <typename T, std::size_t S>
     constexpr std::array<T,S> get_elements(const std::array<T, S>& a, const std::array<std::size_t, S>& s) {
         auto result = std::array<T,S>();
-        for (auto i = 0; i < S; ++i) {
+        for (std::size_t i = 0; i < S; ++i) {
             result[i] = a[s[i]];
         }
         return result;

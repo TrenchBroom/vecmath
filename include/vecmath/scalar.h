@@ -430,7 +430,7 @@ namespace vm {
     template <typename T>
     constexpr T snap(const T v, const T grid) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        assert(grid != 0.0);
+        assert(grid != static_cast<T>(0.0));
         return grid * round(v / grid);
     }
 
@@ -445,7 +445,7 @@ namespace vm {
     template <typename T>
     constexpr T snapUp(const T v, const T grid) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        assert(grid > 0.0);
+        assert(grid > static_cast<T>(0.0));
         return grid * round_up(v / grid);
     }
 
@@ -460,7 +460,7 @@ namespace vm {
     template <typename T>
     constexpr T snapDown(const T v, const T grid) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        assert(grid > 0.0);
+        assert(grid > static_cast<T>(0.0));
         return grid * round_down(v / grid);
     }
 
