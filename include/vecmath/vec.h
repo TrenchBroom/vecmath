@@ -373,8 +373,8 @@ namespace vm {
      * @param epsilon the epsilon value for component wise comparison
      * @return -1 if the left hand range is less than the right hand range, +1 if the left hand range is greater than the right hand range, and 0 if both ranges are equal
      */
-    template <typename T, typename I>
-    constexpr int compare(I lhsCur, I lhsEnd, I rhsCur, I rhsEnd, const T epsilon = static_cast<T>(0.0)) {
+    template <typename T, typename I1, typename I2>
+    constexpr int compare(I1 lhsCur, I1 lhsEnd, I2 rhsCur, I2 rhsEnd, const T epsilon = static_cast<T>(0.0)) {
         while (lhsCur != lhsEnd && rhsCur != rhsEnd) {
             const auto cmp = compare(*lhsCur, *rhsCur, epsilon);
             if (cmp < 0) {

@@ -43,16 +43,16 @@ namespace vm {
     };
 
     template <typename T>
-    double constexpr sqrt_nr(const T x, const T curr, const T prev) {
+    constexpr T sqrt_nr(const T x, const T curr, const T prev) {
         return curr == prev ? curr : sqrt_nr(x, static_cast<T>(0.5) * (curr + x / curr), curr);
     }
 
     template <typename T>
-    constexpr double sqrt(const T x) {
+    constexpr T sqrt(const T x) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return x >= static_cast<T>(0.0) && x < std::numeric_limits<double>::infinity()
+        return x >= static_cast<T>(0.0) && x < std::numeric_limits<T>::infinity()
                ? sqrt_nr(x, x, static_cast<T>(0.0))
-               : std::numeric_limits<double>::quiet_NaN();
+               : std::numeric_limits<T>::quiet_NaN();
     }
 
     /**
