@@ -365,7 +365,8 @@ namespace vm {
      * reached. Otherwise, the two ranges of the same length, and are considered to be identical.
      *
      * @tparam T the type of the epsilon parameter
-     * @tparam I the range iterator type
+     * @tparam I1 the iterator type of the first range
+     * @tparam I2 the iterator type of the second range
      * @param lhsCur the beginning of the left hand range
      * @param lhsEnd the end of the left hand range
      * @param rhsCur the beginning of the right hand range
