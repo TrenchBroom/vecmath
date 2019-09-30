@@ -94,38 +94,77 @@ namespace vm {
     }
 
     /**
+     * Returns the given value. Used as the base case of the variadic min template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
+     */
+    template <typename T>
+    constexpr T min(const T v) {
+        return v;
+    }
+
+    /**
      * Returns the minimum of the given values.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
+     * @param rest the remaining values
      * @return the minimum of the given values
      */
-    template <typename... T>
-    constexpr T min(const T lhs, const T rhs...) {
-        const auto rhs_min = min(rhs...);
-        if (lhs < rhs_min) {
-            return lhs;
+    template <typename T, typename... Rest>
+    constexpr T min(const T lhs, const T rhs, const Rest... rest) {
+        if (lhs < rhs) {
+            return min(lhs, rest...);
         } else {
-            return rhs_min;
+            return min(rhs, rest...);
         }
+    }
+
+    /**
+     * Returns the given value. Used as the base case of the variadic max template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
+     */
+    template <typename T>
+    constexpr T max(const T v) {
+        return v;
     }
 
     /**
      * Returns the maximum of the given values.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
+     * @param rest the remaining values
      * @return the maximum of the given values
      */
-    template <typename T>
-    constexpr T max(const T lhs, const T rhs) {
+    template <typename T, typename... Rest>
+    constexpr T max(const T lhs, const T rhs, const Rest... rest) {
         if (lhs > rhs) {
-            return lhs;
+            return max(lhs, rest...);
         } else {
-            return rhs;
+            return max(rhs, rest...);
         }
+    }
+
+    /**
+     * Returns the given value. Used as the base case of the variadic abs_min template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
+     */
+    template <typename T>
+    constexpr T abs_min(const T v) {
+        return v;
     }
 
     /**
@@ -133,35 +172,64 @@ namespace vm {
      * minimal value.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
+     * @param rest the remaining values
      * @return the minimum of the absolute given values
      */
-    template <typename T>
-    constexpr T abs_min(const T lhs, const T rhs) {
+    template <typename T, typename... Rest>
+    constexpr T abs_min(const T lhs, const T rhs, const Rest... rest) {
         if (abs(lhs) < abs(rhs)) {
-            return lhs;
+            return abs_min(lhs, rest...);
         } else {
-            return rhs;
+            return abs_min(rhs, rest...);
         }
+    }
+
+
+    /**
+     * Returns the given value. Used as the base case of the variadic abs_max template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
+     */
+    template <typename T>
+    constexpr T abs_max(const T v) {
+        return v;
     }
 
     /**
      * Returns the maximum of the absolute given values. Note that this function does not return the absolute of the
-     * maximal value.
+     * maximum value.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
+     * @param rest the remaining values
      * @return the maximum of the absolute given values
      */
-    template <typename T>
-    constexpr T abs_max(const T lhs, const T rhs) {
+    template <typename T, typename... Rest>
+    constexpr T abs_max(const T lhs, const T rhs, const Rest... rest) {
         if (abs(lhs) > abs(rhs)) {
-            return lhs;
+            return abs_max(lhs, rest...);
         } else {
-            return rhs;
+            return abs_max(rhs, rest...);
         }
+    }
+
+    /**
+     * Returns the given value. Used as the base case of the variadic safe_min template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
+     */
+    template <typename T>
+    constexpr T safe_min(const T v) {
+        return v;
     }
 
     /**
@@ -169,19 +237,35 @@ namespace vm {
      * considered in the result.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
-     * @return the minimum of the given values, or NaN if both given values are NaN
+     * @param rest the remaining values
+     * @return the minimum of the given values
+     */
+    template <typename T, typename... Rest>
+    constexpr T safe_min(const T lhs, const T rhs, const Rest... rest) {
+        if (is_nan(lhs)) {
+            return safe_min(rhs, rest...);
+        } else if (is_nan(rhs)) {
+            return safe_min(lhs, rest...);
+        } else if (lhs < rhs) {
+            return safe_min(lhs, rest...);
+        } else {
+            return safe_min(rhs, rest...);
+        }
+    }
+
+    /**
+     * Returns the given value. Used as the base case of the variadic safe_max template.
+     *
+     * @tparam T the argument type
+     * @param v the value to return
+     * @return the given value
      */
     template <typename T>
-    constexpr T safe_min(const T lhs, const T rhs) {
-        if (is_nan(lhs)) {
-            return rhs;
-        } else if (is_nan(rhs)) {
-            return lhs;
-        } else {
-            return min(lhs, rhs);
-        }
+    constexpr T safe_max(const T v) {
+        return v;
     }
 
     /**
@@ -189,18 +273,22 @@ namespace vm {
      * considered in the result.
      *
      * @tparam T the argument type
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first value
      * @param rhs the second value
-     * @return the maximum of the given values, or NaN if both given values are NaN
+     * @param rest the remaining values
+     * @return the maximum of the given values
      */
-    template <typename T>
-    constexpr T safe_max(const T lhs, const T rhs) {
+    template <typename T, typename... Rest>
+    constexpr T safe_max(const T lhs, const T rhs, const Rest... rest) {
         if (is_nan(lhs)) {
-            return rhs;
+            return safe_max(rhs, rest...);
         } else if (is_nan(rhs)) {
-            return lhs;
+            return safe_max(lhs, rest...);
+        } else if (lhs > rhs) {
+            return safe_max(lhs, rest...);
         } else {
-            return max(lhs, rhs);
+            return safe_max(rhs, rest...);
         }
     }
 
