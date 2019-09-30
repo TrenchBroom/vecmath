@@ -26,6 +26,7 @@
 #define CE_ASSERT_FALSE(expr) { constexpr auto r = (expr); ASSERT_FALSE(r); }
 #define CE_ASSERT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_EQ((exp), r); }
 #define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_FLOAT_EQ((exp), r); }
+#define CE_ASSERT_DOUBLE_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_DOUBLE_EQ((exp), r); }
 #define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_VEC_EQ((exp), r); }
 
 template <typename T, size_t S>

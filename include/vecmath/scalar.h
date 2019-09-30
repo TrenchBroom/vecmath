@@ -101,12 +101,13 @@ namespace vm {
      * @param rhs the second value
      * @return the minimum of the given values
      */
-    template <typename T>
-    constexpr T min(const T lhs, const T rhs) {
-        if (lhs < rhs) {
+    template <typename... T>
+    constexpr T min(const T lhs, const T rhs...) {
+        const auto rhs_min = min(rhs...);
+        if (lhs < rhs_min) {
             return lhs;
         } else {
-            return rhs;
+            return rhs_min;
         }
     }
 

@@ -27,58 +27,39 @@
 namespace vm {
     TEST(scalar_test, identity) {
         constexpr auto id = identity();
-        constexpr auto result = id(1);
-        ASSERT_EQ(1, result);
-
-        ASSERT_EQ(1, id(1));
-        ASSERT_EQ(-1, id(-1));
-        ASSERT_DOUBLE_EQ(1.234, id(1.234));
+        CA_ASSERT_EQ(1, id(1))
+        CA_ASSERT_EQ(-1, id(-1))
+        CA_ASSERT_DOUBLE_EQ(1.234, id(1.234))
     }
 
     TEST(scalar_test, is_nan) {
-        // constexpr evaluation
-        constexpr auto result = is_nan(std::numeric_limits<double>::quiet_NaN());
-        ASSERT_TRUE(result);
-
-        ASSERT_TRUE(is_nan(std::numeric_limits<double>::quiet_NaN()));
-        ASSERT_TRUE(is_nan(std::numeric_limits<float>::quiet_NaN()));
-        ASSERT_FALSE(is_nan(1.0));
-        ASSERT_FALSE(is_nan(1.0f));
+        CA_ASSERT_TRUE(is_nan(std::numeric_limits<double>::quiet_NaN()))
+        CA_ASSERT_TRUE(is_nan(std::numeric_limits<float>::quiet_NaN()))
+        CA_ASSERT_FALSE(is_nan(1.0))
+        CA_ASSERT_FALSE(is_nan(1.0f))
     }
 
     TEST(scalar_test, is_inf) {
-        // constexpr evaluation
-        constexpr auto result = is_inf(+std::numeric_limits<double>::infinity());
-        ASSERT_TRUE(result);
-
-        ASSERT_TRUE(is_inf(+std::numeric_limits<double>::infinity()));
-        ASSERT_TRUE(is_inf(-std::numeric_limits<double>::infinity()));
-        ASSERT_TRUE(is_inf(+std::numeric_limits<float>::infinity()));
-        ASSERT_TRUE(is_inf(-std::numeric_limits<float>::infinity()));
-        ASSERT_FALSE(is_inf(0.0));
-        ASSERT_FALSE(is_inf(0.0f));
+        CA_ASSERT_TRUE(is_inf(+std::numeric_limits<double>::infinity()))
+        CA_ASSERT_TRUE(is_inf(-std::numeric_limits<double>::infinity()))
+        CA_ASSERT_TRUE(is_inf(+std::numeric_limits<float>::infinity()))
+        CA_ASSERT_TRUE(is_inf(-std::numeric_limits<float>::infinity()))
+        CA_ASSERT_FALSE(is_inf(0.0))
+        CA_ASSERT_FALSE(is_inf(0.0f))
     }
 
     TEST(scalar_test, nan) {
-        // constexpr evaluation
-        const auto result = nan<double>();
-        ASSERT_TRUE(result);
-
-        ASSERT_TRUE(is_nan(nan<double>()));
-        ASSERT_TRUE(is_nan(nan<float>()));
+        CA_ASSERT_TRUE(is_nan(nan<double>()))
+        CA_ASSERT_TRUE(is_nan(nan<float>()))
     }
 
     TEST(scalar_test, min) {
-        // constexpr evaluation
-        const auto result = min(0.0, 1.0);
-        ASSERT_EQ(0.0, result);
-
-        ASSERT_EQ(+1.0, min(+1.0, +1.0));
-        ASSERT_EQ(+1.0, min(+1.0, +2.0));
-        ASSERT_EQ(+1.0, min(+2.0, +1.0));
-        ASSERT_EQ(-1.0, min(-1.0, +2.0));
-        ASSERT_EQ(-2.0, min(+1.0, -2.0));
-        ASSERT_EQ(-2.0, min(-1.0, -2.0));
+        CA_ASSERT_EQ(+1.0, min(+1.0, +1.0))
+        CA_ASSERT_EQ(+1.0, min(+1.0, +2.0))
+        CA_ASSERT_EQ(+1.0, min(+2.0, +1.0))
+        CA_ASSERT_EQ(-1.0, min(-1.0, +2.0))
+        CA_ASSERT_EQ(-2.0, min(+1.0, -2.0))
+        CA_ASSERT_EQ(-2.0, min(-1.0, -2.0))
     }
 
     TEST(scalar_test, max) {
