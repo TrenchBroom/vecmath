@@ -807,15 +807,17 @@ namespace vm {
      *
      * @tparam T the component type
      * @tparam S the number of components
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first vector
      * @param rhs the second vector
+     * @param rest the remaining vectors
      * @return the component wise minimum of the given vectors
      */
-    template <typename T, size_t S>
-    constexpr vec<T,S> min(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+    template <typename T, size_t S, typename... Rest>
+    constexpr vec<T,S> min(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = min(lhs[i], rhs[i]);
+            result[i] = min(lhs[i], rhs[i], rest[i]...);
         }
         return result;
     }
@@ -825,15 +827,17 @@ namespace vm {
      *
      * @tparam T the component type
      * @tparam S the number of components
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first vector
      * @param rhs the second vector
+     * @param rest the remaining vectors
      * @return the component wise maximum of the given vectors
      */
-    template <typename T, size_t S>
-    constexpr vec<T,S> max(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+    template <typename T, size_t S, typename... Rest>
+    constexpr vec<T,S> max(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = max(lhs[i], rhs[i]);
+            result[i] = max(lhs[i], rhs[i], rest[i]...);
         }
         return result;
     }
@@ -843,15 +847,17 @@ namespace vm {
      *
      * @tparam T the component type
      * @tparam S the number of components
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first vector
      * @param rhs the second vector
+     * @param rest the remaining vectors
      * @return the component wise absolute minimum of the given vectors
      */
-    template <typename T, size_t S>
-    constexpr vec<T,S> abs_min(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+    template <typename T, size_t S, typename... Rest>
+    constexpr vec<T,S> abs_min(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = abs_min(lhs[i], rhs[i]);
+            result[i] = abs_min(lhs[i], rhs[i], rest[i]...);
         }
         return result;
     }
@@ -861,15 +867,17 @@ namespace vm {
      *
      * @tparam T the component type
      * @tparam S the number of components
+     * @tparam Rest the types of the remaining arguments
      * @param lhs the first vector
      * @param rhs the second vector
+     * @param rest the remaining vectors
      * @return the component wise absolute maximum of the given vectors
      */
-    template <typename T, size_t S>
-    constexpr vec<T,S> abs_max(const vec<T,S>& lhs, const vec<T,S>& rhs) {
+    template <typename T, size_t S, typename... Rest>
+    constexpr vec<T,S> abs_max(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
-            result[i] = abs_max(lhs[i], rhs[i]);
+            result[i] = abs_max(lhs[i], rhs[i], rest[i]...);
         }
         return result;
     }

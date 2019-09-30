@@ -380,6 +380,7 @@ namespace vm {
         CER_ASSERT_EQ(vec3f(-2, -2, -2), min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
         CER_ASSERT_EQ(vec3f(+1, +2, +1), min(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
         CER_ASSERT_EQ(vec3f(-2, -3, -2), min(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
+        CER_ASSERT_EQ(vec3f(-2, -3, -4), min(vec3f(-2, -2, -2), vec3f(-1, -3, -1), vec3f(-1, -3, -4)))
     }
 
     TEST(vec_test, max) {
@@ -387,6 +388,7 @@ namespace vm {
         CER_ASSERT_EQ(vec3f(-1, -1, -1), max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
         CER_ASSERT_EQ(vec3f(+2, +3, +2), max(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
         CER_ASSERT_EQ(vec3f(-1, -2, -1), max(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
+        CER_ASSERT_EQ(vec3f(+4, -2, +1), max(vec3f(-2, -2, -2), vec3f(-1, -3, -1), vec3f(4, -4, 1)))
     }
 
     TEST(vec_test, abs_min) {
@@ -394,6 +396,7 @@ namespace vm {
         CER_ASSERT_EQ(vec3f(-1, -1, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
         CER_ASSERT_EQ(vec3f(+1, +2, +1), abs_min(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
         CER_ASSERT_EQ(vec3f(-1, -2, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
+        CER_ASSERT_EQ(vec3f( 0,  1, -1), abs_min(vec3f(-2, -2, -2), vec3f(-1, -3, -1), vec3f(0, 1, -4)))
     }
 
     TEST(vec_test, abs_max) {
@@ -401,6 +404,7 @@ namespace vm {
         CER_ASSERT_EQ(vec3f(-2, -2, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -1, -1)))
         CER_ASSERT_EQ(vec3f(+2, +3, +2), abs_max(vec3f(+2, +2, +2), vec3f(+1, +3, +1)))
         CER_ASSERT_EQ(vec3f(-2, -3, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -3, -1)))
+        CER_ASSERT_EQ(vec3f(+4, -3, -2), abs_max(vec3f(-2, -2, -2), vec3f(-1, -3, -1), vec3f(+4, -1, 0)))
     }
 
     TEST(vec_test, abs) {
