@@ -1,3 +1,6 @@
+REM Init submodules
+git submodule update --init
+
 REM Check versions
 cmake --version
 cppcheck --version

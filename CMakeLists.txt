@@ -1,6 +1,6 @@
-project(vecmath CXX)
-
 cmake_minimum_required(VERSION 3.12)
+
+project(vecmath VERSION 0.1.0 LANGUAGES CXX)
 
 set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
