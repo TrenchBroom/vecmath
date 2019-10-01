@@ -22,7 +22,7 @@ along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 
 #include "constants.h"
 #include "scalar.h"
-#include "util.h"
+#include "constexpr_util.h"
 
 #include <array>
 #include <cassert>
@@ -75,7 +75,7 @@ namespace vm {
          * @param values the values
          */
         constexpr vec(std::initializer_list<T> values) :
-            v{ to_array<T,S>(values) } {}
+            v{ detail::to_array<T,S>(values) } {}
 
         /**
          * Creates a new vector with the components initialized to the given values. The values are converted
@@ -102,7 +102,7 @@ namespace vm {
          */
         template <typename U>
         constexpr explicit vec(const vec<U, S>& other) :
-        v { cast_array<T>(other.v) } {}
+        v { detail::cast_array<T>(other.v) } {}
 
         /**
          * Creates a new vector by copying the values of the given vector of smaller size and filling up the remaining
@@ -119,7 +119,7 @@ namespace vm {
          */
         template <typename U, std::size_t SS, typename A1, typename... Args>
         constexpr vec(const vec<U, SS>& other, const A1 a1, const Args... args) :
-            v { concat(cast_array<T>(other.v), std::array<T, sizeof...(Args)+1>{ static_cast<T>(a1), static_cast<T>(args)... }) } {
+            v { detail::concat(detail::cast_array<T>(other.v), std::array<T, sizeof...(Args)+1>{ static_cast<T>(a1), static_cast<T>(args)... }) } {
                 static_assert(SS + sizeof...(Args) + 1 == S, "Wrong number of parameters");
             }
     public:
@@ -546,7 +546,7 @@ namespace vm {
         constexpr auto cmp = [](const auto l, const auto r) {
             return l < r;
         };
-        return sort(vector.v, cmp);
+        return detail::sort(vector.v, cmp);
     }
 
     /**
@@ -560,7 +560,7 @@ namespace vm {
      */
     template <typename T, size_t S>
     constexpr vec<T,S> sort(const vec<T,S>& vector) {
-        return vec<T,S> { get_elements(vector.v, sorted_index_sequence(vector)) };
+        return vec<T,S> { detail::get_elements(vector.v, sorted_index_sequence(vector)) };
     }
 
     /**
@@ -578,7 +578,7 @@ namespace vm {
         constexpr auto cmp = [](const auto l, const auto r) {
             return abs(l) < abs(r);
         };
-        return sort(vector.v, cmp);
+        return detail::sort(vector.v, cmp);
     }
 
     /**
@@ -592,7 +592,7 @@ namespace vm {
      */
     template <typename T, size_t S>
     constexpr vec<T,S> abs_sort(const vec<T,S>& vector) {
-        return vec<T,S> { get_elements(vector.v, abs_sorted_index_sequence(vector)) };
+        return vec<T,S> { detail::get_elements(vector.v, abs_sorted_index_sequence(vector)) };
     }
 
     /**

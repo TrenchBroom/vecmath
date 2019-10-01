@@ -652,7 +652,7 @@ namespace vm {
 
     TEST(mat_test, operator_multiply_vector_left) {
         constexpr auto v =  vec4d(1, 2, 3, 1);
-        CER_ASSERT_VEC_EQ(v, v * mat4x4d::identity());
+        CER_ASSERT_VEC_EQ(v, v * mat4x4d::identity())
 
         constexpr auto exp = vec4d(51, 58, 65, 72);
         CER_ASSERT_EQ(

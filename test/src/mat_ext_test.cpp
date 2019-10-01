@@ -22,25 +22,241 @@
 #include <vecmath/forward.h>
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
+#include <vecmath/quat.h>
 #include <vecmath/vec.h>
 
 #include "test_utils.h"
 
+#include <cstdlib>
+#include <ctime>
+
 namespace vm {
-    TEST(mat_test, stripTranslation) {
-        const vec3d v(2.0, 3.0, 4.0);
-        const mat4x4d t = translationMatrix(v);
-        const mat4x4d r = rotationMatrix(toRadians(15.0), toRadians(30.0), toRadians(45.0));
-        ASSERT_EQ(r, stripTranslation(r * t));
-        ASSERT_EQ(r, stripTranslation(t * r));
+    TEST(mat_ext_test, operator_multiply_vectors_right) {
+        const auto v = std::vector<vec4d> {
+            vec4d(1, 2, 3, 1),
+            vec4d(2, 3, 4, 1),
+            vec4d(3, 2, 7, 23)
+        };
+
+        constexpr auto m = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        const auto r = std::vector<vec4d> {
+            vec4d(18, 46, 74, 102),
+            vec4d(24, 64, 104, 144),
+            vec4d(120, 260, 400, 540)
+        };
+
+        const auto o = m * v;
+        for (size_t i = 0; i < 3; i++) {
+            ASSERT_VEC_EQ(r[i], o[i]);
+        }
     }
 
-    TEST(mat_test, pointsTransformationMatrix) {
+    TEST(mat_ext_test, operator_multiply_vectors_left) {
+        const auto v = std::vector<vec4d> {
+            vec4d(1, 2, 3, 1),
+            vec4d(2, 3, 4, 1),
+            vec4d(3, 2, 3, 23)
+        };
+
+        constexpr auto m = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        const auto r = std::vector<vec4d> {
+            vec4d(51, 58, 65, 72),
+            vec4d(66, 76, 86, 96),
+            vec4d(339, 370, 401, 432),
+        };
+
+        const auto o = v * m;
+        for (size_t i = 0; i < 3; i++) {
+            ASSERT_VEC_EQ(r[i], o[i]);
+        }
+    }
+
+    TEST(mat_ext_test, operator_multiply_vectors_right_lower_dimension) {
+        const auto v = std::vector<vec3d> {
+            vec3d(1.0, 2.0, 3.0),
+            vec3d(2.0, 3.0, 4.0),
+            vec3d(3.0 / 23.0, 2.0 / 23.0, 7.0 / 23.0)
+        };
+
+        constexpr auto m =  mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        const auto r = std::vector<vec3d> {
+            to_cartesian_coords(vec4d(18, 46, 74, 102)),
+            to_cartesian_coords(vec4d(24, 64, 104, 144)),
+            to_cartesian_coords(vec4d(120, 260, 400, 540))
+        };
+
+        const auto o = m * v;
+        for (size_t i = 0; i < 3; i++) {
+            ASSERT_VEC_EQ(r[i], o[i]);
+        }
+    }
+
+    TEST(mat_ext_test, operator_multiply_vectors_left_lower_dimension) {
+        const auto v = std::vector<vec3d> {
+            vec3d(1.0, 2.0, 3.0),
+            vec3d(2.0, 3.0, 4.0),
+            vec3d(3.0 / 23.0, 2.0 / 23.0, 3.0 / 23.0)
+        };
+
+        constexpr auto m =  mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        const auto r = std::vector<vec3d> {
+            to_cartesian_coords(vec4d(51.0, 58.0, 65.0, 72.0)),
+            to_cartesian_coords(vec4d(66.0, 76.0, 86.0, 96.0)),
+            to_cartesian_coords(vec4d(339.0, 370.0, 401.0, 432.0))
+        };
+
+        const auto o = v * m;
+        for (size_t i = 0; i < 3; i++) {
+            ASSERT_VEC_EQ(r[i], o[i]);
+        }
+    }
+
+    TEST(mat_ext_test, rotation_matrix_with_euler_angles) {
+        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw(), rotation_matrix(to_radians(90.0), 0.0, 0.0));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw(), rotation_matrix(0.0, to_radians(90.0), 0.0));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw(), rotation_matrix(0.0, 0.0, to_radians(90.0)));
+    }
+
+    TEST(mat_ext_test, rotationMatrixToEulerAngles_90DegreeRotations) {
+        ASSERT_VEC_EQ(vec3d(to_radians(90.0), 0.0, 0.0), rotation_matrix_to_euler_angles(mat4x4d::rot_90_x_ccw()));
+        ASSERT_VEC_EQ(vec3d(0.0, to_radians(90.0), 0.0), rotation_matrix_to_euler_angles(mat4x4d::rot_90_y_ccw()));
+        ASSERT_VEC_EQ(vec3d(0.0, 0.0, to_radians(90.0)), rotation_matrix_to_euler_angles(mat4x4d::rot_90_z_ccw()));
+    }
+
+    TEST(mat_ext_test, rotation_matrix_to_euler_angles) {
+        const auto roll = to_radians(12.0);
+        const auto pitch = to_radians(13.0);
+        const auto yaw = to_radians(14.0);
+
+        const auto rotMat = rotation_matrix(roll, pitch, yaw);
+        const auto rollPitchYaw = rotation_matrix_to_euler_angles(rotMat);
+
+        EXPECT_DOUBLE_EQ(roll, rollPitchYaw.x());
+        EXPECT_DOUBLE_EQ(pitch, rollPitchYaw.y());
+        EXPECT_DOUBLE_EQ(yaw, rollPitchYaw.z());
+    }
+
+    TEST(mat_ext_test, rotation_matrix_with_axis_and_angle) {
+        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw(), rotation_matrix(vec3d::pos_x(), to_radians(90.0)));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw(), rotation_matrix(vec3d::pos_y(), to_radians(90.0)));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw(), rotation_matrix(vec3d::pos_z(), to_radians(90.0)));
+        ASSERT_VEC_EQ(vec3d::pos_y(),          rotation_matrix(vec3d::pos_z(), to_radians(90.0)) * vec3d::pos_x());
+    }
+
+    TEST(mat_ext_test, rotation_matrix_with_quaternion) {
+        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw(), rotation_matrix(quatd(vec3d::pos_x(), to_radians(90.0))));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw(), rotation_matrix(quatd(vec3d::pos_y(), to_radians(90.0))));
+        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw(), rotation_matrix(quatd(vec3d::pos_z(), to_radians(90.0))));
+
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        for (size_t i = 0; i < 10; ++i) {
+            vec3d axis;
+            for (size_t j = 0; j < 3; ++j) {
+                axis[j] = (static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX));
+            }
+            axis = normalize(axis);
+            const double angle = (static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX))*2.0*Cd::pi();
+            ASSERT_MAT_EQ(rotation_matrix(axis, angle), rotation_matrix(quatd(axis, angle)));
+        }
+    }
+
+    TEST(mat_ext_test, translation_matrix) {
+        constexpr auto v = vec3d(2, 3, 4);
+        constexpr auto t = translation_matrix(v);
+
+        CER_ASSERT_VEC_EQ(t[0], vec4d::pos_x())
+        CER_ASSERT_VEC_EQ(t[1], vec4d::pos_y())
+        CER_ASSERT_VEC_EQ(t[2], vec4d::pos_z())
+        CER_ASSERT_VEC_EQ(t[3], vec4d(v, 1))
+    }
+
+    TEST(mat_test, strip_translation) {
+        constexpr auto v = vec3d(2, 3, 4);
+        constexpr auto t = translation_matrix(v);
+        constexpr auto s = scaling_matrix(vec3d(2, 3, 4));
+
+        CER_ASSERT_EQ(s, strip_translation(s * t))
+        CER_ASSERT_EQ(s, strip_translation(t * s))
+    }
+
+    TEST(mat_ext_test, scaling_matrix) {
+        CER_ASSERT_EQ(
+            mat4x4d(
+                2, 0, 0, 0,
+                0, 3, 0, 0,
+                0, 0, 4, 0,
+                0, 0, 0, 1),
+            scaling_matrix(vec3d(2, 3, 4)))
+    }
+
+    TEST(mat_ext_test, mirror_matrix) {
+        constexpr auto mirX = mirror_matrix<double>(axis::x);
+        constexpr auto mirY = mirror_matrix<double>(axis::y);
+        constexpr auto mirZ = mirror_matrix<double>(axis::z);
+
+        CER_ASSERT_EQ(vec3d::neg_x(), mirX * vec3d::pos_x())
+        CER_ASSERT_EQ(vec3d::pos_y(), mirX * vec3d::pos_y())
+        CER_ASSERT_EQ(vec3d::pos_z(), mirX * vec3d::pos_z())
+
+        CER_ASSERT_EQ(vec3d::pos_x(), mirY * vec3d::pos_x())
+        CER_ASSERT_EQ(vec3d::neg_y(), mirY * vec3d::pos_y())
+        CER_ASSERT_EQ(vec3d::pos_z(), mirY * vec3d::pos_z())
+
+        CER_ASSERT_EQ(vec3d::pos_x(), mirZ * vec3d::pos_x())
+        CER_ASSERT_EQ(vec3d::pos_y(), mirZ * vec3d::pos_y())
+        CER_ASSERT_EQ(vec3d::neg_z(), mirZ * vec3d::pos_z())
+    }
+
+    TEST(mat_ext_test, coordinateSystemMatrix) {
+        constexpr auto m = coordinate_system_matrix(
+            vec3d::neg_x(),
+            vec3d::neg_y(),
+            vec3d::neg_z(),
+            vec3d::one());
+        CER_ASSERT_EQ(vec3d::neg_x() + vec3d::one(), m * vec3d::pos_x())
+        CER_ASSERT_EQ(vec3d::neg_y() + vec3d::one(), m * vec3d::pos_y())
+        CER_ASSERT_EQ(vec3d::neg_z() + vec3d::one(), m * vec3d::pos_z())
+    }
+
+    TEST(mat_ext_test, plane_projection_matrix) {
+        // I really don't know how to write a test for this right now.
+    }
+
+    TEST(mat_ext_test, shear_matrix) {
+        CER_ASSERT_EQ(vec3d(1, 1, 1), shear_matrix(0.0, 0.0, 0.0, 0.0, 1.0, 1.0) * vec3d::pos_z())
+        CER_ASSERT_EQ(vec3d(0, 0, 0), shear_matrix(0.0, 0.0, 0.0, 0.0, 1.0, 1.0) * vec3d::zero())
+        CER_ASSERT_EQ(vec3d(1, 1, 1), shear_matrix(0.0, 0.0, 1.0, 1.0, 0.0, 0.0) * vec3d::pos_y())
+        CER_ASSERT_EQ(vec3d(0, 0, 0), shear_matrix(0.0, 0.0, 1.0, 1.0, 0.0, 0.0) * vec3d::zero())
+        CER_ASSERT_EQ(vec3d(1, 1, 1), shear_matrix(1.0, 1.0, 0.0, 0.0, 0.0, 0.0) * vec3d::pos_x())
+        CER_ASSERT_EQ(vec3d(0, 0, 0), shear_matrix(1.0, 1.0, 0.0, 0.0, 0.0, 0.0) * vec3d::zero())
+    }
+
+    TEST(mat_test, points_transformation_matrix) {
         const vec3d in[3] = {{2.0, 0.0, 0.0},
                              {4.0, 0.0, 0.0},
                              {2.0, 2.0, 0.0}};
 
-        constexpr auto M = translationMatrix(vec3d(100.0, 100.0, 100.0)) * scalingMatrix(vec3d(2.0, 2.0, 2.0)) * rotationMatrix(vec3d::pos_z(), toRadians(90.0));
+        const auto M = translation_matrix(vec3d(100.0, 100.0, 100.0)) * scaling_matrix(vec3d(2.0, 2.0, 2.0)) * rotation_matrix(vec3d::pos_z(), to_radians(90.0));
 
         vec3d out[3];
         for (size_t i=0; i<3; ++i) {
@@ -51,216 +267,12 @@ namespace vm {
         // in[1]: 0,4,0, then 0,8,0, then 100, 108, 100
         // in[2]: -2,2,0, then -4,4,0, then 96, 104, 100
 
-        constexpr auto M2 = pointsTransformationMatrix(in[0], in[1], in[2], out[0], out[1], out[2]);
+        const auto M2 = points_transformation_matrix(in[0], in[1], in[2], out[0], out[1], out[2]);
         vec3d test[3];
         for (size_t i=0; i<3; ++i) {
             test[i] = M2 * in[i];
 
             EXPECT_VEC_EQ(out[i], test[i]);
         }
-    }
-
-    TEST(MatTest, rightMultiplyWithListOfVectors) {
-        std::vector<vec4d> v;
-        v.push_back(vec4d(1.0, 2.0, 3.0, 1.0));
-        v.push_back(vec4d(2.0, 3.0, 4.0, 1.0));
-        v.push_back(vec4d(3.0, 2.0, 7.0, 23.0));
-
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                         13.0, 14.0, 15.0, 16.0);
-
-        std::vector<vec4d> r;
-        r.push_back(vec4d(18.0, 46.0, 74.0, 102.0));
-        r.push_back(vec4d(24.0, 64.0, 104.0, 144.0));
-        r.push_back(vec4d(120.0, 260.0, 400.0, 540.0));
-
-        const std::vector<vec4d> o = m * v;
-        for (size_t i = 0; i < 3; i++) {
-            ASSERT_VEC_EQ(r[i], o[i]);
-        }
-    }
-
-    TEST(MatTest, leftMultiplyWithListOfVectors) {
-        std::vector<vec4d> v;
-        v.push_back(vec4d(1.0, 2.0, 3.0, 1.0));
-        v.push_back(vec4d(2.0, 3.0, 4.0, 1.0));
-        v.push_back(vec4d(3.0, 2.0, 3.0, 23.0));
-
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                         13.0, 14.0, 15.0, 16.0);
-
-        std::vector<vec4d> r;
-        r.push_back(vec4d(51.0, 58.0, 65.0, 72.0));
-        r.push_back(vec4d(66.0, 76.0, 86.0, 96.0));
-        r.push_back(vec4d(339.0, 370.0, 401.0, 432.0));
-
-        const std::vector<vec4d> o = v * m;
-        for (size_t i = 0; i < 3; i++) {
-            ASSERT_VEC_EQ(r[i], o[i]);
-        }
-    }
-
-    TEST(MatTest, rightMultiplyWithListOfVectorsOneLessDimension) {
-        std::vector<vec3d> v;
-        v.push_back(vec3d(1.0, 2.0, 3.0));
-        v.push_back(vec3d(2.0, 3.0, 4.0));
-        v.push_back(vec3d(3.0 / 23.0, 2.0 / 23.0, 7.0 / 23.0));
-
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                         13.0, 14.0, 15.0, 16.0);
-
-        std::vector<vec3d> r;
-        r.push_back(toCartesianCoords(vec4d(18.0, 46.0, 74.0, 102.0)));
-        r.push_back(toCartesianCoords(vec4d(24.0, 64.0, 104.0, 144.0)));
-        r.push_back(toCartesianCoords(vec4d(120.0, 260.0, 400.0, 540.0)));
-
-        const std::vector<vec3d> o = m * v;
-        for (size_t i = 0; i < 3; i++) {
-            ASSERT_VEC_EQ(r[i], o[i]);
-        }
-    }
-
-    TEST(MatTest, leftMultiplyWithListOfVectorsOneLessDimension) {
-        std::vector<vec3d> v;
-        v.push_back(vec3d(1.0, 2.0, 3.0));
-        v.push_back(vec3d(2.0, 3.0, 4.0));
-        v.push_back(vec3d(3.0 / 23.0, 2.0 / 23.0, 3.0 / 23.0));
-
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                         13.0, 14.0, 15.0, 16.0);
-
-        std::vector<vec3d> r;
-        r.push_back(toCartesianCoords(vec4d(51.0, 58.0, 65.0, 72.0)));
-        r.push_back(toCartesianCoords(vec4d(66.0, 76.0, 86.0, 96.0)));
-        r.push_back(toCartesianCoords(vec4d(339.0, 370.0, 401.0, 432.0)));
-
-        const std::vector<vec3d> o = v * m;
-        for (size_t i = 0; i < 3; i++) {
-           ASSERT_VEC_EQ(r[i], o[i]);
-        }
-    }
-
-    TEST(MatTest, rotationMatrixWithEulerAngles) {
-        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw, rotationMatrix(toRadians(90.0), 0.0, 0.0));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw, rotationMatrix(0.0, toRadians(90.0), 0.0));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw, rotationMatrix(0.0, 0.0, toRadians(90.0)));
-    }
-
-    TEST(MatTest, rotationMatrixToEulerAngles_90DegreeRotations) {
-        ASSERT_VEC_EQ(vec3d(toRadians(90.0), 0.0, 0.0), rotationMatrixToEulerAngles(mat4x4d::rot_90_x_ccw));
-        ASSERT_VEC_EQ(vec3d(0.0, toRadians(90.0), 0.0), rotationMatrixToEulerAngles(mat4x4d::rot_90_y_ccw));
-        ASSERT_VEC_EQ(vec3d(0.0, 0.0, toRadians(90.0)), rotationMatrixToEulerAngles(mat4x4d::rot_90_z_ccw));
-    }
-
-    TEST(MatTest, rotationMatrixToEulerAngles) {
-        const auto roll = toRadians(12.0);
-        const auto pitch = toRadians(13.0);
-        const auto yaw = toRadians(14.0);
-
-        const auto rotMat = rotationMatrix(roll, pitch, yaw);
-        const auto rollPitchYaw = rotationMatrixToEulerAngles(rotMat);
-
-        EXPECT_DOUBLE_EQ(roll, rollPitchYaw.x());
-        EXPECT_DOUBLE_EQ(pitch, rollPitchYaw.y());
-        EXPECT_DOUBLE_EQ(yaw, rollPitchYaw.z());
-    }
-
-    TEST(MatTest, rotationMatrixWithAngleAndAxis) {
-        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw, rotationMatrix(vec3d::pos_x, toRadians(90.0)));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw, rotationMatrix(vec3d::pos_y, toRadians(90.0)));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw, rotationMatrix(vec3d::pos_z, toRadians(90.0)));
-        ASSERT_VEC_EQ(vec3d::pos_y, rotationMatrix(vec3d::pos_z, toRadians(90.0)) * vec3d::pos_x);
-    }
-
-    TEST(MatTest, rotationMatrixWithQuaternion) {
-        ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw, rotationMatrix(quatd(vec3d::pos_x, toRadians(90.0))));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw, rotationMatrix(quatd(vec3d::pos_y, toRadians(90.0))));
-        ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw, rotationMatrix(quatd(vec3d::pos_z, toRadians(90.0))));
-
-        std::srand(static_cast<unsigned int>(std::time(nullptr)));
-        for (size_t i = 0; i < 10; ++i) {
-            vec3d axis;
-            for (size_t j = 0; j < 3; ++j) {
-                axis[j] = (static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX));
-            }
-            axis = normalize(axis);
-            const double angle = (static_cast<double>(std::rand()) / static_cast<double>(RAND_MAX))*2.0*Cd::pi();
-            ASSERT_MAT_EQ(rotationMatrix(axis, angle), rotationMatrix(quatd(axis, angle)));
-        }
-    }
-
-    TEST(MatTest, translationMatrix) {
-        const vec3d v(2.0, 3.0, 4.0);
-        const mat4x4d t = translationMatrix(v);
-
-        ASSERT_VEC_EQ(t[0], vec4d::pos_x);
-        ASSERT_VEC_EQ(t[1], vec4d::pos_y);
-        ASSERT_VEC_EQ(t[2], vec4d::pos_z);
-        ASSERT_VEC_EQ(t[3], vec4d(v, 1.0));
-    }
-
-    TEST(MatTest, scalingMatrix) {
-        const vec3d v(2.0, 3.0, 4.0);
-        const mat4x4d t = scalingMatrix(v);
-
-        for (size_t c = 0; c < 4; ++c) {
-            for (size_t r = 0; r < 4; ++r) {
-                if (c == r) {
-                    if (c < 3) {
-                        ASSERT_DOUBLE_EQ(v[c], t[c][r]);
-                    } else {
-                        ASSERT_DOUBLE_EQ(1.0, t[c][r]);
-                    }
-                } else {
-                    ASSERT_DOUBLE_EQ(0.0, t[c][r]);
-                }
-            }
-        }
-    }
-
-    TEST(MatTest, mirrorMatrix) {
-        const auto mirX = mirrorMatrix<double>(axis::x);
-        const auto mirY = mirrorMatrix<double>(axis::y);
-        const auto mirZ = mirrorMatrix<double>(axis::z);
-
-        ASSERT_EQ(vec3d::neg_x, mirX * vec3d::pos_x);
-        ASSERT_EQ(vec3d::pos_y, mirX * vec3d::pos_y);
-        ASSERT_EQ(vec3d::pos_z, mirX * vec3d::pos_z);
-
-        ASSERT_EQ(vec3d::pos_x, mirY * vec3d::pos_x);
-        ASSERT_EQ(vec3d::neg_y, mirY * vec3d::pos_y);
-        ASSERT_EQ(vec3d::pos_z, mirY * vec3d::pos_z);
-
-        ASSERT_EQ(vec3d::pos_x, mirZ * vec3d::pos_x);
-        ASSERT_EQ(vec3d::pos_y, mirZ * vec3d::pos_y);
-        ASSERT_EQ(vec3d::neg_z, mirZ * vec3d::pos_z);
-    }
-
-    TEST(MatTest, coordinateSystemMatrix) {
-        const auto m = coordinateSystemMatrix(vec3d::neg_x, vec3d::neg_y, vec3d::neg_z, vec3d::one);
-        ASSERT_EQ(vec3d::neg_x + vec3d::one, m * vec3d::pos_x);
-        ASSERT_EQ(vec3d::neg_y + vec3d::one, m * vec3d::pos_y);
-        ASSERT_EQ(vec3d::neg_z + vec3d::one, m * vec3d::pos_z);
-    }
-
-    TEST(MatTest, planeProjectionMatrix) {
-        // I really don't know how to write a test for this right now.
-    }
-
-    TEST(MatTest, shearMatrix) {
-        ASSERT_EQ(vec3d(1, 1, 1), shearMatrix(0.0, 0.0, 0.0, 0.0, 1.0, 1.0) * vec3d::pos_z);
-        ASSERT_EQ(vec3d(0, 0, 0), shearMatrix(0.0, 0.0, 0.0, 0.0, 1.0, 1.0) * vec3d::zero);
-        ASSERT_EQ(vec3d(1, 1, 1), shearMatrix(0.0, 0.0, 1.0, 1.0, 0.0, 0.0) * vec3d::pos_y);
-        ASSERT_EQ(vec3d(0, 0, 0), shearMatrix(0.0, 0.0, 1.0, 1.0, 0.0, 0.0) * vec3d::zero);
-        ASSERT_EQ(vec3d(1, 1, 1), shearMatrix(1.0, 1.0, 0.0, 0.0, 0.0, 0.0) * vec3d::pos_x);
-        ASSERT_EQ(vec3d(0, 0, 0), shearMatrix(1.0, 1.0, 0.0, 0.0, 0.0, 0.0) * vec3d::zero);
     }
 }

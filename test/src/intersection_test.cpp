@@ -23,7 +23,7 @@
 #include <vecmath/vec.h>
 #include <vecmath/vec_ext.h>
 #include <vecmath/quat.h>
-#include <vecmath/util.h>
+#include <vecmath/constexpr_util.h>
 #include <vecmath/intersection.h>
 
 namespace vm {

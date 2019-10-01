@@ -24,7 +24,7 @@
 #include <vecmath/mat_ext.h>
 #include <vecmath/ray.h>
 #include <vecmath/scalar.h>
-#include <vecmath/util.h>
+#include <vecmath/constexpr_util.h>
 
 #include "test_utils.h"
 

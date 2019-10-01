@@ -21,9 +21,8 @@
 #define VECMATH_MAT_H
 
 #include "vec.h"
-// #include "quat.h"
 #include "constants.h"
-#include "util.h"
+#include "constexpr_util.h"
 
 #include <array>
 #include <cassert>
@@ -70,7 +69,7 @@ namespace vm {
          * @param values the initializer list with the matrix elements in row-major order
          */
         constexpr mat(std::initializer_list<T> values) :
-        v{ to_vec_array<T, R, C>(values) } {}
+        v{ detail::to_vec_array<T, R, C>(values) } {}
 
         /**
          * Creates a matrix with the given values.
@@ -82,7 +81,7 @@ namespace vm {
          */
         template <typename A11, typename... Args>
         constexpr explicit mat(const A11 a11, const Args... args) :
-        v{ to_vec_array<T, R, C>({ static_cast<T>(a11), static_cast<T>(args)... }) } {}
+        v{ detail::to_vec_array<T, R, C>({ static_cast<T>(a11), static_cast<T>(args)... }) } {}
 
         /**
          * Creates a matrix with the elements initialized to the values of the corresponding elements of the given
@@ -93,7 +92,7 @@ namespace vm {
          */
         template <typename U>
         constexpr explicit mat(const mat<U, R, C>& other) :
-        v { cast_matrix_rows<T>(other.v) } {}
+        v { detail::cast_matrix_rows<T>(other.v) } {}
     public:
         /* ========== accessors ========== */
 
@@ -647,19 +646,20 @@ namespace vm {
     }
 
     /**
-     * Transposes the given square matrix.
+     * Transposes the given matrix.
      *
      * @tparam T the element type
-     * @tparam S the number of rows and columns
+     * @tparam R the number of rows
+     * @tparam C the number of columns
      * @param m the matrix to transpose
      * @return the transposed matrix
      */
-    template <typename T, std::size_t S>
-    constexpr mat<T, S, S> transpose(const mat<T, S, S>& m) {
-        mat<T, S, S> result(m);
-        for (std::size_t c = 0u; c < S; ++c) {
-            for (std::size_t r = c + 1u; r < S; ++r) {
-                swap(result[c][r], result[r][c]);
+    template <typename T, std::size_t R, std::size_t C>
+    constexpr mat<T, C, R> transpose(const mat<T, R, C>& m) {
+        mat<T, C, R> result(m);
+        for (std::size_t c = 0u; c < C; ++c) {
+            for (std::size_t r = c + 1u; r < R; ++r) {
+                detail::swap(result[c][r], result[r][c]);
             }
         }
         return result;
