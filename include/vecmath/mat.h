@@ -327,7 +327,7 @@ namespace vm {
     /**
      * Compares the given two matrices column wise.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -350,7 +350,7 @@ namespace vm {
     /**
      * Checks whether the given matrices have equal components.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -366,7 +366,7 @@ namespace vm {
     /**
      * Checks whether all columns of the given matrix are zero.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param m the matrix to check
@@ -386,7 +386,7 @@ namespace vm {
     /**
      * Checks whether the given matrices have identical components.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -401,7 +401,7 @@ namespace vm {
     /**
      * Checks whether the given matrices have identical components.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -444,7 +444,7 @@ namespace vm {
     /**
      * Computes the sum of two matrices by adding the corresponding components.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -463,7 +463,7 @@ namespace vm {
     /**
      * Computes the difference of two matrices by subtracting the corresponding components.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the first matrix
@@ -482,7 +482,7 @@ namespace vm {
     /**
      * Computes the product of the given two matrices.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R1 the number of rows of the first matrix
      * @tparam C1R2 the number of columns of the first matrix and the number of rows of the second matrix
      * @tparam C2 the number of columns of the second matrix
@@ -506,7 +506,7 @@ namespace vm {
     /**
      * Computes the scalar product of the given matrix and the given value.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the matrix
@@ -525,7 +525,7 @@ namespace vm {
     /**
      * Computes the scalar product of the given matrix and the given value.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the scalar
@@ -540,7 +540,7 @@ namespace vm {
     /**
      * Computes the scalar division of the given matrix and the given value.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the matrix
@@ -559,7 +559,7 @@ namespace vm {
     /**
      * Multiplies the given vector by the given matrix.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the vector
@@ -578,7 +578,7 @@ namespace vm {
     /**
      * Multiplies the given vector by the given matrix.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the matrix
@@ -599,7 +599,7 @@ namespace vm {
     /**
      * Multiplies the given vector by the given matrix.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the matrix
@@ -607,14 +607,14 @@ namespace vm {
      * @return the product of the given vector and the given matrix
      */
     template <typename T, std::size_t R, std::size_t C>
-    constexpr vec<T,C-1> operator*(const mat<T, R, C>& lhs, const vec<T,C-1>& rhs) {
-        return toCartesianCoords(lhs * toHomogeneousCoords(rhs));
+    constexpr vec<T, C-1> operator*(const mat<T, R, C>& lhs, const vec<T, C-1>& rhs) {
+        return to_cartesian_coords(lhs * to_homogeneous_coords(rhs));
     }
 
     /**
      * Multiplies the given vector by the given matrix.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the vector
@@ -623,7 +623,7 @@ namespace vm {
      */
     template <typename T, std::size_t R, std::size_t C>
     constexpr vec<T,R-1> operator*(const vec<T,R-1>& lhs, const mat<T, R, C>& rhs) {
-        return toCartesianCoords(toHomogeneousCoords(lhs) * rhs);
+        return to_cartesian_coords(to_homogeneous_coords(lhs) * rhs);
     }
 
     /**
@@ -641,6 +641,7 @@ namespace vm {
      */
     template <typename T, std::size_t R, std::size_t C>
     constexpr mat<T, R, C> set(mat<T, R, C> m, const std::size_t r, const std::size_t c, const T v) {
+        assert(r < R && c < C);
         m[c][r] = v;
         return m;
     }
@@ -648,21 +649,277 @@ namespace vm {
     /**
      * Transposes the given square matrix.
      *
-     * @tparam T the component type
+     * @tparam T the element type
      * @tparam S the number of rows and columns
      * @param m the matrix to transpose
      * @return the transposed matrix
      */
     template <typename T, std::size_t S>
-    constexpr mat<T,S,S> transpose(const mat<T,S,S>& m) {
-        using std::swap;
-        mat<T,S,S> result(m);
-        for (size_t c = 0; c < S; c++) {
-            for (size_t r = c + 1; r < S; r++) {
+    constexpr mat<T, S, S> transpose(const mat<T, S, S>& m) {
+        mat<T, S, S> result(m);
+        for (std::size_t c = 0u; c < S; ++c) {
+            for (std::size_t r = c + 1u; r < S; ++r) {
                 swap(result[c][r], result[r][c]);
             }
         }
         return result;
+    }
+
+
+    /**
+     * Computes a minor of the given matrix. The minor of a matrix is obtained by erasing one column and one row from
+     * that matrix. Thus, any minor matrix of an n*m matrix is a (n-1)*(m-1) matrix.
+     *
+     * @tparam T the element type
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param m the matrix to compute a minor of
+     * @param row the row to strike
+     * @param col the column to strike
+     * @return the minor matrix
+     */
+    template <typename T, std::size_t R, std::size_t C>
+    constexpr mat<T, R-1, C-1> extract_minor(const mat<T, R, C>& m, const std::size_t row, const std::size_t col) {
+        assert(row < R && col < C);
+
+        mat<T, R-1, C-1> min;
+        std::size_t minC = 0u;
+        for (std::size_t c = 0u; c < C; ++c) {
+            if (c != col) {
+                std::size_t minR = 0u;
+                for (std::size_t r = 0u; r < R; ++r) {
+                    if (r != row) {
+                        min[minC][minR++] = m[c][r];
+                    }
+                }
+                ++minC;
+            }
+        }
+        return min;
+    }
+
+    namespace detail {
+        /**
+         * Helper struct to compute a matrix determinant. This struct implements a method that works for all S, but
+         * there are partial specializations of this template for specific values of S for which faster algorithms exist.
+         *
+         * @tparam T the component type
+         * @tparam S the number of components
+         */
+        template <typename T, std::size_t S>
+        struct matrix_determinant {
+            constexpr T operator()(const mat<T, S, S>& m) const {
+                // Laplace after first col
+                matrix_determinant<T, S-1> determinant;
+
+                auto result = static_cast<T>(0.0);
+                for (std::size_t r = 0; r < S; r++) {
+                    const auto f = static_cast<T>(r % 2 == 0 ? 1.0 : -1.0);
+                    result += f * m[0][r] * determinant(extract_minor(m, r, 0));
+                }
+                return result;
+            }
+        };
+
+        // TODO: implement faster block-matrix based method for NxN matrices where N = 2^n
+
+        /**
+         * Partial specialization to optimize for the case of a 3x3 matrix.
+         *
+         * @tparam T the component type
+         */
+        template <typename T>
+        struct matrix_determinant<T, 3> {
+            constexpr T operator() (const mat<T, 3, 3>& m) const {
+                return (    m[0][0]*m[1][1]*m[2][2]
+                          + m[1][0]*m[2][1]*m[0][2]
+                          + m[2][0]*m[0][1]*m[1][2]
+                          - m[2][0]*m[1][1]*m[0][2]
+                          - m[1][0]*m[0][1]*m[2][2]
+                          - m[0][0]*m[2][1]*m[1][2]);
+            }
+        };
+
+        /**
+         * Partial specialization to optimize for the case of a 2x2 matrix.
+         *
+         * @tparam T the component type
+         */
+        template <typename T>
+        struct matrix_determinant<T, 2> {
+            constexpr T operator() (const mat<T, 2, 2>& m) const {
+                return (    m[0][0]*m[1][1]
+                          - m[1][0]*m[0][1]);
+            }
+        };
+
+        /**
+         * Partial specialization to optimize for the case of a 1x1 matrix.
+         *
+         * @tparam T the component type
+         */
+        template <typename T>
+        struct matrix_determinant<T, 1> {
+            constexpr T operator() (const mat<T, 1, 1>& m) const {
+                return m[0][0];
+            }
+        };
+    }
+
+    /**
+     * Computes the determinant of the given square matrix.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param m the matrix to compute the determinant of
+     * @return the determinant of the given matrix
+     */
+    template <typename T, std::size_t S>
+    constexpr T compute_determinant(const mat<T, S, S>& m) {
+        return detail::matrix_determinant<T, S>()(m);
+    }
+
+    /**
+     * Computes the adjugate of the given square matrix.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param m the matrix to compute the adjugate of
+     * @return the adjugate of the given matrix
+     */
+    template <typename T, std::size_t S>
+    constexpr mat<T, S, S> compute_adjugate(const mat<T, S, S>& m) {
+        mat<T, S, S> result;
+        for (size_t c = 0; c < S; c++) {
+            for (size_t r = 0; r < S; r++) {
+                const auto f = static_cast<T>((c + r) % 2 == 0 ? 1.0 : -1.0);
+                result[r][c] = f * compute_determinant(extract_minor(m, r, c)); // transpose the matrix on the fly
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Inverts the given square matrix if possible.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param m the matrix to invert
+     * @return a pair of a boolean and a matrix such that the boolean indicates whether the
+     * matrix is invertible, and if so, the matrix is the inverted given matrix
+     */
+    template <typename T, std::size_t S>
+    constexpr std::tuple<bool, mat<T, S, S>> invert(const mat<T, S, S>& m) {
+        const auto det = compute_determinant(m);
+        const auto invertible = (det != static_cast<T>(0.0));
+        if (!invertible) {
+            return { false, mat<T, S, S>::identity() };
+        } else {
+            return { true, compute_adjugate(m) / det };
+        }
+    }
+
+    namespace detail {
+        /**
+         * Finds an LUP decomposition of matrix a.
+         *
+         * Given A, finds P,L,U satisfying PA=LU where P is a permutation matrix,
+         * where L is lower-triangular with the diagonal elements set to 1,
+         * U is upper-triangular.
+         *
+         * The permutation matrix is returned in a compressed form where each element of the vector represents a row of
+         * the permutation matrix, and a value of `i` means the `i`th column of that row is set to 1.
+         *
+         * From "LUP-Decomposition", Introduction to Algorithms by Cormen et. al., 2nd. ed. p752.
+         *
+         * @tparam T the component type
+         * @tparam S the number of components
+         * @param a the matrix to decompose
+         * @return {true, L and U packed into a single matrix, compressed permutation matrix}
+         *         or {false, unspecified, unspecified} if a decomposition doesn't exist.
+         */
+        template <typename T, std::size_t S>
+        constexpr std::tuple<bool, mat<T,S,S>, vec<size_t,S>> lup_find_decomposition(mat<T,S,S> a) {
+            vec<size_t, S> pi;
+            for (std::size_t i = 0; i < S; ++i) {
+                pi[i] = i;
+            }
+            for (std::size_t k = 0; k < S; ++k) {
+                T p(0);
+                std::size_t kPrime = 0;
+                for (std::size_t i = k; i < S; ++i) {
+                    if (vm::abs(a[k][i]) > p) {
+                        p = vm::abs(a[k][i]);
+                        kPrime = i;
+                    }
+                }
+                if (p == 0) {
+                    return { false, mat<T,S,S>(), vec<size_t,S>() };
+                }
+                swap(pi[k], pi[kPrime]);
+                for (std::size_t i = 0; i < S; ++i) {
+                    swap(a[i][k], a[i][kPrime]);
+                }
+                for (std::size_t i = k + 1; i < S; ++i) {
+                    a[k][i] = a[k][i] / a[k][k];
+                    for (size_t j = k + 1; j < S; ++j) {
+                        a[j][i] = a[j][i] - a[k][i] * a[j][k];
+                    }
+                }
+            }
+            return { true, a, pi };
+        }
+
+        /**
+         * Solves a system of equations given an LUP factorization.
+         *
+         * From "LUP-Solve", Introduction to Algorithms by Cormen et. al., 2nd. ed. p745.
+         *
+         * @tparam T the component type
+         * @tparam S the number of components
+         * @param lu the LU factorization packed into a single matrix; see lupDecomposition()
+         * @param pi the permutation matrix packed into a vector; see lupDecomposition()
+         * @param b the target value in the system of equations a*x=b
+         * @return the solution value x in the system of equations a*x=b
+         */
+        template <typename T, std::size_t S>
+        constexpr vec<T,S> lup_solve_internal(const mat<T,S,S>& lu, const vec<size_t,S>& pi, const vec<T,S>& b) {
+            vec<T, S> x;
+            vec<T, S> y;
+            for (size_t i = 0; i < S; ++i) {
+                T sum = T(0);
+                for (size_t j = 0; j + 1 <= i; ++j) {
+                    sum += lu[j][i] * y[j];
+                }
+                y[i] = b[pi[i]] - sum;
+            }
+            for (size_t i = S - 1; i < S; --i) {
+                T sum = T(0);
+                for (size_t j = i+1; j < S; ++j) {
+                    sum += lu[j][i] * x[j];
+                }
+                x[i] = (y[i] - sum) / lu[i][i];
+            }
+            return x;
+        }
+    }
+
+    /**
+     * Solves a system of equations expressed as a*x=b, using LU factorization with pivoting.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param a square matrix
+     * @param b column vector
+     * @return either {true, x such that a*x=b} or {false, unspecified} if no solution could be found
+     */
+    template <typename T, std::size_t S>
+    constexpr std::tuple<bool, vec<T,S>> lup_solve(const mat<T,S,S>& a, const vec<T,S>& b) {
+        auto [success, lu, pi] = detail::lup_find_decomposition(a);
+        if (!success) {
+            return std::make_tuple(false, vec<T,S>());
+        }
+        return std::make_tuple(true, detail::lup_solve_internal(lu, pi, b));
     }
 }
 

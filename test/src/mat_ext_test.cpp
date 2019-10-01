@@ -27,6 +27,39 @@
 #include "test_utils.h"
 
 namespace vm {
+    TEST(mat_test, stripTranslation) {
+        const vec3d v(2.0, 3.0, 4.0);
+        const mat4x4d t = translationMatrix(v);
+        const mat4x4d r = rotationMatrix(toRadians(15.0), toRadians(30.0), toRadians(45.0));
+        ASSERT_EQ(r, stripTranslation(r * t));
+        ASSERT_EQ(r, stripTranslation(t * r));
+    }
+
+    TEST(mat_test, pointsTransformationMatrix) {
+        const vec3d in[3] = {{2.0, 0.0, 0.0},
+                             {4.0, 0.0, 0.0},
+                             {2.0, 2.0, 0.0}};
+
+        constexpr auto M = translationMatrix(vec3d(100.0, 100.0, 100.0)) * scalingMatrix(vec3d(2.0, 2.0, 2.0)) * rotationMatrix(vec3d::pos_z(), toRadians(90.0));
+
+        vec3d out[3];
+        for (size_t i=0; i<3; ++i) {
+            out[i] = M * in[i];
+        }
+
+        // in[0]: 0,2,0, then 0,4,0, then 100, 104, 100
+        // in[1]: 0,4,0, then 0,8,0, then 100, 108, 100
+        // in[2]: -2,2,0, then -4,4,0, then 96, 104, 100
+
+        constexpr auto M2 = pointsTransformationMatrix(in[0], in[1], in[2], out[0], out[1], out[2]);
+        vec3d test[3];
+        for (size_t i=0; i<3; ++i) {
+            test[i] = M2 * in[i];
+
+            EXPECT_VEC_EQ(out[i], test[i]);
+        }
+    }
+
     TEST(MatTest, rightMultiplyWithListOfVectors) {
         std::vector<vec4d> v;
         v.push_back(vec4d(1.0, 2.0, 3.0, 1.0));
