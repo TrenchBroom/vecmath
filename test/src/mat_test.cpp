@@ -21,9 +21,8 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/mat.h>
-#include <vecmath/mat_ext.h>
 #include <vecmath/vec.h>
-#include <vecmath/quat.h>
+// #include <vecmath/quat.h>
 
 #include "test_utils.h"
 
@@ -31,205 +30,289 @@
 #include <ctime>
 
 namespace vm {
-    TEST(MatTest, zeroMatrix) {
-        ASSERT_EQ(
+    TEST(mat_test, constructor_default) {
+        CER_ASSERT_MAT_EQ(mat4x4d::identity(), mat4x4d());
+    }
+
+    TEST(mat_test, constructor_initializer_list) {
+        constexpr auto m1 = mat3x3d({
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            7.0, 8.0, 9.0
+        });
+        CER_ASSERT_DOUBLE_EQ(1.0, m1[0][0])
+        CER_ASSERT_DOUBLE_EQ(2.0, m1[1][0])
+        CER_ASSERT_DOUBLE_EQ(3.0, m1[2][0])
+        CER_ASSERT_DOUBLE_EQ(4.0, m1[0][1])
+        CER_ASSERT_DOUBLE_EQ(5.0, m1[1][1])
+        CER_ASSERT_DOUBLE_EQ(6.0, m1[2][1])
+        CER_ASSERT_DOUBLE_EQ(7.0, m1[0][2])
+        CER_ASSERT_DOUBLE_EQ(8.0, m1[1][2])
+        CER_ASSERT_DOUBLE_EQ(9.0, m1[2][2])
+
+        constexpr auto m2 = mat<double, 4, 3>({
+             1.0,  2.0,  3.0,
+             4.0,  5.0,  6.0,
+             7.0,  8.0,  9.0,
+            10.0, 11.0, 12.0
+        });
+        CER_ASSERT_DOUBLE_EQ( 1.0, m2[0][0])
+        CER_ASSERT_DOUBLE_EQ( 2.0, m2[1][0])
+        CER_ASSERT_DOUBLE_EQ( 3.0, m2[2][0])
+        CER_ASSERT_DOUBLE_EQ( 4.0, m2[0][1])
+        CER_ASSERT_DOUBLE_EQ( 5.0, m2[1][1])
+        CER_ASSERT_DOUBLE_EQ( 6.0, m2[2][1])
+        CER_ASSERT_DOUBLE_EQ( 7.0, m2[0][2])
+        CER_ASSERT_DOUBLE_EQ( 8.0, m2[1][2])
+        CER_ASSERT_DOUBLE_EQ( 9.0, m2[2][2])
+        CER_ASSERT_DOUBLE_EQ(10.0, m2[0][3])
+        CER_ASSERT_DOUBLE_EQ(11.0, m2[1][3])
+        CER_ASSERT_DOUBLE_EQ(12.0, m2[2][3])
+    }
+
+    TEST(mat_test, componentwise_constructor_with_matching_type) {
+        constexpr auto m1 = mat3x3d(
+            1.0, 2.0, 3.0,
+            4.0, 5.0, 6.0,
+            7.0, 8.0, 9.0
+        );
+        CER_ASSERT_DOUBLE_EQ(1.0, m1[0][0])
+        CER_ASSERT_DOUBLE_EQ(2.0, m1[1][0])
+        CER_ASSERT_DOUBLE_EQ(3.0, m1[2][0])
+        CER_ASSERT_DOUBLE_EQ(4.0, m1[0][1])
+        CER_ASSERT_DOUBLE_EQ(5.0, m1[1][1])
+        CER_ASSERT_DOUBLE_EQ(6.0, m1[2][1])
+        CER_ASSERT_DOUBLE_EQ(7.0, m1[0][2])
+        CER_ASSERT_DOUBLE_EQ(8.0, m1[1][2])
+        CER_ASSERT_DOUBLE_EQ(9.0, m1[2][2])
+
+        constexpr auto m2 = mat<double, 4, 3>(
+             1.0,  2.0,  3.0,
+             4.0,  5.0,  6.0,
+             7.0,  8.0,  9.0,
+            10.0, 11.0, 12.0
+        );
+        CER_ASSERT_DOUBLE_EQ( 1.0, m2[0][0])
+        CER_ASSERT_DOUBLE_EQ( 2.0, m2[1][0])
+        CER_ASSERT_DOUBLE_EQ( 3.0, m2[2][0])
+        CER_ASSERT_DOUBLE_EQ( 4.0, m2[0][1])
+        CER_ASSERT_DOUBLE_EQ( 5.0, m2[1][1])
+        CER_ASSERT_DOUBLE_EQ( 6.0, m2[2][1])
+        CER_ASSERT_DOUBLE_EQ( 7.0, m2[0][2])
+        CER_ASSERT_DOUBLE_EQ( 8.0, m2[1][2])
+        CER_ASSERT_DOUBLE_EQ( 9.0, m2[2][2])
+        CER_ASSERT_DOUBLE_EQ(10.0, m2[0][3])
+        CER_ASSERT_DOUBLE_EQ(11.0, m2[1][3])
+        CER_ASSERT_DOUBLE_EQ(12.0, m2[2][3])
+    }
+
+    TEST(mat_test, componentwise_constructor_with_mixed_types) {
+        constexpr auto m1 = mat3x3d(
+            1.0f, 2.0, 3,
+            4.0f, 5.0, 6,
+            7.0f, 8.0, 9
+        );
+        CER_ASSERT_DOUBLE_EQ(1.0, m1[0][0])
+        CER_ASSERT_DOUBLE_EQ(2.0, m1[1][0])
+        CER_ASSERT_DOUBLE_EQ(3.0, m1[2][0])
+        CER_ASSERT_DOUBLE_EQ(4.0, m1[0][1])
+        CER_ASSERT_DOUBLE_EQ(5.0, m1[1][1])
+        CER_ASSERT_DOUBLE_EQ(6.0, m1[2][1])
+        CER_ASSERT_DOUBLE_EQ(7.0, m1[0][2])
+        CER_ASSERT_DOUBLE_EQ(8.0, m1[1][2])
+        CER_ASSERT_DOUBLE_EQ(9.0, m1[2][2])
+
+        constexpr auto m2 = mat<double, 4, 3>(
+             1.0f,  2.0,  3,
+             4.0f,  5.0,  6,
+             7.0f,  8.0,  9,
+            10.0f, 11.0, 12
+        );
+        CER_ASSERT_DOUBLE_EQ( 1.0, m2[0][0])
+        CER_ASSERT_DOUBLE_EQ( 2.0, m2[1][0])
+        CER_ASSERT_DOUBLE_EQ( 3.0, m2[2][0])
+        CER_ASSERT_DOUBLE_EQ( 4.0, m2[0][1])
+        CER_ASSERT_DOUBLE_EQ( 5.0, m2[1][1])
+        CER_ASSERT_DOUBLE_EQ( 6.0, m2[2][1])
+        CER_ASSERT_DOUBLE_EQ( 7.0, m2[0][2])
+        CER_ASSERT_DOUBLE_EQ( 8.0, m2[1][2])
+        CER_ASSERT_DOUBLE_EQ( 9.0, m2[2][2])
+        CER_ASSERT_DOUBLE_EQ(10.0, m2[0][3])
+        CER_ASSERT_DOUBLE_EQ(11.0, m2[1][3])
+        CER_ASSERT_DOUBLE_EQ(12.0, m2[2][3])
+    }
+
+    TEST(mat_test, converting_constructor) {
+        constexpr auto from = mat4x4d(
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            7, 6, 5, 4,
+            3, 2, 1, 0);
+        constexpr auto to = mat4x4f(
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            7, 6, 5, 4,
+            3, 2, 1, 0);
+        CER_ASSERT_EQ(to, mat4x4f(from));
+    }
+
+        TEST(mat_test, fill) {
+        CER_ASSERT_EQ(
+            mat4x4f(
+                1, 1, 1, 1,
+                1, 1, 1, 1,
+                1, 1, 1, 1,
+                1, 1, 1, 1),
+            mat4x4f::fill(1.0f))
+        CER_ASSERT_EQ(
+            mat4x4f(
+                -2, -2, -2, -2,
+                -2, -2, -2, -2,
+                -2, -2, -2, -2,
+                -2, -2, -2, -2),
+            mat4x4f::fill(-2.0f))
+    }
+
+    TEST(mat_test, identity) {
+        CER_ASSERT_EQ(
+            mat4x4f(
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1),
+            mat4x4f::identity())
+    }
+
+    TEST(mat_test, zero) {
+        CER_ASSERT_EQ(
             mat4x4f(
                 0, 0, 0, 0,
                 0, 0, 0, 0,
                 0, 0, 0, 0,
                 0, 0, 0, 0),
-            mat4x4f::zero);
+            mat4x4f::zero())
     }
 
-    TEST(MatTest, identityMatrix) {
-        ASSERT_EQ(
-            mat4x4f(
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1),
-            mat4x4f::identity);
-        ASSERT_EQ(
-            mat4x4f(
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1),
-            mat4x4f::identityMatrix());
+    TEST(mat_test, rotate_x_90_cw) {
+        constexpr auto m = mat4x4d::rot_90_x_cw();
+        constexpr auto v = vec4d::pos_y();
+        CER_ASSERT_VEC_EQ(vec4d::neg_z(), m * v)
     }
 
-    TEST(MatTest, rot90XCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_x_cw;
-        const vec4d& v = vec4d::pos_y;
-        ASSERT_VEC_EQ(vec4d::neg_z, m * v);
+    TEST(mat_test, rotate_y_90_cw) {
+        constexpr auto m = mat4x4d::rot_90_y_cw();
+        constexpr auto v = vec4d::pos_x();
+        CER_ASSERT_VEC_EQ(vec4d::pos_z(), m * v)
     }
 
-    TEST(MatTest, rot90YCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_y_cw;
-        const vec4d& v = vec4d::pos_x;
-        ASSERT_VEC_EQ(vec4d::pos_z, m * v);
+    TEST(mat_test, rotate_z_90_cw) {
+        constexpr auto m = mat4x4d::rot_90_z_cw();
+        constexpr auto v = vec4d::pos_y();
+        CER_ASSERT_VEC_EQ(vec4d::pos_x(), m * v)
     }
 
-    TEST(MatTest, rot90ZCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_z_cw;
-        const vec4d& v = vec4d::pos_y;
-        ASSERT_VEC_EQ(vec4d::pos_x, m * v);
+    TEST(mat_test, rotate_x_90_ccw) {
+        constexpr auto m = mat4x4d::rot_90_x_ccw();
+        constexpr auto v = vec4d::pos_y();
+        CER_ASSERT_VEC_EQ(vec4d::pos_z(), m * v)
     }
 
-    TEST(MatTest, rot90XCCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_x_ccw;
-        const vec4d& v = vec4d::pos_y;
-        ASSERT_VEC_EQ(vec4d::pos_z, m * v);
+    TEST(mat_test, rotate_y_90_ccw) {
+        constexpr auto m = mat4x4d::rot_90_y_ccw();
+        constexpr auto v = vec4d::pos_x();
+        CER_ASSERT_VEC_EQ(vec4d::neg_z(), m * v)
     }
 
-    TEST(MatTest, rot90YCCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_y_ccw;
-        const vec4d& v = vec4d::pos_x;
-        ASSERT_VEC_EQ(vec4d::neg_z, m * v);
+    TEST(mat_test, rotate_z_90_ccw) {
+        constexpr auto m = mat4x4d::rot_90_z_ccw();
+        constexpr auto v = vec4d::pos_x();
+        CER_ASSERT_VEC_EQ(vec4d::pos_y(), m * v)
     }
 
-    TEST(MatTest, rot90ZCCWMatrix) {
-        const mat4x4d& m = mat4x4d::rot_90_z_ccw;
-        const vec4d& v = vec4d::pos_x;
-        ASSERT_VEC_EQ(vec4d::pos_y, m * v);
+    TEST(mat_test, rotate_x_180) {
+        constexpr auto m = mat4x4d::rot_180_x();
+        constexpr auto v = vec4d::pos_y();
+        CER_ASSERT_VEC_EQ(vec4d::neg_y(), m * v)
     }
 
-    TEST(MatTest, rot180XMatrix) {
-        const mat4x4d& m = mat4x4d::rot_180_x;
-        const vec4d& v = vec4d::pos_y;
-        ASSERT_VEC_EQ(vec4d::neg_y, m * v);
+    TEST(mat_test, rotate_y_180) {
+        constexpr auto m = mat4x4d::rot_180_y();
+        constexpr auto v = vec4d::pos_x();
+        CER_ASSERT_VEC_EQ(vec4d::neg_x(), m * v)
     }
 
-    TEST(MatTest, rot180YMatrix) {
-        const mat4x4d& m = mat4x4d::rot_180_y;
-        const vec4d& v = vec4d::pos_x;
-        ASSERT_VEC_EQ(vec4d::neg_x, m * v);
+    TEST(mat_test, rotate_z_180) {
+        constexpr auto m = mat4x4d::rot_180_z();
+        constexpr auto v = vec4d::pos_y();
+        CER_ASSERT_VEC_EQ(vec4d::neg_y(), m * v)
     }
 
-    TEST(MatTest, rot180ZMatrix) {
-        const mat4x4d& m = mat4x4d::rot_180_z;
-        const vec4d& v = vec4d::pos_y;
-        ASSERT_VEC_EQ(vec4d::neg_y, m * v);
+    TEST(mat_test, mirror_x) {
+        constexpr auto m = mat4x4d::mirror_x();
+        constexpr auto v = vec4d(1.0, 1.0, 1.0, 0.0);
+        CER_ASSERT_VEC_EQ(vec4d(-1.0, 1.0, 1.0, 0.0), m * v)
     }
 
-    TEST(MatTest, mirXMatrix) {
-        const mat4x4d& m = mat4x4d::mirror_x;
-        const vec4d v(1.0, 1.0, 1.0, 0.0);
-        ASSERT_VEC_EQ(vec4d(-1.0, 1.0, 1.0, 0.0), m * v);
+    TEST(mat_test, mirror_y) {
+        constexpr auto m = mat4x4d::mirror_y();
+        constexpr auto v = vec4d(1.0, 1.0, 1.0, 0.0);
+        CER_ASSERT_VEC_EQ(vec4d(1.0, -1.0, 1.0, 0.0), m * v)
     }
 
-    TEST(MatTest, mirYMatrix) {
-        const mat4x4d& m = mat4x4d::mirror_y;
-        const vec4d v(1.0, 1.0, 1.0, 0.0);
-        ASSERT_VEC_EQ(vec4d(1.0, -1.0, 1.0, 0.0), m * v);
+    TEST(mat_test, mirror_z) {
+        constexpr auto m = mat4x4d::mirror_z();
+        constexpr auto v = vec4d(1.0, 1.0, 1.0, 0.0);
+        CER_ASSERT_VEC_EQ(vec4d(1.0, 1.0, -1.0, 0.0), m * v)
     }
 
-    TEST(MatTest, mirZMatrix) {
-        const mat4x4d& m = mat4x4d::mirror_z;
-        const vec4d v(1.0, 1.0, 1.0, 0.0);
-        ASSERT_VEC_EQ(vec4d(1.0, 1.0, -1.0, 0.0), m * v);
+    TEST(mat_test, zero_out_x) {
+        constexpr auto m = mat4x4d::zero_out<0>();
+        constexpr vec4d v(1.0, 1.0, 1.0, 1.0);
+        CER_ASSERT_VEC_EQ(vec4d(0.0, 1.0, 1.0, 1.0), m * v)
     }
 
-    TEST(MatTest, zeroXMatrix) {
-        const mat4x4d& m = mat4x4d::zero_x;
-        const vec4d v(1.0, 1.0, 1.0, 1.0);
-        ASSERT_VEC_EQ(vec4d(0.0, 1.0, 1.0, 1.0), m * v);
+    TEST(mat_test, zero_out_y) {
+        constexpr auto m = mat4x4d::zero_out<1>();
+        constexpr vec4d v(1.0, 1.0, 1.0, 1.0);
+        CER_ASSERT_VEC_EQ(vec4d(1.0, 0.0, 1.0, 1.0), m * v)
     }
 
-    TEST(MatTest, zeroYMatrix) {
-        const mat4x4d& m = mat4x4d::zero_y;
-        const vec4d v(1.0, 1.0, 1.0, 1.0);
-        ASSERT_VEC_EQ(vec4d(1.0, 0.0, 1.0, 1.0), m * v);
+    TEST(mat_test, zero_out_z) {
+        constexpr auto m = mat4x4d::zero_out<2>();
+        constexpr vec4d v(1.0, 1.0, 1.0, 1.0);
+        CER_ASSERT_VEC_EQ(vec4d(1.0, 1.0, 0.0, 1.0), m * v)
     }
 
-    TEST(MatTest, zeroZMatrix) {
-        const mat4x4d& m = mat4x4d::zero_z;
-        const vec4d v(1.0, 1.0, 1.0, 1.0);
-        ASSERT_VEC_EQ(vec4d(1.0, 1.0, 0.0, 1.0), m * v);
-    }
-
-    TEST(MatTest, fill) {
-        ASSERT_EQ(
-            mat3x3d(
-                3, 3, 3,
-                3, 3, 3,
-                3, 3, 3),
-            mat3x3d::fill(3.0));
-    }
-
-    TEST(MatTest, defaultConstructor) {
-        const mat4x4d m;
-        ASSERT_MAT_EQ(mat4x4d::identity, m);
-    }
-
-    TEST(MatTest, conversionConstructor) {
-        const mat4x4d from(
+    TEST(mat_test, operator_subscript) {
+        constexpr auto m =  mat4x4d(
             1, 2, 3, 4,
             5, 6, 7, 8,
             7, 6, 5, 4,
             3, 2, 1, 0);
-        const mat4x4f to(
-            1, 2, 3, 4,
-            5, 6, 7, 8,
-            7, 6, 5, 4,
-            3, 2, 1, 0);
-        ASSERT_EQ(to, mat4x4f(from));
+
+        CER_ASSERT_DOUBLE_EQ(m.v[0][0], m[0][0])
+        CER_ASSERT_DOUBLE_EQ(m.v[0][1], m[0][1])
+        CER_ASSERT_DOUBLE_EQ(m.v[0][2], m[0][2])
+        CER_ASSERT_DOUBLE_EQ(m.v[0][3], m[0][3])
+
+        CER_ASSERT_DOUBLE_EQ(m.v[1][0], m[1][0])
+        CER_ASSERT_DOUBLE_EQ(m.v[1][1], m[1][1])
+        CER_ASSERT_DOUBLE_EQ(m.v[1][2], m[1][2])
+        CER_ASSERT_DOUBLE_EQ(m.v[1][3], m[1][3])
+
+        CER_ASSERT_DOUBLE_EQ(m.v[2][0], m[2][0])
+        CER_ASSERT_DOUBLE_EQ(m.v[2][1], m[2][1])
+        CER_ASSERT_DOUBLE_EQ(m.v[2][2], m[2][2])
+        CER_ASSERT_DOUBLE_EQ(m.v[2][3], m[2][3])
+
+        CER_ASSERT_DOUBLE_EQ(m.v[3][0], m[3][0])
+        CER_ASSERT_DOUBLE_EQ(m.v[3][1], m[3][1])
+        CER_ASSERT_DOUBLE_EQ(m.v[3][2], m[3][2])
+        CER_ASSERT_DOUBLE_EQ(m.v[3][3], m[3][3])
     }
 
-    TEST(MatTest, 3x3Constructor) {
-        const mat3x3d m(
-            1.0, 2.0, 3.0,
-            4.0, 5.0, 6.0,
-            7.0, 8.0, 9.0);
-        ASSERT_DOUBLE_EQ(1.0, m[0][0]);
-        ASSERT_DOUBLE_EQ(2.0, m[1][0]);
-        ASSERT_DOUBLE_EQ(3.0, m[2][0]);
-        ASSERT_DOUBLE_EQ(4.0, m[0][1]);
-        ASSERT_DOUBLE_EQ(5.0, m[1][1]);
-        ASSERT_DOUBLE_EQ(6.0, m[2][1]);
-        ASSERT_DOUBLE_EQ(7.0, m[0][2]);
-        ASSERT_DOUBLE_EQ(8.0, m[1][2]);
-        ASSERT_DOUBLE_EQ(9.0, m[2][2]);
-    }
-
-    TEST(MatTest, 4x4Constructor) {
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                        13.0, 14.0, 15.0, 16.0);
-        ASSERT_DOUBLE_EQ( 1.0, m[0][0]);
-        ASSERT_DOUBLE_EQ( 2.0, m[1][0]);
-        ASSERT_DOUBLE_EQ( 3.0, m[2][0]);
-        ASSERT_DOUBLE_EQ( 4.0, m[3][0]);
-        ASSERT_DOUBLE_EQ( 5.0, m[0][1]);
-        ASSERT_DOUBLE_EQ( 6.0, m[1][1]);
-        ASSERT_DOUBLE_EQ( 7.0, m[2][1]);
-        ASSERT_DOUBLE_EQ( 8.0, m[3][1]);
-        ASSERT_DOUBLE_EQ( 9.0, m[0][2]);
-        ASSERT_DOUBLE_EQ(10.0, m[1][2]);
-        ASSERT_DOUBLE_EQ(11.0, m[2][2]);
-        ASSERT_DOUBLE_EQ(12.0, m[3][2]);
-        ASSERT_DOUBLE_EQ(13.0, m[0][3]);
-        ASSERT_DOUBLE_EQ(14.0, m[1][3]);
-        ASSERT_DOUBLE_EQ(15.0, m[2][3]);
-        ASSERT_DOUBLE_EQ(16.0, m[3][3]);
-    }
-
-    TEST(MatTest, subscript) {
-        const mat4x4d m(
-            1, 2, 3, 4,
-            5, 6, 7, 8,
-            7, 6, 5, 4,
-            3, 2, 1, 0);
-        for (size_t c = 0; c < 4; ++c) {
-            for (size_t r = 0; r < 4; ++r) {
-                ASSERT_DOUBLE_EQ(m.v[c][r], m[c][r]);
-            }
-        }
-    }
-
-    TEST(MatTest, compare) {
-        ASSERT_TRUE(
+    TEST(mat_test, compare) {
+        CER_ASSERT_TRUE(
             compare(
                 mat4x4d(
                     1, 2, 3, 4,
@@ -242,9 +325,9 @@ namespace vm {
                     1, 2, 3, 4,
                     1, 2, 3, 4)
             ) == 0
-        );
+        )
 
-        ASSERT_TRUE(
+        CER_ASSERT_TRUE(
             compare(
                 mat4x4d(
                     1, 2, 3, 1,
@@ -257,9 +340,9 @@ namespace vm {
                     1, 2, 3, 4,
                     1, 2, 3, 4)
             ) < 0
-        );
+        )
 
-        ASSERT_TRUE(
+        CER_ASSERT_TRUE(
             compare(
                 mat4x4d(
                     1, 2, 3, 5,
@@ -272,46 +355,12 @@ namespace vm {
                     1, 2, 3, 4,
                     1, 2, 3, 4)
             ) > 0
-        );
+        )
     }
 
-    TEST(MatTest, equal) {
-        const mat4x4d m( 1,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                        13, 14, 15, 16);
-        const mat4x4d n( 1,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                        13, 14, 15, 16);
-        const mat4x4d o( 2,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                        13, 14, 15, 16);
-        ASSERT_TRUE(m == n);
-        ASSERT_FALSE(m == o);
-    }
-
-    TEST(MatTest, notEqual) {
-        const mat4x4d m( 1,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                         13, 14, 15, 16);
-        const mat4x4d n( 1,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                         13, 14, 15, 16);
-        const mat4x4d o( 2,  2,  3,  4,
-                         5,  6,  7,  8,
-                         9, 10, 11, 12,
-                         13, 14, 15, 16);
-        ASSERT_FALSE(m != n);
-        ASSERT_TRUE(m != o);
-    }
-
-    TEST(MatTest, isEqual) {
-        ASSERT_TRUE(
-            isEqual(
+    TEST(mat_test, is_equal) {
+        CER_ASSERT_TRUE(
+            is_equal(
                 mat4x4d(
                     1, 2, 3, 4,
                     1, 2, 3, 4,
@@ -324,9 +373,9 @@ namespace vm {
                     1, 2, 3, 4),
                 0.0
             )
-        );
-        ASSERT_TRUE(
-            isEqual(
+        )
+        CER_ASSERT_TRUE(
+            is_equal(
                 mat4x4d(
                     1, 2, 3, 4,
                     1, 2, 3, 4,
@@ -339,9 +388,9 @@ namespace vm {
                     1, 2, 3, 4),
                 0.1
             )
-        );
-        ASSERT_TRUE(
-            isEqual(
+        )
+        CER_ASSERT_TRUE(
+            is_equal(
                 mat4x4d(
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0,
@@ -354,9 +403,9 @@ namespace vm {
                     1.0, 2.0, 3.0, 4.0),
                 0.11
             )
-        );
-        ASSERT_TRUE(
-            isEqual(
+        )
+        CER_ASSERT_TRUE(
+            is_equal(
                 mat4x4d(
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0,
@@ -369,9 +418,9 @@ namespace vm {
                     1.0, 2.0, 3.0, 4.0),
                 0.1
             )
-        );
-        ASSERT_FALSE(
-            isEqual(
+        )
+        CER_ASSERT_FALSE(
+            is_equal(
                 mat4x4d(
                     1.0, 2.0, 3.0, 4.0,
                     1.0, 2.0, 3.0, 4.0,
@@ -384,17 +433,72 @@ namespace vm {
                     1.0, 2.0, 3.0, 4.0),
                 0.1
             )
-        );
+        )
     }
 
-    TEST(MatTest, isZero) {
-        ASSERT_TRUE(isZero(mat4x4d::zero, vm::Cd::almostZero()));
-        ASSERT_FALSE(isZero(mat4x4d::identity, vm::Cd::almostZero()));
+    TEST(mat_test, is_zero) {
+        ASSERT_TRUE(is_zero(mat4x4d::zero(), vm::Cd::almostZero()));
+        ASSERT_FALSE(is_zero(mat4x4d::identity(), vm::Cd::almostZero()));
     }
 
-    TEST(MatTest, negate) {
-        ASSERT_EQ(
+    TEST(mat_test, operator_equal) {
+        constexpr auto m = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        constexpr auto n = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        constexpr auto o = mat4x4d(
+             2,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        CER_ASSERT_TRUE(m == n)
+        CER_ASSERT_FALSE(m == o)
+    }
+
+    TEST(mat_test, operator_not_equal) {
+        constexpr auto m = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        constexpr auto n = mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        constexpr auto o = mat4x4d(
+             2,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+        CER_ASSERT_FALSE(m != n)
+        CER_ASSERT_TRUE(m != o)
+    }
+
+    TEST(mat_test, operator_unary_plus) {
+        CER_ASSERT_EQ(
+            mat4x4d(
+                +1, +2, +3, +4,
+                +1, +2, +3, +4,
+                +1, +2, +3, +4,
+                +1, +2, +3, +4),
             +mat4x4d(
+                +1, +2, +3, +4,
+                +1, +2, +3, +4,
+                +1, +2, +3, +4,
+                +1, +2, +3, +4)
+        )
+    }
+
+    TEST(mat_test, operator_unary_minus) {
+        CER_ASSERT_EQ(
+            mat4x4d(
                 -1, -2, -3, -4,
                 -1, -2, -3, -4,
                 -1, -2, -3, -4,
@@ -404,46 +508,92 @@ namespace vm {
                 +1, +2, +3, +4,
                 +1, +2, +3, +4,
                 +1, +2, +3, +4)
+        )
+    }
+
+    TEST(mat_test, operator_binary_plus) {
+        CER_ASSERT_EQ(
+            mat4x4d(
+                 3,  4,  6,  8,
+                10, 14, 14, 16,
+                18, 21, 22, 24,
+                26, 28, 30, 32
+                ),
+              mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16)
+            + mat4x4d(
+                 2,  2,  3,  4,
+                 5,  8,  7,  8,
+                 9, 11, 11, 12,
+                13, 14, 15, 16))
+    }
+
+    TEST(mat_test, operator_binary_minus) {
+        CER_ASSERT_EQ(
+            mat4x4d(
+                -1,  0,  0,  0,
+                 0, -2,  0,  0,
+                 0, -1,  0,  0,
+                 0,  0,  0,  0
+                ),
+              mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16)
+            - mat4x4d(
+                 2,  2,  3,  4,
+                 5,  8,  7,  8,
+                 9, 11, 11, 12,
+                13, 14, 15, 16))
+    }
+
+    TEST(mat_test, operator_multiply_matrix) {
+        CER_ASSERT_EQ(
+            mat4x4d(
+                 91, 107, 110, 120,
+                207, 247, 254, 280,
+                323, 387, 398, 440,
+                439, 527, 542, 600
+                ),
+              mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16)
+            * mat4x4d(
+                 2,  2,  3,  4,
+                 5,  8,  7,  8,
+                 9, 11, 11, 12,
+                13, 14, 15, 16))
+
+        constexpr auto exp = mat<double, 4, 2>(
+             39,  51,
+            103, 135,
+            167, 219,
+            231, 303
         );
+        constexpr auto lhs = mat<double, 4, 3>(
+            1,  2,  3,
+            5,  6,  7,
+            9, 10, 11,
+            13, 14, 15);
+        constexpr auto rhs = mat<double, 3, 2>(
+            2,  2,
+            5,  8,
+            9, 11);
+
+        CER_ASSERT_EQ(exp, lhs * rhs)
     }
 
-    TEST(MatTest, add) {
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                        13.0, 14.0, 15.0, 16.0);
-        const mat4x4d n( 2.0,  2.0,  3.0,  4.0,
-                         5.0,  8.0,  7.0,  8.0,
-                         9.0, 11.0, 11.0, 12.0,
-                        13.0, 14.0, 15.0, 16.0);
-        const mat4x4d o = m + n;
 
-        for (size_t c = 0; c < 4; ++c) {
-            for (size_t r = 0; r < 4; ++r) {
-                ASSERT_DOUBLE_EQ(m[c][r] + n[c][r], o[c][r]);
-            }
-        }
-    }
 
-    TEST(MatTest, subtract) {
-        const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
-                         5.0,  6.0,  7.0,  8.0,
-                         9.0, 10.0, 11.0, 12.0,
-                        13.0, 14.0, 15.0, 16.0);
-        const mat4x4d n( 2.0,  2.0,  3.0,  4.0,
-                         5.0,  8.0,  7.0,  8.0,
-                         9.0, 11.0, 11.0, 12.0,
-                        13.0, 14.0, 15.0, 16.0);
-        const mat4x4d o = m - n;
+    /*
 
-        for (size_t c = 0; c < 4; ++c) {
-            for (size_t r = 0; r < 4; ++r) {
-                ASSERT_DOUBLE_EQ(m[c][r] - n[c][r], o[c][r]);
-            }
-        }
-    }
-
-    TEST(MatTest, multiply) {
+    TEST(mat_test, multiply) {
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
@@ -460,7 +610,7 @@ namespace vm {
         ASSERT_MAT_EQ(r, o);
     }
 
-    TEST(MatTest, scalarMultiply_right) {
+    TEST(mat_test, scalarMultiply_right) {
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
@@ -474,7 +624,7 @@ namespace vm {
         }
     }
 
-    TEST(MatTest, scalarMultiply_left) {
+    TEST(mat_test, scalarMultiply_left) {
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
@@ -488,7 +638,7 @@ namespace vm {
         }
     }
 
-    TEST(MatTest, divide) {
+    TEST(mat_test, divide) {
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
@@ -502,7 +652,7 @@ namespace vm {
         }
     }
 
-    TEST(MatTest, vectorMultiply_right) {
+    TEST(mat_test, vectorMultiply_right) {
         const vec4d v(1.0, 2.0, 3.0, 1.0);
         ASSERT_VEC_EQ(v, mat4x4d::identity * v);
 
@@ -511,10 +661,10 @@ namespace vm {
                          9.0, 10.0, 11.0, 12.0,
                          13.0, 14.0, 15.0, 16.0);
         const vec4d r(18.0, 46.0, 74.0, 102.0);
-        ASSERT_VEC_EQ(r, m * v);
+        ASSERT_VEC_EQ(r, m * v)
     }
 
-    TEST(MatTest, vectorMultiply_left) {
+    TEST(mat_test, vectorMultiply_left) {
         const vec4d v(1.0, 2.0, 3.0, 1.0);
         ASSERT_VEC_EQ(v, v * mat4x4d::identity);
 
@@ -526,28 +676,28 @@ namespace vm {
         ASSERT_VEC_EQ(r, v * m);
     }
 
-    TEST(MatTest, vectorMultiply_right_2) {
+    TEST(mat_test, vectorMultiply_right_2) {
         const vec3d v(1.0, 2.0, 3.0);
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
                         13.0, 14.0, 15.0, 16.0);
         const vec4d r(18.0, 46.0, 74.0, 102.0);
-        ASSERT_VEC_EQ(toCartesianCoords(r), m * v);
+        ASSERT_VEC_EQ(to_cartesian_coords(r), m * v)
     }
 
-    TEST(MatTest, vectorMultiply_left_2) {
+    TEST(mat_test, vectorMultiply_left_2) {
         const vec3d v(1.0, 2.0, 3.0);
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
                         13.0, 14.0, 15.0, 16.0);
         const vec4d r(51.0, 58.0, 65.0, 72.0);
-        ASSERT_VEC_EQ(toCartesianCoords(r), v * m);
+        ASSERT_VEC_EQ(to_cartesian_coords(r), v * m);
     }
 
 
-    TEST(MatTest, transpose) {
+    TEST(mat_test, transpose) {
         mat<double, 4, 4> m;
         for (size_t c = 0; c < 4; ++c) {
             for (size_t r = 0; r < 4; ++r) {
@@ -555,7 +705,7 @@ namespace vm {
             }
         }
 
-        const auto t = transpose(m);
+        constexpr auto t = transpose(m);
 
         for (size_t c = 0; c < 4; ++c) {
             for (size_t r = 0; r < 4; ++r) {
@@ -564,7 +714,7 @@ namespace vm {
         }
     }
 
-    TEST(MatTest, extractMinor) {
+    TEST(mat_test, extractMinor) {
         const mat4x4d m( 1.0,  2.0,  3.0,  4.0,
                          5.0,  6.0,  7.0,  8.0,
                          9.0, 10.0, 11.0, 12.0,
@@ -587,7 +737,7 @@ namespace vm {
         ASSERT_MAT_EQ(m21, extractMinor(m, 2, 1));
     }
 
-    TEST(MatTest, determinant) {
+    TEST(mat_test, determinant) {
         const mat4x4d m1( 1.0,  2.0,  3.0,  4.0,
                           5.0,  6.0,  7.0,  8.0,
                           9.0, 10.0, 11.0, 12.0,
@@ -607,7 +757,7 @@ namespace vm {
         ASSERT_DOUBLE_EQ(-418.0, computeDeterminant(m3));
     }
 
-    TEST(MatTest, computeAdjugate) {
+    TEST(mat_test, computeAdjugate) {
         const mat4x4d m1( 1.0,  2.0,  3.0,  4.0,
                           5.0,  6.0,  7.0,  8.0,
                           9.0, 10.0, 11.0, 12.0,
@@ -655,7 +805,7 @@ namespace vm {
         ASSERT_FALSE(invertible);
     }
 
-    TEST(MatTest, invert) {
+    TEST(mat_test, invert) {
         const mat4x4d m1( 1.0,  2.0,  3.0,  4.0,
                           5.0,  6.0,  7.0,  8.0,
                           9.0, 10.0, 11.0, 12.0,
@@ -684,7 +834,7 @@ namespace vm {
         ASSERT_NOT_INVERTIBLE(m1);
     }
 
-    TEST(MatTest, stripTranslation) {
+    TEST(mat_test, stripTranslation) {
         const vec3d v(2.0, 3.0, 4.0);
         const mat4x4d t = translationMatrix(v);
         const mat4x4d r = rotationMatrix(toRadians(15.0), toRadians(30.0), toRadians(45.0));
@@ -692,10 +842,10 @@ namespace vm {
         ASSERT_EQ(r, stripTranslation(t * r));
     }
 
-    TEST(MatTest, lupSolve) {
-        const auto A = rotationMatrix(0.1, 0.2, 0.3) * translationMatrix(vec3d(100.0, 100.0, 100.0));
-        const auto x = vec4d(20, -60, 32, 1);
-        const auto b = A * x;
+    TEST(mat_test, lupSolve) {
+        constexpr auto A = rotationMatrix(0.1, 0.2, 0.3) * translationMatrix(vec3d(100.0, 100.0, 100.0));
+        constexpr auto x = vec4d(20, -60, 32, 1);
+        constexpr auto b = A * x;
 
         // solve for x
         auto [success, x2] = lupSolve(A, b);
@@ -704,12 +854,12 @@ namespace vm {
         EXPECT_VEC_EQ(b, A * x2);
     }
 
-    TEST(MatTest, pointsTransformationMatrix) {
+    TEST(mat_test, pointsTransformationMatrix) {
         const vec3d in[3] = {{2.0, 0.0, 0.0},
                              {4.0, 0.0, 0.0},
                              {2.0, 2.0, 0.0}};
 
-        const auto M = translationMatrix(vec3d(100.0, 100.0, 100.0)) * scalingMatrix(vec3d(2.0, 2.0, 2.0)) * rotationMatrix(vec3d::pos_z, toRadians(90.0));
+        constexpr auto M = translationMatrix(vec3d(100.0, 100.0, 100.0)) * scalingMatrix(vec3d(2.0, 2.0, 2.0)) * rotationMatrix(vec3d::pos_z(), toRadians(90.0));
 
         vec3d out[3];
         for (size_t i=0; i<3; ++i) {
@@ -720,7 +870,7 @@ namespace vm {
         // in[1]: 0,4,0, then 0,8,0, then 100, 108, 100
         // in[2]: -2,2,0, then -4,4,0, then 96, 104, 100
 
-        const auto M2 = pointsTransformationMatrix(in[0], in[1], in[2], out[0], out[1], out[2]);
+        constexpr auto M2 = pointsTransformationMatrix(in[0], in[1], in[2], out[0], out[1], out[2]);
         vec3d test[3];
         for (size_t i=0; i<3; ++i) {
             test[i] = M2 * in[i];
@@ -728,4 +878,5 @@ namespace vm {
             EXPECT_VEC_EQ(out[i], test[i]);
         }
     }
+     */
 }

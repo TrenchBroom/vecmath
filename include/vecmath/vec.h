@@ -22,7 +22,7 @@ along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 
 #include "constants.h"
 #include "scalar.h"
-#include "utils.h"
+#include "util.h"
 
 #include <array>
 #include <cassert>
@@ -74,7 +74,7 @@ namespace vm {
          *
          * @param values the values
          */
-        constexpr explicit vec(std::initializer_list<T> values) :
+        constexpr vec(std::initializer_list<T> values) :
             v{ to_array<T,S>(values) } {}
 
         /**
@@ -130,7 +130,7 @@ namespace vm {
          * @param value the value to set
          * @return the newly created vector
          */
-        static constexpr vec<T,S> fill(const T value) {
+        static constexpr vec<T, S> fill(const T value) {
             vec<T,S> result;
             for (size_t i = 0; i < S; ++i) {
                 result[i] = value;
@@ -144,7 +144,7 @@ namespace vm {
          * @param index the index of the component to set to 1
          * @return the newly created vector
          */
-        static constexpr vec<T,S> axis(const std::size_t index) {
+        static constexpr vec<T, S> axis(const std::size_t index) {
             vec<T,S> axis;
             axis[index] = static_cast<T>(1.0);
             return axis;
@@ -172,13 +172,12 @@ namespace vm {
             return v[i];
         }
 
-
         /**
          * Returns the value of the first component.
          *
          * @return the value of the first component
          */
-        template <size_t SS = S>
+        template <std::size_t SS = S>
         constexpr T x(typename std::enable_if<SS >= 1>::type* = nullptr) const {
             static_assert(S > 0);
             return v[0];
@@ -189,7 +188,7 @@ namespace vm {
          *
          * @return the value of the second component
          */
-        template <size_t SS = S>
+        template <std::size_t SS = S>
         constexpr T y(typename std::enable_if<SS >= 2>::type* = nullptr) const {
             static_assert(S > 1);
             return v[1];
@@ -200,7 +199,7 @@ namespace vm {
          *
          * @return the value of the third component
          */
-        template <size_t SS = S>
+        template <std::size_t SS = S>
         constexpr T z (typename std::enable_if<SS >= 3>::type* = nullptr) const {
             static_assert(S > 2);
             // cppcheck-suppress arrayIndexOutOfBounds
@@ -212,7 +211,7 @@ namespace vm {
          *
          * @return the value of the fourth component
          */
-        template <size_t SS = S>
+        template <std::size_t SS = S>
         constexpr T w(typename std::enable_if<SS >= 4>::type* = nullptr) const {
             static_assert(S > 3);
             // cppcheck-suppress arrayIndexOutOfBounds
@@ -269,57 +268,90 @@ namespace vm {
             return vec<T,4>(x(), y(), z(), w());
         }
     public:
-        static constexpr vec<T,S> pos_x() {
+        /**
+         * Returns a vector with the first component set to 1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> pos_x() {
             constexpr auto result = axis(0);
             return result;
         }
 
-        static constexpr vec<T,S> pos_y() {
+        /**
+         * Returns a vector with the second component set to 1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> pos_y() {
             constexpr auto result = axis(1);
             return result;
         }
 
-        static constexpr vec<T,S> pos_z() {
+        /**
+         * Returns a vector with the third component set to 1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> pos_z() {
             constexpr auto result = axis(2);
             return result;
         }
 
-        static constexpr vec<T,S> neg_x() {
+        /**
+         * Returns a vector with the first component set to -1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> neg_x() {
             constexpr auto result = -axis(0);
             return result;
         }
 
-        static constexpr vec<T,S> neg_y() {
+        /**
+         * Returns a vector with the second component set to -1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> neg_y() {
             constexpr auto result = -axis(1);
             return result;
         }
 
-        static constexpr vec<T,S> neg_z() {
+        /**
+         * Returns a vector with the third component set to -1 and all other components set to 0.
+         */
+        static constexpr vec<T, S> neg_z() {
             constexpr auto result = -axis(2);
             return result;
         }
 
-        static constexpr vec<T,S> zero() {
+        /**
+         * Returns a vector with all components set to 0.
+         */
+        static constexpr vec<T, S> zero() {
             constexpr auto result = fill(static_cast<T>(0));
             return result;
         }
 
-        static constexpr vec<T,S> one() {
+        /**
+         * Returns a vector with all components set to 1.
+         */
+        static constexpr vec<T, S> one() {
             constexpr auto result = fill(static_cast<T>(1));
             return result;
         }
 
-        static constexpr vec<T,S> nan() {
+        /**
+         * Returns a vector with all components set to NaN.
+         */
+        static constexpr vec<T, S> nan() {
             constexpr auto result = fill(std::numeric_limits<T>::quiet_NaN());
             return result;
         }
 
-        static constexpr vec<T,S> min() {
+        /**
+         * Returns a vector with all components set to the minimal possible value.
+         */
+        static constexpr vec<T, S> min() {
             constexpr auto result = fill(std::numeric_limits<T>::min());
             return result;
         }
 
-        static constexpr const vec<T,S> max() {
+        /**
+         * Returns a vector with all components set to the maximal possible value.
+         */
+        static constexpr vec<T, S> max() {
             constexpr auto result = fill(std::numeric_limits<T>::max());
             return result;
         }

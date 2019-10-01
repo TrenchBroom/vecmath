@@ -1,2 +1,2 @@
 # vecmath
-C++ compile-time vector math library
+C1R2++ compile-time vector math library

@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VECMATH_MathUtils_h
-#define VECMATH_MathUtils_h
+#ifndef VECMATH_SCALAR_h
+#define VECMATH_SCALAR_h
 
 #include "constants.h"
 

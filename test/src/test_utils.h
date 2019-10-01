@@ -22,21 +22,23 @@
 
 #include <vecmath/forward.h>
 
-#define CE_ASSERT_TRUE(expr) { constexpr auto r = (expr); ASSERT_TRUE(r); }
-#define CE_ASSERT_FALSE(expr) { constexpr auto r = (expr); ASSERT_FALSE(r); }
-#define CE_ASSERT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_EQ((exp), r); }
-#define CE_ASSERT_NE(exp, expr) { constexpr auto r = (expr); ASSERT_NE((exp), r); }
-#define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_FLOAT_EQ((exp), r); }
-#define CE_ASSERT_DOUBLE_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_DOUBLE_EQ((exp), r); }
-#define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto r = (expr); ASSERT_VEC_EQ((exp), r); }
+#define CE_ASSERT_TRUE(expr) { constexpr auto _r_r = (expr); ASSERT_TRUE(_r_r); }
+#define CE_ASSERT_FALSE(expr) { constexpr auto _r_r = (expr); ASSERT_FALSE(_r_r); }
+#define CE_ASSERT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_EQ((exp), _r_r); }
+#define CE_ASSERT_NE(exp, expr) { constexpr auto _r_r = (expr); ASSERT_NE((exp), _r_r); }
+#define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_FLOAT_EQ((exp), _r_r); }
+#define CE_ASSERT_DOUBLE_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_DOUBLE_EQ((exp), _r_r); }
+#define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_VEC_EQ((exp), _r_r); }
+#define CE_ASSERT_MAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_MAT_EQ((exp), _r_r); }
 
-#define CER_ASSERT_TRUE(expr) ASSERT_TRUE((expr)); { constexpr auto r = (expr); ASSERT_TRUE(r); }
-#define CER_ASSERT_FALSE(expr) ASSERT_FALSE((expr)); { constexpr auto r = (expr); ASSERT_FALSE(r); }
-#define CER_ASSERT_EQ(exp, expr) ASSERT_EQ((exp), (expr)); { constexpr auto r = (expr); ASSERT_EQ((exp), r); }
-#define CER_ASSERT_NE(exp, expr) ASSERT_NE((exp), (expr)); { constexpr auto r = (expr); ASSERT_NE((exp), r); }
-#define CER_ASSERT_FLOAT_EQ(exp, expr) ASSERT_FLOAT_EQ((exp), (expr)); { constexpr auto r = (expr); ASSERT_FLOAT_EQ((exp), r); }
-#define CER_ASSERT_DOUBLE_EQ(exp, expr) ASSERT_DOUBLE_EQ((exp), (expr)); { constexpr auto r = (expr); ASSERT_DOUBLE_EQ((exp), r); }
-#define CER_ASSERT_VEC_EQ(exp, expr) ASSERT_VEC_EQ((exp), (expr)); { constexpr auto r = (expr); ASSERT_VEC_EQ((exp), r); }
+#define CER_ASSERT_TRUE(expr) ASSERT_TRUE((expr)); CE_ASSERT_TRUE((expr))
+#define CER_ASSERT_FALSE(expr) ASSERT_FALSE((expr)); CE_ASSERT_FALSE((expr))
+#define CER_ASSERT_EQ(exp, expr) ASSERT_EQ((exp), (expr)); CE_ASSERT_EQ((exp), (expr))
+#define CER_ASSERT_NE(exp, expr) ASSERT_NE((exp), (expr)); CE_ASSERT_NE((exp), (expr))
+#define CER_ASSERT_FLOAT_EQ(exp, expr) ASSERT_FLOAT_EQ((exp), (expr)); CE_ASSERT_FLOAT_EQ((exp), (expr))
+#define CER_ASSERT_DOUBLE_EQ(exp, expr) ASSERT_DOUBLE_EQ((exp), (expr)); CE_ASSERT_DOUBLE_EQ((exp), (expr))
+#define CER_ASSERT_VEC_EQ(exp, expr) ASSERT_VEC_EQ((exp), (expr)); CE_ASSERT_VEC_EQ((exp), (expr))
+#define CER_ASSERT_MAT_EQ(exp, expr) ASSERT_MAT_EQ((exp), (expr)); CE_ASSERT_MAT_EQ((exp), (expr))
 
 template <typename T, size_t S>
 void ASSERT_VEC_EQ(const vm::vec<T,S>& lhs, const vm::vec<T,S>& rhs) {
