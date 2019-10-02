@@ -710,7 +710,7 @@ namespace vm {
         struct matrix_determinant {
             constexpr T operator()(const mat<T, S, S>& m) const {
                 // Laplace after first col
-                matrix_determinant<T, S-1> determinant;
+                matrix_determinant<T, S-1> determinant {};
 
                 auto result = static_cast<T>(0.0);
                 for (std::size_t r = 0; r < S; r++) {
