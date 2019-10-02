@@ -22,7 +22,7 @@
 
 #include "vec.h"
 #include "constants.h"
-#include "constexpr_util.h"
+#include "constexpr_mat_util.h"
 
 #include <array>
 #include <cassert>

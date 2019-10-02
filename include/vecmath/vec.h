@@ -22,7 +22,7 @@ along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 
 #include "constants.h"
 #include "scalar.h"
-#include "constexpr_util.h"
+#include "constexpr_vec_util.h"
 
 #include <array>
 #include <cassert>

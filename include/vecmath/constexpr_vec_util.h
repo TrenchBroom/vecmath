@@ -22,6 +22,7 @@ along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 
 #include <array>
 #include <cstddef>
+#include <utility>
 
 namespace vm {
     namespace detail {
@@ -33,16 +34,6 @@ namespace vm {
         template <typename T, typename U, std::size_t S>
         constexpr std::array<T, S> cast_array(const std::array<U, S>& a) {
             return cast_array_helper<T>(a, std::make_index_sequence<S>{});
-        }
-
-        template <typename T, typename U, std::size_t R, std::size_t C, std::size_t... I>
-        constexpr std::array<vec<T, R>, C> cast_matrix_rows_helper(const std::array<vec<U, R>, C>& a, const std::index_sequence<I...>) {
-            return { vec<T, R>(cast_array<T>(a[I].v))... };
-        }
-
-        template <typename T, typename U, std::size_t R, std::size_t C>
-        constexpr std::array<vec<T, R>, C> cast_matrix_rows(const std::array<vec<U, R>, C>& a) {
-            return cast_matrix_rows_helper<T>(a, std::make_index_sequence<C>{});
         }
 
         template <typename T, std::size_t S1, std::size_t... I1, std::size_t S2, std::size_t... I2>
@@ -69,25 +60,6 @@ namespace vm {
         template<typename T, std::size_t S>
         constexpr std::array<T, S> to_array(std::initializer_list<T> v) {
             return to_array_helper<T, S>(v, std::make_index_sequence<S>());
-        }
-
-        template <typename T, std::size_t R, std::size_t C, std::size_t CI, std::size_t... RI>
-        constexpr std::array<T, R> to_vec_helper(
-            std::initializer_list<T> v,
-            std::index_sequence<RI...>) {
-            return { *(v.begin() + CI + RI * C)... };
-        }
-
-        template <typename T, std::size_t R, std::size_t C, std::size_t... CI>
-        constexpr std::array<vec<T, R>, C> to_vec_array_helper(
-            std::initializer_list<T> v,
-            std::index_sequence<CI...>) {
-            return { vec<T, R>(to_vec_helper<T, R, C, CI>(v, std::make_index_sequence<R>()))... };
-        }
-
-        template <typename T, std::size_t R, std::size_t C>
-        constexpr std::array<vec<T, R>, C> to_vec_array(std::initializer_list<T> v) {
-            return to_vec_array_helper<T, R, C>(v, std::make_index_sequence<C>());
         }
 
         template <std::size_t... I>

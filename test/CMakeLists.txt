@@ -12,7 +12,7 @@ target_sources(vecmath-test PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/quat_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/ray_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/scalar_test.cpp"
-        # "${CMAKE_CURRENT_SOURCE_DIR}/src/segment_test.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/segment_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/vec_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/run_all.cpp"
         )
