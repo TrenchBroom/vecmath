@@ -915,10 +915,14 @@ namespace vm {
      */
     template <typename T, std::size_t S>
     constexpr std::tuple<bool, vec<T,S>> lup_solve(const mat<T,S,S>& a, const vec<T,S>& b) {
-        auto [success, lu, pi] = detail::lup_find_decomposition(a);
+        const auto decomp = detail::lup_find_decomposition(a);
+        const auto success = std::get<0>(decomp);
         if (!success) {
             return std::make_tuple(false, vec<T,S>());
         }
+
+        const auto lu = std::get<1>(decomp);
+        const auto pi = std::get<2>(decomp);
         return std::make_tuple(true, detail::lup_solve_internal(lu, pi, b));
     }
 }
