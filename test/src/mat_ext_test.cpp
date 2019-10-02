@@ -56,6 +56,81 @@ namespace vm {
         }
     }
 
+    TEST(mat_ext_test, operator_multiply_array_right) {
+        constexpr auto v = std::array<vec4d, 3> {
+            vec4d(1, 2, 3, 1),
+            vec4d(2, 3, 4, 1),
+            vec4d(3, 2, 7, 23)
+        };
+
+        constexpr auto m = mat4x4d(
+            1,  2,  3,  4,
+            5,  6,  7,  8,
+            9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        constexpr auto r = std::array<vec4d, 3> {
+            vec4d(18, 46, 74, 102),
+            vec4d(24, 64, 104, 144),
+            vec4d(120, 260, 400, 540)
+        };
+
+        constexpr auto o = m * v;
+        CER_ASSERT_VEC_EQ(r[0], o[0])
+        CER_ASSERT_VEC_EQ(r[1], o[1])
+        CER_ASSERT_VEC_EQ(r[2], o[2])
+    }
+
+    TEST(mat_ext_test, operator_multiply_vectors_right_lower_dimension) {
+        const auto v = std::vector<vec3d> {
+            vec3d(1.0, 2.0, 3.0),
+            vec3d(2.0, 3.0, 4.0),
+            vec3d(3.0 / 23.0, 2.0 / 23.0, 7.0 / 23.0)
+        };
+
+        constexpr auto m =  mat4x4d(
+            1,  2,  3,  4,
+            5,  6,  7,  8,
+            9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        const auto r = std::vector<vec3d> {
+            to_cartesian_coords(vec4d(18, 46, 74, 102)),
+            to_cartesian_coords(vec4d(24, 64, 104, 144)),
+            to_cartesian_coords(vec4d(120, 260, 400, 540))
+        };
+
+        const auto o = m * v;
+        for (size_t i = 0; i < 3; i++) {
+            ASSERT_VEC_EQ(r[i], o[i]);
+        }
+    }
+
+    TEST(mat_ext_test, operator_multiply_array_right_lower_dimension) {
+        constexpr auto v = std::array<vec3d, 3> {
+            vec3d(1.0, 2.0, 3.0),
+            vec3d(2.0, 3.0, 4.0),
+            vec3d(3.0 / 23.0, 2.0 / 23.0, 7.0 / 23.0)
+        };
+
+        constexpr auto m =  mat4x4d(
+            1,  2,  3,  4,
+            5,  6,  7,  8,
+            9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        constexpr auto r = std::array<vec3d, 3> {
+            to_cartesian_coords(vec4d(18, 46, 74, 102)),
+            to_cartesian_coords(vec4d(24, 64, 104, 144)),
+            to_cartesian_coords(vec4d(120, 260, 400, 540))
+        };
+
+        constexpr auto o = m * v;
+        CER_ASSERT_VEC_EQ(r[0], o[0])
+        CER_ASSERT_VEC_EQ(r[1], o[1])
+        CER_ASSERT_VEC_EQ(r[2], o[2])
+    }
+
     TEST(mat_ext_test, operator_multiply_vectors_left) {
         const auto v = std::vector<vec4d> {
             vec4d(1, 2, 3, 1),
@@ -81,29 +156,29 @@ namespace vm {
         }
     }
 
-    TEST(mat_ext_test, operator_multiply_vectors_right_lower_dimension) {
-        const auto v = std::vector<vec3d> {
-            vec3d(1.0, 2.0, 3.0),
-            vec3d(2.0, 3.0, 4.0),
-            vec3d(3.0 / 23.0, 2.0 / 23.0, 7.0 / 23.0)
+    TEST(mat_ext_test, operator_multiply_array_left) {
+        constexpr auto v = std::array<vec4d, 3> {
+            vec4d(1, 2, 3, 1),
+            vec4d(2, 3, 4, 1),
+            vec4d(3, 2, 3, 23)
         };
 
-        constexpr auto m =  mat4x4d(
+        constexpr auto m = mat4x4d(
              1,  2,  3,  4,
              5,  6,  7,  8,
              9, 10, 11, 12,
             13, 14, 15, 16);
 
-        const auto r = std::vector<vec3d> {
-            to_cartesian_coords(vec4d(18, 46, 74, 102)),
-            to_cartesian_coords(vec4d(24, 64, 104, 144)),
-            to_cartesian_coords(vec4d(120, 260, 400, 540))
+        constexpr auto r = std::array<vec4d, 3> {
+            vec4d(51, 58, 65, 72),
+            vec4d(66, 76, 86, 96),
+            vec4d(339, 370, 401, 432),
         };
 
-        const auto o = m * v;
-        for (size_t i = 0; i < 3; i++) {
-            ASSERT_VEC_EQ(r[i], o[i]);
-        }
+        constexpr auto o = v * m;
+        CER_ASSERT_VEC_EQ(r[0], o[0])
+        CER_ASSERT_VEC_EQ(r[1], o[1])
+        CER_ASSERT_VEC_EQ(r[2], o[2])
     }
 
     TEST(mat_ext_test, operator_multiply_vectors_left_lower_dimension) {
@@ -129,6 +204,31 @@ namespace vm {
         for (size_t i = 0; i < 3; i++) {
             ASSERT_VEC_EQ(r[i], o[i]);
         }
+    }
+
+    TEST(mat_ext_test, operator_multiply_array_left_lower_dimension) {
+        constexpr auto v = std::array<vec3d, 3> {
+            vec3d(1.0, 2.0, 3.0),
+            vec3d(2.0, 3.0, 4.0),
+            vec3d(3.0 / 23.0, 2.0 / 23.0, 3.0 / 23.0)
+        };
+
+        constexpr auto m =  mat4x4d(
+             1,  2,  3,  4,
+             5,  6,  7,  8,
+             9, 10, 11, 12,
+            13, 14, 15, 16);
+
+        constexpr auto r = std::array<vec3d, 3> {
+            to_cartesian_coords(vec4d(51.0, 58.0, 65.0, 72.0)),
+            to_cartesian_coords(vec4d(66.0, 76.0, 86.0, 96.0)),
+            to_cartesian_coords(vec4d(339.0, 370.0, 401.0, 432.0))
+        };
+
+        constexpr auto o = v * m;
+        CER_ASSERT_VEC_EQ(r[0], o[0])
+        CER_ASSERT_VEC_EQ(r[1], o[1])
+        CER_ASSERT_VEC_EQ(r[2], o[2])
     }
 
     TEST(mat_ext_test, rotation_matrix_with_euler_angles) {

@@ -26,10 +26,90 @@
 #include "util.h"
 // #include "bbox.h"
 
+#include <array>
 #include <vector>
 #include <tuple>
 
 namespace vm {
+    /**
+     * Multiplies the given list of vectors with the given matrix.
+     *
+     * @tparam T the component type
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param lhs the list of vectors
+     * @param rhs the matrix
+     * @return a list of the the products of the given vectors and the given matrix
+     */
+    template <typename T, std::size_t R, std::size_t C>
+    std::vector<vec<T,C>> operator*(const mat<T,R,C>& lhs, const std::vector<vec<T,C>>& rhs) {
+        std::vector<vec<T,C>> result;
+        result.reserve(rhs.size());
+        for (const auto& v : rhs) {
+            result.push_back(lhs * v);
+        }
+        return result;
+    }
+
+    /**
+     * Multiplies the given array of vectors with the given matrix.
+     *
+     * @tparam T the component type
+     * @tparam N the number of array elements
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param lhs the array of vectors
+     * @param rhs the matrix
+     * @return an array of the the products of the given vectors and the given matrix
+     */
+    template <typename T, std::size_t N, std::size_t R, std::size_t C>
+    constexpr std::array<vec<T, C>, N> operator*(const mat<T, R, C>& lhs, const std::array<vec<T, C>, N>& rhs) {
+        std::array<vec<T, C>, N> result {};
+        for (std::size_t i = 0u; i < N; ++i) {
+            result[i] = lhs * rhs[i];
+        }
+        return result;
+    }
+
+    /**
+     * Multiplies the given list of vectors with the given matrix.
+     *
+     * @tparam T the component type
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param lhs the list of vectors
+     * @param rhs the matrix
+     * @return a list of the the products of the given vectors and the given matrix
+     */
+    template <typename T, std::size_t R, std::size_t C>
+    std::vector<vec<T, C-1>> operator*(const mat<T, R, C>& lhs, const std::vector<vec<T, C-1>>& rhs) {
+        std::vector<vec<T, C-1>> result;
+        result.reserve(rhs.size());
+        for (const auto& v : rhs) {
+            result.push_back(lhs * v);
+        }
+        return result;
+    }
+
+    /**
+     * Multiplies the given array of vectors with the given matrix.
+     *
+     * @tparam T the component type
+     * @tparam N the number of array elements
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param lhs the array of vectors
+     * @param rhs the matrix
+     * @return an array of the the products of the given vectors and the given matrix
+     */
+    template <typename T, std::size_t N, std::size_t R, std::size_t C>
+    constexpr std::array<vec<T, C-1>, N> operator*(const mat<T,R,C>& lhs, const std::array<vec<T, C-1>, N>& rhs) {
+        std::array<vec<T, C-1>, N> result {};
+        for (std::size_t i = 0u; i < N; ++i) {
+            result[i] = lhs * rhs[i];
+        }
+        return result;
+    }
 
     /**
      * Multiplies the given list of vectors with the given matrix.
@@ -52,6 +132,26 @@ namespace vm {
     }
 
     /**
+     * Multiplies the given array of vectors with the given matrix.
+     *
+     * @tparam T the component type
+     * @tparam N the number of array elements
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param lhs the array of vectors
+     * @param rhs the matrix
+     * @return an array of the the products of the given vectors and the given matrix
+     */
+    template <typename T, std::size_t N, std::size_t R, std::size_t C>
+    constexpr std::array<vec<T, R>, N> operator*(const std::array<vec<T, R>, N>& lhs, const mat<T ,R, C>& rhs) {
+        std::array<vec<T, R>, N> result {};
+        for (std::size_t i = 0u; i < N; ++i) {
+            result[i] = lhs[i] * rhs;
+        }
+        return result;
+    }
+
+    /**
      * Multiplies the given list of vectors with the given matrix.
      *
      * @tparam T the component type
@@ -62,8 +162,8 @@ namespace vm {
      * @return a list of the the products of the given vectors and the given matrix
      */
     template <typename T, std::size_t R, std::size_t C>
-    std::vector<vec<T,R-1>> operator*(const std::vector<vec<T,R-1>>& lhs, const mat<T,R,C>& rhs) {
-        std::vector<vec<T,R-1>> result;
+    std::vector<vec<T, R-1>> operator*(const std::vector<vec<T, R-1>>& lhs, const mat<T, R, C>& rhs) {
+        std::vector<vec<T, R-1>> result;
         result.reserve(lhs.size());
         for (const auto& v : lhs) {
             result.push_back(v * rhs);
@@ -75,38 +175,18 @@ namespace vm {
      * Multiplies the given list of vectors with the given matrix.
      *
      * @tparam T the component type
+     * @tparam N the number of array elements
      * @tparam R the number of rows
      * @tparam C the number of columns
      * @param lhs the list of vectors
      * @param rhs the matrix
      * @return a list of the the products of the given vectors and the given matrix
      */
-    template <typename T, std::size_t R, std::size_t C>
-    std::vector<vec<T,C>> operator*(const mat<T,R,C>& lhs, const std::vector<vec<T,C>>& rhs) {
-        std::vector<vec<T,C>> result;
-        result.reserve(rhs.size());
-        for (const auto& v : rhs) {
-            result.push_back(lhs * v);
-        }
-        return result;
-    }
-
-    /**
-     * Multiplies the given list of vectors with the given matrix.
-     *
-     * @tparam T the component type
-     * @tparam R the number of rows
-     * @tparam C the number of columns
-     * @param lhs the list of vectors
-     * @param rhs the matrix
-     * @return a list of the the products of the given vectors and the given matrix
-     */
-    template <typename T, std::size_t R, std::size_t C>
-    std::vector<vec<T,C-1>> operator*(const mat<T,R,C>& lhs, const std::vector<vec<T,C-1>>& rhs) {
-        std::vector<vec<T,C-1>> result;
-        result.reserve(rhs.size());
-        for (const auto& v : rhs) {
-            result.push_back(lhs * v);
+    template <typename T, std::size_t N, std::size_t R, std::size_t C>
+    constexpr std::array<vec<T, R-1>, N> operator*(const std::array<vec<T, R-1>, N>& lhs, const mat<T,R,C>& rhs) {
+        std::array<vec<T, R-1>, N> result {};
+        for (std::size_t i = 0u; i < N; ++i) {
+            result[i] = lhs[i] * rhs;
         }
         return result;
     }
