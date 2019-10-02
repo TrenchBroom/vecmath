@@ -22,74 +22,93 @@
 #include <vecmath/forward.h>
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
+#include <vecmath/abstract_line.h>
 #include <vecmath/ray.h>
 #include <vecmath/scalar.h>
-#include <vecmath/constexpr_util.h>
+#include <vecmath/util.h>
 
 #include "test_utils.h"
 
 namespace vm {
-    TEST(RayTest, defaultConstructor) {
-        const auto r = ray3d();
-        ASSERT_VEC_EQ(vec3d::zero, r.origin);
-        ASSERT_VEC_EQ(vec3d::zero, r.direction);
+    TEST(ray_test, constructor_default) {
+        constexpr auto r = ray3d();
+        CER_ASSERT_VEC_EQ(vec3d::zero(), r.origin)
+        CER_ASSERT_VEC_EQ(vec3d::zero(), r.direction)
     }
 
-    TEST(RayTest, constructWithOriginAndDirection) {
-        const auto r = ray3d(vec3d::one, vec3d::pos_z);
-        ASSERT_VEC_EQ(vec3d::one, r.origin);
-        ASSERT_VEC_EQ(vec3d::pos_z, r.direction);
+    TEST(ray_test, constructor_convert) {
+        constexpr auto r = ray3d(vec3d::one(), vec3d::pos_z());
+        constexpr auto s = ray3f(r);
+        CER_ASSERT_VEC_EQ(vec3f::one(), s.origin)
+        CER_ASSERT_VEC_EQ(vec3f::pos_z(), s.direction)
     }
 
-    TEST(RayTest, getOrigin) {
-        const auto r = ray3d(vec3d::one, vec3d::pos_z);
+    TEST(ray_test, constructor_with_origin_and_direction) {
+        constexpr auto r = ray3d(vec3d::one(), vec3d::pos_z());
+        CER_ASSERT_VEC_EQ(vec3d::one(), r.origin)
+        CER_ASSERT_VEC_EQ(vec3d::pos_z(), r.direction)
+    }
+
+    TEST(ray_test, get_origin) {
+        const auto r = ray3d(vec3d::one(), vec3d::pos_z());
         ASSERT_VEC_EQ(r.origin, r.getOrigin());
     }
 
-    TEST(RayTest, getDirection) {
-        const auto r = ray3d(vec3d::one, vec3d::pos_z);
+    TEST(ray_test, get_direction) {
+        const auto r = ray3d(vec3d::one(), vec3d::pos_z());
         ASSERT_VEC_EQ(r.direction, r.getDirection());
     }
 
-    TEST(RayTest, transform) {
-        const auto r = ray3d(vec3d::one, vec3d::pos_z);
-        const auto rm = rotationMatrix(toRadians(15.0), toRadians(20.0), toRadians(-12.0));
-        const auto tm = translationMatrix(vec3d::one);
+    TEST(ray_test, transform) {
+        const auto r = ray3d(vec3d::one(), vec3d::pos_z());
+        const auto rm = rotation_matrix(to_radians(15.0), to_radians(20.0), to_radians(-12.0));
+        const auto tm = translation_matrix(vec3d::one());
 
         const auto rt = r.transform(rm * tm);
-        ASSERT_TRUE(isUnit(r.direction, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(r.direction, vm::Cd::almostZero()));
         ASSERT_VEC_EQ(rm * tm * r.origin, rt.origin);
         ASSERT_VEC_EQ(rm * r.direction, rt.direction);
     }
 
-    TEST(RayTest, pointStatus) {
-        const ray3f ray(vec3f::zero, vec3f::pos_z);
-        ASSERT_EQ(point_status::above, ray.pointStatus(vec3f(0.0f, 0.0f, 1.0f)));
-        ASSERT_EQ(point_status::inside, ray.pointStatus(vec3f(0.0f, 0.0f, 0.0f)));
-        ASSERT_EQ(point_status::below, ray.pointStatus(vec3f(0.0f, 0.0f, -1.0f)));
+    TEST(ray_test, transform_c) {
+        constexpr auto r = ray3d(vec3d::one(), vec3d::pos_z());
+        constexpr auto sm = scaling_matrix(vec3d(2.0, 0.5, -2.0));
+        constexpr auto tm = translation_matrix(vec3d::one());
+
+        constexpr auto rt = r.transform_c(sm * tm);
+        CER_ASSERT_TRUE(is_unit_c(r.direction, vm::Cd::almostZero()))
+        CER_ASSERT_VEC_EQ(sm * tm * r.origin, rt.origin)
+        CER_ASSERT_VEC_EQ(normalize_c(sm * r.direction), rt.direction)
     }
 
-    TEST(RayTest, pointAtDistance) {
-        const ray3f ray(vec3f::zero, vec3f::pos_x);
-        ASSERT_VEC_EQ(vec3f(5.0f, 0.0f, 0.0f), ray.pointAtDistance(5.0f));
+    TEST(ray_test, point_status) {
+        constexpr auto ray =  ray3f(vec3f::zero(), vec3f::pos_z());
+        CER_ASSERT_EQ(point_status::above, ray.pointStatus(vec3f(0.0f, 0.0f, 1.0f)))
+        CER_ASSERT_EQ(point_status::inside, ray.pointStatus(vec3f(0.0f, 0.0f, 0.0f)))
+        CER_ASSERT_EQ(point_status::below, ray.pointStatus(vec3f(0.0f, 0.0f, -1.0f)))
     }
 
-    TEST(RayTest, isEqual) {
-        ASSERT_TRUE(isEqual(ray3d(), ray3d(), 0.0));
-        ASSERT_TRUE(isEqual(ray3d(vec3d::zero, vec3d::pos_z), ray3d(vec3d::zero, vec3d::pos_z), 0.0));
-        ASSERT_FALSE(isEqual(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 0.0));
-        ASSERT_TRUE(isEqual(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 2.0));
+    TEST(ray_test, point_at_distance) {
+        constexpr auto ray = ray3f(vec3f::zero(), vec3f::pos_x());
+        CER_ASSERT_VEC_EQ(vec3f(5.0f, 0.0f, 0.0f), pointAtDistance(ray, 5.0f))
     }
 
-    TEST(RayTest, equal) {
-        ASSERT_TRUE(ray3d() == ray3d());
-        ASSERT_TRUE(ray3d(vec3d::zero, vec3d::pos_z) == ray3d(vec3d::zero, vec3d::pos_z));
-        ASSERT_FALSE(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) == ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)));
+    TEST(ray_test, is_equal) {
+        CER_ASSERT_TRUE(is_equal(ray3d(), ray3d(), 0.0))
+        CER_ASSERT_TRUE(is_equal(ray3d(vec3d::zero(), vec3d::pos_z()), ray3d(vec3d::zero(), vec3d::pos_z()), 0.0))
+        CER_ASSERT_FALSE(is_equal(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 0.0))
+        CER_ASSERT_TRUE(is_equal(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 2.0))
     }
 
-    TEST(RayTest, notEqual) {
-        ASSERT_FALSE(ray3d() != ray3d());
-        ASSERT_FALSE(ray3d(vec3d::zero, vec3d::pos_z) != ray3d(vec3d::zero, vec3d::pos_z));
-        ASSERT_TRUE(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)));
+    TEST(ray_test, operator_equal) {
+        CER_ASSERT_TRUE(ray3d() == ray3d())
+        CER_ASSERT_TRUE(ray3d(vec3d::zero(), vec3d::pos_z()) == ray3d(vec3d::zero(), vec3d::pos_z()))
+        CER_ASSERT_FALSE(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) == ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
+    }
+
+    TEST(ray_test, operator_not_equal) {
+        CER_ASSERT_FALSE(ray3d() != ray3d())
+        CER_ASSERT_FALSE(ray3d(vec3d::zero(), vec3d::pos_z()) != ray3d(vec3d::zero(), vec3d::pos_z()))
+        CER_ASSERT_TRUE(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
     }
 }

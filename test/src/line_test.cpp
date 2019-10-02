@@ -21,6 +21,7 @@
 
 #include "test_utils.h"
 
+#include <vecmath/abstract_line.h>
 #include <vecmath/forward.h>
 #include <vecmath/line.h>
 #include <vecmath/mat.h>
@@ -28,75 +29,93 @@
 #include <vecmath/scalar.h>
 
 namespace vm {
-    TEST(LineTest, defaultConstructor) {
-        const line3f p;
-        ASSERT_EQ(vec3f::zero, p.point);
-        ASSERT_EQ(vec3f::zero, p.direction);
+    TEST(line_test, constructor_default) {
+        constexpr auto p = line3f();
+        CER_ASSERT_EQ(vec3f::zero(), p.point)
+        CER_ASSERT_EQ(vec3f::zero(), p.direction)
     }
 
-    TEST(LineTest, constructWithPointAndDirection) {
-        const vec3f p(10,20,30);
-        const vec3f n = normalize(vec3f(1.0f, 2.0f, 3.0f));
-        const line3f l(p, n);
-        ASSERT_VEC_EQ(p, l.point);
-        ASSERT_VEC_EQ(n, l.direction);
+    TEST(line_test, constructor_convert) {
+        constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
+        constexpr auto k = line3f(l);
+        CER_ASSERT_VEC_EQ(vec3f::one(), k.point)
+        CER_ASSERT_VEC_EQ(vec3f::pos_z(), k.direction)
     }
 
-    TEST(LineTest, getOrigin) {
-        const auto l = line3d(vec3d::one, vec3d::pos_z);
-        ASSERT_VEC_EQ(l.point, l.getOrigin());
+    TEST(line_test, constructor_with_point_and_direction) {
+        constexpr auto p = vec3f(10,20,30);
+        constexpr auto n = normalize_c(vec3f(1.0f, 2.0f, 3.0f));
+        constexpr auto l = line3f(p, n);
+        CER_ASSERT_VEC_EQ(p, l.point)
+        CER_ASSERT_VEC_EQ(n, l.direction)
     }
 
-    TEST(LineTest, getDirection) {
-        const auto l = line3d(vec3d::one, vec3d::pos_z);
-        ASSERT_VEC_EQ(l.direction, l.getDirection());
+    TEST(line_test, get_origin) {
+        constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
+        CER_ASSERT_VEC_EQ(l.point, l.getOrigin())
     }
 
-    TEST(LineTest, transform) {
-        const auto l = line3d(vec3d::one, vec3d::pos_z);
-        const auto rm = rotationMatrix(toRadians(15.0), toRadians(20.0), toRadians(-12.0));
-        const auto tm = translationMatrix(vec3d::one);
+    TEST(line_test, get_direction) {
+        constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
+        CER_ASSERT_VEC_EQ(l.direction, l.getDirection());
+    }
+
+    TEST(line_test, transform) {
+        const auto l = line3d(vec3d::one(), vec3d::pos_z());
+        const auto rm = rotation_matrix(to_radians(15.0), to_radians(20.0), to_radians(-12.0));
+        const auto tm = translation_matrix(vec3d::one());
 
         const auto lt = l.transform(rm * tm);
-        ASSERT_TRUE(isUnit(l.direction, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almostZero()));
         ASSERT_VEC_EQ(rm * tm * l.point, lt.point);
         ASSERT_VEC_EQ(rm * l.direction, lt.direction);
     }
 
-    TEST(LineTest, makeCanonical) {
-        const auto l1 = line3d(vec3d(-10, 0, 10), vec3d::pos_x);
-        const auto l2 = line3d(vec3d(+10, 0, 10), vec3d::pos_x);
-        ASSERT_EQ(l1.makeCanonical(), l2.makeCanonical());
+    TEST(line_test, transform_c) {
+        constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
+        constexpr auto sm = scaling_matrix(vec3d(2.0, 0.5, -2.0));
+        constexpr auto tm = translation_matrix(vec3d::one());
+
+        constexpr auto lt = l.transform_c(sm * tm);
+        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almostZero()));
+        ASSERT_VEC_EQ(sm * tm * l.point, lt.point);
+        ASSERT_VEC_EQ(normalize_c(sm * l.direction), lt.direction);
     }
 
-    TEST(LineTest, distanceToProjectedPoint) {
-        const line3f l(vec3f(10,0,0), vec3f::pos_z);
-        ASSERT_FLOAT_EQ(0.0f, l.distanceToProjectedPoint(vec3f(10,0,0)));
-        ASSERT_FLOAT_EQ(10.0f, l.distanceToProjectedPoint(vec3f(10,0,10)));
-        ASSERT_FLOAT_EQ(10.0f, l.distanceToProjectedPoint(vec3f(10,10,10)));
+    TEST(line_test, make_canonical) {
+        constexpr auto l1 = line3d(vec3d(-10, 0, 10), vec3d::pos_x());
+        constexpr auto l2 = line3d(vec3d(+10, 0, 10), vec3d::pos_x());
+        CER_ASSERT_EQ(l1.makeCanonical(), l2.makeCanonical())
     }
 
-    TEST(LineTest, projectPoint) {
-        const line3f l(vec3f(10,0,0), vec3f::pos_z);
-        ASSERT_VEC_EQ(vec3f(10,0,5), l.projectPoint(vec3f(100,100,5)));
+    TEST(line_test, distance_to_projected_point) {
+        constexpr auto l = line3f(vec3f(10, 0, 0), vec3f::pos_z());
+        CER_ASSERT_FLOAT_EQ(0.0f, distanceToProjectedPoint(l, vec3f(10,0,0)))
+        CER_ASSERT_FLOAT_EQ(10.0f, distanceToProjectedPoint(l, vec3f(10,0,10)))
+        CER_ASSERT_FLOAT_EQ(10.0f, distanceToProjectedPoint(l, vec3f(10,10,10)))
     }
 
-    TEST(LineTest, isEqual) {
-        ASSERT_TRUE(isEqual(line3d(), line3d(), 0.0));
-        ASSERT_TRUE(isEqual(line3d(vec3d::zero, vec3d::pos_z), line3d(vec3d::zero, vec3d::pos_z), 0.0));
-        ASSERT_FALSE(isEqual(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 0.0));
-        ASSERT_TRUE(isEqual(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 2.0));
+    TEST(line_test, project_point) {
+        constexpr auto l = line3f(vec3f(10,0,0), vec3f::pos_z());
+        CER_ASSERT_VEC_EQ(vec3f(10,0,5), projectPoint(l, vec3f(100,100,5)))
     }
 
-    TEST(LineTest, equal) {
-        ASSERT_TRUE(line3d() == line3d());
-        ASSERT_TRUE(line3d(vec3d::zero, vec3d::pos_z) == line3d(vec3d::zero, vec3d::pos_z));
-        ASSERT_FALSE(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) == line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)));
+    TEST(line_test, is_equal) {
+        CER_ASSERT_TRUE(is_equal(line3d(), line3d(), 0.0))
+        CER_ASSERT_TRUE(is_equal(line3d(vec3d::zero(), vec3d::pos_z()), line3d(vec3d::zero(), vec3d::pos_z()), 0.0))
+        CER_ASSERT_FALSE(is_equal(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 0.0))
+        CER_ASSERT_TRUE(is_equal(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)), line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)), 2.0))
     }
 
-    TEST(LineTest, notEqual) {
-        ASSERT_FALSE(line3d() != line3d());
-        ASSERT_FALSE(line3d(vec3d::zero, vec3d::pos_z) != line3d(vec3d::zero, vec3d::pos_z));
-        ASSERT_TRUE(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)));
+    TEST(line_test, operator_equal) {
+        CER_ASSERT_TRUE(line3d() == line3d())
+        CER_ASSERT_TRUE(line3d(vec3d::zero(), vec3d::pos_z()) == line3d(vec3d::zero(), vec3d::pos_z()))
+        CER_ASSERT_FALSE(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) == line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
+    }
+
+    TEST(line_test, operator_not_equal) {
+        CER_ASSERT_FALSE(line3d() != line3d())
+        CER_ASSERT_FALSE(line3d(vec3d::zero(), vec3d::pos_z()) != line3d(vec3d::zero(), vec3d::pos_z()))
+        CER_ASSERT_TRUE(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
     }
 }
