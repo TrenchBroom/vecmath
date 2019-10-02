@@ -278,7 +278,7 @@ namespace vm {
 
     TEST(bbox_builder_test, empty) {
         constexpr auto builder = vm::bbox3f::builder();
-        CER_ASSERT_EQ(vm::bbox3f(), builder.bounds())
+        CER_ASSERT_FALSE(builder.initialized())
     }
 
     TEST(bbox_builder_test, add_one_point) {
@@ -287,6 +287,7 @@ namespace vm {
         vm::bbox3f::builder builder;
         builder.add(point);
 
+        ASSERT_TRUE(builder.initialized());
         ASSERT_EQ(vm::bbox3f(point, point), builder.bounds());
     }
 
@@ -298,6 +299,7 @@ namespace vm {
         builder.add(point1);
         builder.add(point2);
 
+        ASSERT_TRUE(builder.initialized());
         ASSERT_EQ(vm::bbox3f(point1, point2), builder.bounds());
     }
 
@@ -309,6 +311,7 @@ namespace vm {
         builder.add(point2);
         builder.add(point1);
 
+        ASSERT_TRUE(builder.initialized());
         ASSERT_EQ(vm::bbox3f(point1, point2), builder.bounds());
     }
 }

@@ -533,108 +533,140 @@ namespace vm {
         CE_ASSERT_TRUE(is_nan(sqrt_c(-1.0)))
     }
 
-    template <size_t S>
-    void assertSolution(const std::tuple<size_t, std::array<double,S>>& expected, const std::tuple<size_t, std::array<double,S>>& actual);
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T>& expected, const std::tuple<std::size_t, T, T>& actual);
 
-    TEST(scalar_test, solveQuadratic) {
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T, T>& expected, const std::tuple<std::size_t, T, T, T>& actual);
+
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T, T, T>& expected, const std::tuple<std::size_t, T, T, T, T>& actual);
+
+    TEST(scalar_test, solve_quadratic) {
         using c = constants<double>;
 
         assertSolution(
-            { 2, { 2.0, -8.0 } },
-            solveQuadratic(1.0, 6.0, -16.0, c::almostZero())
+            { 2, 2.0, -8.0 },
+            solve_quadratic(1.0, 6.0, -16.0, c::almostZero())
         );
         assertSolution(
-            { 2, { -1.0, -9.0 } },
-            solveQuadratic(1.0, 10.0, 9.0, c::almostZero())
+            { 2, -1.0, -9.0 },
+            solve_quadratic(1.0, 10.0, 9.0, c::almostZero())
         );
         assertSolution(
-            { 2, { 7.0, -4.0 } },
-            solveQuadratic(0.5, -1.5, -14.0, c::almostZero())
+            { 2, 7.0, -4.0 },
+            solve_quadratic(0.5, -1.5, -14.0, c::almostZero())
         );
         assertSolution(
-            { 1, { 2.0, nan<double>() } },
-            solveQuadratic(1.0, -4.0, 4.0, c::almostZero())
+            { 1, 2.0, nan<double>() },
+            solve_quadratic(1.0, -4.0, 4.0, c::almostZero())
         );
         assertSolution(
-            { 0, { nan<double>(), nan<double>() } },
-            solveQuadratic(1.0, 12.0, 37.0, c::almostZero())
+            { 0, nan<double>(), nan<double>() },
+            solve_quadratic(1.0, 12.0, 37.0, c::almostZero())
         );
     }
 
-    TEST(scalar_test, solveCubic) {
+    TEST(scalar_test, solve_cubic) {
         using c = constants<double>;
 
         assertSolution(
-            { 1, { -2.0, nan<double>(), nan<double>() } },
-            solveCubic(1.0, 0.0, -2.0, 4.0, c::almostZero())
+            { 1, -2.0, nan<double>(), nan<double>() },
+            solve_cubic(1.0, 0.0, -2.0, 4.0, c::almostZero())
         );
         assertSolution(
-            { 1, { 7.0 / 9.0, nan<double>(), nan<double>() } },
-            solveCubic(9.0, -43.0, 145.0, -91.0, c::almostZero())
+            { 1, 7.0 / 9.0, nan<double>(), nan<double>() },
+            solve_cubic(9.0, -43.0, 145.0, -91.0, c::almostZero())
         );
         assertSolution(
-            { 3, { 4.464101615, 2.0, -2.464101615 } },
-            solveCubic(1.0, -4.0, -7.0, 22.0, c::almostZero())
+            { 3, 4.464101615, 2.0, -2.464101615 },
+            solve_cubic(1.0, -4.0, -7.0, 22.0, c::almostZero())
         );
 
 
         // casus irreducibilis
         assertSolution(
-            { 2, { -2.0, 1.0, nan<double>() } },
-            solveCubic(1.0, 0.0, -3.0, 2.0, c::almostZero())
+            { 2, -2.0, 1.0, nan<double>() },
+            solve_cubic(1.0, 0.0, -3.0, 2.0, c::almostZero())
         );
         assertSolution(
-            { 3, { 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 } },
-            solveCubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almostZero())
+            { 3, 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 },
+            solve_cubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almostZero())
         );
     }
 
-    TEST(scalar_test, solveQuartic) {
+    TEST(scalar_test, solve_quartic) {
         using c = constants<double>;
 
         assertSolution(
-            { 0, { nan<double>(), nan<double>(), nan<double>(), nan<double>() } },
-            solveQuartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almostZero())
+            { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
+            solve_quartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almostZero())
         );
         assertSolution(
-            { 0, { nan<double>(), nan<double>(), nan<double>(), nan<double>() } },
-            solveQuartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almostZero())
+             { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
+            solve_quartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almostZero())
         );
         assertSolution(
-            { 4, { -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 } },
-            solveQuartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almostZero())
+             { 4, -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 },
+            solve_quartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almostZero())
         );
         assertSolution(
-            { 2, { 1.5986745079, -1.0, nan<double>(), nan<double>() } },
-            solveQuartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almostZero())
+             { 2, 1.5986745079, -1.0, nan<double>(), nan<double>() },
+            solve_quartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almostZero())
         );
         assertSolution(
-            { 2, { -1.0, -1.0, nan<double>(), nan<double>() } },
-            solveQuartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almostZero())
+             { 2, -1.0, -1.0, nan<double>(), nan<double>() },
+            solve_quartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almostZero())
         );
         assertSolution(
-            { 2, { -3.0, 2.0, nan<double>(), nan<double>() } },
-            solveQuartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almostZero())
+             { 2, -3.0, 2.0, nan<double>(), nan<double>() },
+            solve_quartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almostZero())
         );
         assertSolution(
-            { 4, {
+            { 4,
                 -1.0 - sqrt(6.0),
                 -1.0 - sqrt(11.0),
                 sqrt(11.0) - 1.0,
                 sqrt(6.0) - 1.0
-            } },
-            solveQuartic(1.0, 4.0, -11.0, -30.0, 50.0, c::almostZero())
+            },
+            solve_quartic(1.0, 4.0, -11.0, -30.0, 50.0, c::almostZero())
         );
     }
 
-    template <size_t S>
-    void assertSolution(const std::tuple<size_t, std::array<double,S>>& expected, const std::tuple<size_t, std::array<double,S>>& actual) {
-        const auto [expectedNum, expectedSol] = expected;
-        const auto [actualNum, actualSol] = actual;
+
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T>& expected, const std::tuple<std::size_t, T, T>& actual) {
+        const auto expectedNum = std::get<0>(expected);
+        const auto actualNum   = std::get<0>(actual);
 
         ASSERT_EQ(expectedNum, actualNum);
-        for (size_t i = 0; i < expectedNum; ++i) {
-            ASSERT_NEAR(expectedSol[i], actualSol[i], 0.00000001);
+        if (expectedNum > 0) {
+            ASSERT_NEAR(std::get<1>(expected), std::get<1>(actual), 0.00000001);
+        }
+        if (expectedNum > 1) {
+            ASSERT_NEAR(std::get<2>(expected), std::get<2>(actual), 0.00000001);
+        }
+    }
+
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T, T>& expected, const std::tuple<std::size_t, T, T, T>& actual) {
+        assertSolution<T>(
+            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected) },
+            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual) } );
+
+        if (std::get<0>(expected) > 2) {
+            ASSERT_NEAR(std::get<3>(expected), std::get<3>(actual), 0.00000001);
+        }
+    }
+
+    template <typename T>
+    void assertSolution(const std::tuple<std::size_t, T, T, T, T>& expected, const std::tuple<std::size_t, T, T, T, T>& actual) {
+        assertSolution<T>(
+            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected), std::get<3>(expected) },
+            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual),   std::get<3>(actual) } );
+
+        if (std::get<0>(expected) > 3) {
+            ASSERT_NEAR(std::get<4>(expected), std::get<4>(actual), 0.00000001);
         }
     }
 }

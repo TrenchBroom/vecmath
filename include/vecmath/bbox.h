@@ -47,13 +47,14 @@ namespace vm {
         class builder {
         private:
             bbox m_bounds;
-            bool m_initialized;
         public:
             /**
              * Creates a new unitialized instance.
              */
             constexpr builder() :
-            m_initialized(false) {}
+            m_bounds(false) {
+                // put the bounds to an invalid state to signal that its unitialized
+            }
 
             /**
              * Returns the bounds. If the no point has been added, an empty bbox at the origin is returned.
@@ -66,9 +67,18 @@ namespace vm {
              * Returns whether anything has been added to this builder.
              */
             constexpr bool initialized() const {
-                return m_initialized;
+                return m_bounds.is_valid();
             }
 
+            /**
+             * Adds the given range of points.
+             *
+             * @tparam I the iterator type
+             * @tparam G the type of the function that transforms the iterated type to a point
+             * @param cur the start of the range
+             * @param end the end of the range
+             * @param get the function that transforms the iterated type to a point
+             */
             template <typename I, typename G = vm::identity>
             constexpr void add(I cur, I end, G get = G()) {
                 while (cur != end) {
@@ -81,9 +91,8 @@ namespace vm {
              * Adds the given point.
              */
             constexpr void add(const vec<T,S>& point) {
-                if (!m_initialized) {
+                if (!initialized()) {
                     m_bounds.min = m_bounds.max = point;
-                    m_initialized = true;
                 } else {
                     m_bounds = merge(m_bounds, point);
                 }
@@ -93,9 +102,8 @@ namespace vm {
              * Adds the given box.
              */
             constexpr void add(const bbox& box) {
-                if (!m_initialized) {
+                if (initialized()) {
                     m_bounds = box;
-                    m_initialized = true;
                 } else {
                     m_bounds = merge(m_bounds, box);
                 }
@@ -174,6 +182,16 @@ namespace vm {
         min(vec<T,S>::fill(-i_minMax)),
         max(vec<T,S>::fill(+i_minMax)) {
             assert(is_valid());
+        }
+
+    private:
+        /**
+         * This constructor is used by the builder to create an invalid bbox.
+         */
+        constexpr bbox(const bool) :
+        min(vec<T,S>::fill(T(1))),
+        max(vec<T,S>::fill(T(0))) {
+            assert(!is_valid());
         }
     public:
         /**
