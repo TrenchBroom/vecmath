@@ -101,15 +101,15 @@ namespace vm {
             const auto cos = dot(from, to);
             if (is_equal(+cos, T(1.0), constants<T>::almostZero())) {
                 // `from` and `to` are equal.
-                set_rotation(vec<T, 3>::pos_z, T(0.0));
+                set_rotation(vec<T, 3>::pos_z(), T(0.0));
             } else if (is_equal(-cos, T(1.0), constants<T>::almostZero())) {
                 // `from` and `to` are opposite.
                 // We need to find a rotation axis that is perpendicular to `from`.
-                auto axis = cross(from, vec<T,3>::pos_z);
-                if (is_zero(squaredLength(axis), constants<T>::almostZero())) {
-                    axis = cross(from, vec<T,3>::pos_x);
+                auto axis = cross(from, vec<T,3>::pos_z());
+                if (is_zero(squared_length(axis), constants<T>::almostZero())) {
+                    axis = cross(from, vec<T,3>::pos_x());
                 }
-                set_rotation(normalize(axis), toRadians(T(180)));
+                set_rotation(normalize(axis), to_radians(T(180)));
             } else {
                 const auto axis = normalize(cross(from, to));
                 const auto angle = std::acos(cos);
@@ -150,20 +150,86 @@ namespace vm {
          *
          * @return the conjugated quaternion
          */
-        quat<T> conjugate() const {
+        constexpr quat<T> conjugate() const {
             return quat<T>(r, -v);
         }
     };
 
     /**
-     * Negates this quaternion by negating its real component.
+     * Checks whether the given quaternions are equal up to the given epsilon. Two quaternions p, q are considered to be
+     * equal when they represent the same rotation, that is, if
+     *
+     * - p is component wise equal to q or
+     * - p is component wise equal to -q
+     *
+     * up to the given epsilon value.
+     *
+     * @tparam T the component type
+     * @param lhs the first quaternion
+     * @param rhs the second quaternion
+     * @param epsilon the epsilon value
+     * @return true if the given quaternions represent the same rotation and false otherwise
+     */
+    template <typename T>
+    constexpr bool is_equal(const quat<T>& lhs, const quat<T>& rhs, const T epsilon) {
+        return (is_equal(lhs.r, rhs.r, epsilon) || is_equal(lhs.r, -rhs.r, epsilon)) && is_equal(lhs.v, rhs.v, epsilon);
+    }
+
+    /**
+     * Checks whether the given quaternions are identical. Two quaternions p, q are considered to be identical if they
+     * represent the same rotation, this is, if
+     *
+     * - p is component wise identical to q or
+     * - p is component wise identical to -q.
+     *
+     * This check is equivalent to is_equal(lhs, rhs, 0).
+     *
+     * @tparam T the component type
+     * @param lhs the first quaternion
+     * @param rhs the second quaternion
+     * @return true if the given quaternions represent the same rotation and false otherwise
+     */
+    template <typename T>
+    constexpr bool operator==(const quat<T>& lhs, const quat<T>& rhs) {
+        return (lhs.r == rhs.r || lhs.r == -rhs.r) && lhs.v == rhs.v;
+    }
+
+    /**
+     * Checks whether the given quaternions are identical.
+     *
+     * This check is equivalent to !is_equal(lhs, rhs, 0).
+     *
+     * @tparam T the component type
+     * @param lhs the first quaternion
+     * @param rhs the second quaternion
+     * @return false if the given quaternions represent the same rotation and true otherwise
+     */
+    template <typename T>
+    constexpr bool operator!=(const quat<T>& lhs, const quat<T>& rhs) {
+        return (lhs.r != rhs.r && lhs.r != -rhs.r) || lhs.v != rhs.v;
+    }
+
+    /**
+     * Returns the given quaternion.
+     *
+     * @tparam T the component type
+     * @param q the quaternion to return
+     * @return the given quaternion
+     */
+    template <typename T>
+    constexpr quat<T> operator+(const quat<T>& q) {
+        return q;
+    }
+
+    /**
+     * Negates the given quaternion by negating its real component.
      *
      * @tparam T the component type
      * @param q the quaternion to negate
      * @return the negated quaternion
      */
     template <typename T>
-    quat<T> operator-(const quat<T>& q) {
+    constexpr quat<T> operator-(const quat<T>& q) {
         return quat<T>(-q.r, q.v);
     }
 
@@ -176,7 +242,7 @@ namespace vm {
      * @return the multiplied quaternion
      */
     template <typename T>
-    quat<T> operator*(const quat<T> lhs, const T rhs) {
+    constexpr quat<T> operator*(const quat<T> lhs, const T rhs) {
         return quat<T>(lhs.r * rhs, lhs.v);
     }
 
@@ -189,7 +255,7 @@ namespace vm {
      * @return the multiplied quaternion
      */
     template <typename T>
-    quat<T> operator*(const T lhs, const quat<T>& rhs) {
+    constexpr quat<T> operator*(const T lhs, const quat<T>& rhs) {
         return quat<T>(lhs * rhs.r, rhs.v);
     }
 
@@ -202,7 +268,7 @@ namespace vm {
      * @return the product of the given quaternions.
      */
     template <typename T>
-    quat<T> operator*(const quat<T>& lhs, const quat<T>& rhs) {
+    constexpr quat<T> operator*(const quat<T>& lhs, const quat<T>& rhs) {
         const auto nr = lhs.r * rhs.r - dot(lhs.v, rhs.v);
         const auto nx = lhs.r * rhs.v.x() + lhs.v.x() * rhs.r + lhs.v.y() * rhs.v.z() - lhs.v.z() * rhs.v.y();
         const auto ny = lhs.r * rhs.v.y() + lhs.v.y() * rhs.r + lhs.v.z() * rhs.v.x() - lhs.v.x() * rhs.v.z();
@@ -220,7 +286,7 @@ namespace vm {
      * @return the rotated vector
      */
     template <typename T>
-    vec<T,3> operator*(const quat<T>& lhs, const vec<T,3>& rhs) {
+    constexpr vec<T,3> operator*(const quat<T>& lhs, const vec<T,3>& rhs) {
         return (lhs * quat<T>(T(0.0), rhs) * lhs.conjugate()).v;
     }
 }

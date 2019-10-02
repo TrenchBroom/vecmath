@@ -431,7 +431,7 @@ namespace vm {
     /**
      * Checks whether the given vectors are component wise equal up to the given epsilon.
      *
-     * Unline the equality operator ==, this function takes an epsilon value into account.
+     * Unlike the equality operator ==, this function takes an epsilon value into account.
      *
      * @tparam T the component type
      * @tparam S the number of components
