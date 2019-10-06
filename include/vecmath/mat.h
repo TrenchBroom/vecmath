@@ -22,9 +22,7 @@
 
 #include "vec.h"
 #include "constants.h"
-#include "constexpr_mat_util.h"
 
-#include <array>
 #include <cassert>
 #include <tuple>
 
@@ -40,7 +38,7 @@ namespace vm {
         /**
          * The matrix components in column major format.
          */
-        std::array<column_type, C> v;
+        column_type v[C];
     public:
         /* ========== constructors and assignment operators ========== */
 
@@ -69,7 +67,14 @@ namespace vm {
          * @param values the initializer list with the matrix elements in row-major order
          */
         constexpr mat(std::initializer_list<T> values) :
-        v{ detail::to_vec_array<T, R, C>(values) } {}
+        v{} {
+            const auto* list = std::begin(values);
+            for (std::size_t c = 0u; c < C; ++c) {
+                for (std::size_t r = 0u; r < R; ++r) {
+                    v[c][r] = list[c + (C * r)];
+                }
+            }
+        }
 
         /**
          * Creates a matrix with the given values.
@@ -81,7 +86,15 @@ namespace vm {
          */
         template <typename A11, typename... Args>
         constexpr explicit mat(const A11 a11, const Args... args) :
-        v{ detail::to_vec_array<T, R, C>({ static_cast<T>(a11), static_cast<T>(args)... }) } {}
+        v{} {
+            static_assert(sizeof...(args) + 1u == R * C, "Wrong number of parameters");
+            const T t[R * C] { static_cast<T>(a11), static_cast<T>(args)... };
+            for (std::size_t c = 0u; c < C; ++c) {
+                for (std::size_t r = 0u; r < R; ++r) {
+                    v[c][r] = t[c + (C * r)];
+                }
+            }
+        }
 
         /**
          * Creates a matrix with the elements initialized to the values of the corresponding elements of the given
@@ -92,7 +105,13 @@ namespace vm {
          */
         template <typename U>
         constexpr explicit mat(const mat<U, R, C>& other) :
-        v { detail::cast_matrix_rows<T>(other.v) } {}
+        v{} {
+            for (std::size_t c = 0u; c < C; ++c) {
+                for (std::size_t r = 0u; r < R; ++r) {
+                    v[c][r] = static_cast<T>(other[c][r]);
+                }
+            }
+        }
     public:
         /* ========== accessors ========== */
 

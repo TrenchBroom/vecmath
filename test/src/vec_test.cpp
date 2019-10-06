@@ -25,6 +25,7 @@
 
 #include "test_utils.h"
 
+#include <array>
 #include <limits>
 #include <string>
 #include <vector>
@@ -265,25 +266,7 @@ namespace vm {
         CER_ASSERT_TRUE (vec3f(1, 2, 4) >= vec3f(1, 2, 2))
     }
 
-    /* ========== sorting and finding components ========== */
-
-    TEST(vec_test, sort) {
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(1, 2, 3)))
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(1, 3, 2)))
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(2, 1, 3)))
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(2, 3, 1)))
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(3, 1, 2)))
-        CER_ASSERT_EQ(vec3f(1, 2, 3), sort(vec3f(3, 2, 1)))
-    }
-
-    TEST(vec_test, abs_sort) {
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 1, -2,  3)))
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 1,  3, -2)))
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f(-2,  1,  3)))
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f(-2,  3,  1)))
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 3,  1, -2)))
-        CER_ASSERT_EQ(vec3f(1, -2, 3), abs_sort(vec3f( 3, -2,  1)))
-    }
+    /* ========== finding components ========== */
 
     TEST(vec_test, find_max_component) {
         CER_ASSERT_EQ(0u, find_max_component(vec3f::pos_x(), 0))

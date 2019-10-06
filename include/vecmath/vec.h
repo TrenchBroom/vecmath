@@ -22,9 +22,8 @@ along with libvecmath. If not, see <http://www.gnu.org/licenses/>.
 
 #include "constants.h"
 #include "scalar.h"
-#include "constexpr_vec_util.h"
+#include "constexpr_util.h"
 
-#include <array>
 #include <cassert>
 #include <cstddef>
 #include <ostream>
@@ -41,7 +40,7 @@ namespace vm {
         /**
          * The vector components.
          */
-        std::array<T,S> v;
+        T v[S];
     public:
         /* ========== constructors and assignment operators ========== */
 
@@ -60,14 +59,6 @@ namespace vm {
         vec<T,S>& operator=(vec<T,S>&& other) noexcept = default;
 
         /**
-         * Creates a new vector from the values in the given array.
-         *
-         * @param values the values
-         */
-        constexpr explicit vec(const std::array<T, S>& values) :
-        v(values) {}
-
-        /**
          * Creates a new vector from the values in the given initializer list. If the given list has fewer elements than
          * the size of this vector, then the remaining components are set to 0. If the given list has more elements than
          * the size of this vector, then the surplus elements are ignored.
@@ -75,7 +66,12 @@ namespace vm {
          * @param values the values
          */
         constexpr vec(std::initializer_list<T> values) :
-            v{ detail::to_array<T,S>(values) } {}
+        v{} {
+            auto it = std::begin(values);
+            for (std::size_t i = 0u; i < vm::min(values.size(), S); ++i) {
+                v[i] = *it++;
+            }
+        }
 
         /**
          * Creates a new vector with the components initialized to the given values. The values are converted
@@ -88,8 +84,8 @@ namespace vm {
          */
         template <typename A1, typename... Args>
         constexpr explicit vec(const A1 a1, const Args... args) :
-        v{ { static_cast<T>(a1), static_cast<T>(args)... } } {
-            static_assert(sizeof...(args) == S-1, "Wrong number of parameters");
+        v{ static_cast<T>(a1), static_cast<T>(args)... } {
+            static_assert(sizeof...(args) == S-1u, "Wrong number of parameters");
         }
 
         /**
@@ -102,7 +98,11 @@ namespace vm {
          */
         template <typename U>
         constexpr explicit vec(const vec<U, S>& other) :
-        v { detail::cast_array<T>(other.v) } {}
+        v{} {
+            for (std::size_t i = 0u; i < S; ++i) {
+                v[i] = static_cast<T>(other[i]);
+            }
+        }
 
         /**
          * Creates a new vector by copying the values of the given vector of smaller size and filling up the remaining
@@ -119,8 +119,16 @@ namespace vm {
          */
         template <typename U, std::size_t SS, typename A1, typename... Args>
         constexpr vec(const vec<U, SS>& other, const A1 a1, const Args... args) :
-            v { detail::concat(detail::cast_array<T>(other.v), std::array<T, sizeof...(Args)+1>{ static_cast<T>(a1), static_cast<T>(args)... }) } {
+            v{} {
                 static_assert(SS + sizeof...(Args) + 1 == S, "Wrong number of parameters");
+                for (std::size_t i = 0u; i < SS; ++i) {
+                    v[i] = static_cast<T>(other[i]);
+                }
+
+                const T t[S-SS] { static_cast<T>(a1), static_cast<T>(args)... };
+                for (std::size_t i = 0u; i < S-SS; ++i) {
+                    v[i + SS] = t[i];
+                }
             }
     public:
         /* ========== factory methods ========== */
@@ -531,68 +539,32 @@ namespace vm {
 
     /* ========== sorting and finding components ========== */
 
-    /**
-     * Returns an array of indices of the given vector. The indices are ordered by the values of their their
-     * corresponding components in the given vector, in ascending order. The algorithm used to sort the indices is not
-     * stable.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param vector the vector to sort
-     * @return the sorted array of indices
-     */
-    template <typename T, size_t S>
-    constexpr std::array<std::size_t, S> sorted_index_sequence(const vec<T,S>& vector) {
-        constexpr auto cmp = [](const auto l, const auto r) {
-            return l < r;
+    namespace detail {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
+        template <typename T>
+        struct index_pair {
+            T element;
+            std::size_t index;
+
+            constexpr index_pair() : element{}, index{} {}
         };
-        return detail::sort(vector.v, cmp);
-    }
+#pragma clang diagnostic pop
 
-    /**
-     * Returns the given vector with its components sorted by their values in ascending order. The algorithm used to
-     * sort the indices is not stable.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param vector the vector to sort
-     * @return the sorted vector
-     */
-    template <typename T, size_t S>
-    constexpr vec<T,S> sort(const vec<T,S>& vector) {
-        return vec<T,S> { detail::get_elements(vector.v, sorted_index_sequence(vector)) };
-    }
+        template <typename T>
+        using vector_index_element = index_pair<T>;
 
-    /**
-     * Returns an array of indices of the given vector. The indices are ordered by the absolute value of their
-     * corresponding components in the given vector, in ascending order. The algorithm used to sort the indices is not
-     * stable.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param vector the vector to sort
-     * @return the sorted vector
-     */
-    template <typename T, size_t S>
-    constexpr std::array<std::size_t, S> abs_sorted_index_sequence(const vec<T,S>& vector) {
-        constexpr auto cmp = [](const auto l, const auto r) {
-            return abs(l) < abs(r);
-        };
-        return detail::sort(vector.v, cmp);
-    }
+        template <typename T, std::size_t S>
+        using vector_index_elements = vector_index_element<T>[S];
 
-    /**
-     * Returns the given vector with its components sorted by their absolute values in ascending order. The algorithm
-     * used to sort the indices is not stable.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param vector the vector to sort
-     * @return the sorted vector
-     */
-    template <typename T, size_t S>
-    constexpr vec<T,S> abs_sort(const vec<T,S>& vector) {
-        return vec<T,S> { detail::get_elements(vector.v, abs_sorted_index_sequence(vector)) };
+        template <typename T, size_t S, typename Cmp>
+        constexpr void sort_vector(const vec<T,S>& vector, const Cmp& cmp, vector_index_elements<T,S>& elements) {
+            for (std::size_t i = 0u; i < S; ++i) {
+                elements[i].element = vector[i];
+                elements[i].index = i;
+            }
+            sort(std::begin(elements), std::end(elements), cmp);
+        }
     }
 
     /**
@@ -608,7 +580,14 @@ namespace vm {
     template <typename T, size_t S>
     constexpr std::size_t find_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
         assert(k < S);
-        return sorted_index_sequence(vector)[S - k - 1u];
+
+        constexpr auto cmp = [](const auto& lhs, const auto& rhs) {
+            return lhs.element < rhs.element;
+        };
+
+        detail::vector_index_elements<T, S> elements;
+        detail::sort_vector(vector, cmp, elements);
+        return elements[S - k - 1u].index;
     }
 
     /**
@@ -624,7 +603,14 @@ namespace vm {
     template <typename T, size_t S>
     constexpr std::size_t find_abs_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
         assert(k < S);
-        return abs_sorted_index_sequence(vector)[S - k - 1u];
+
+        constexpr auto cmp = [](const auto& lhs, const auto& rhs) {
+            return abs(lhs.element) < abs(rhs.element);
+        };
+
+        detail::vector_index_elements<T, S> elements;
+        detail::sort_vector(vector, cmp, elements);
+        return elements[S - k - 1u].index;
     }
 
     /**
@@ -637,8 +623,15 @@ namespace vm {
      * @return the value of a k-largest component value of the given vector
      */
     template <typename T, size_t S>
-    constexpr T get_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
-        return vector[sorted_index_sequence(vector)[S - k - 1u]];
+    constexpr T get_max_component(vec<T,S> vector, const std::size_t k = 0u) {
+        assert(k < S);
+
+        constexpr auto cmp = [](const auto& lhs, const auto& rhs) {
+            return lhs < rhs;
+        };
+
+        detail::sort(std::begin(vector.v), std::end(vector.v), cmp);
+        return vector[S - k - 1u];
     }
 
     /**
@@ -652,8 +645,13 @@ namespace vm {
      * @return the value of a k-largest component of the given vector
      */
     template <typename T, size_t S>
-    constexpr T get_abs_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
-        return vector[abs_sorted_index_sequence(vector)[S - k - 1u]];
+    constexpr T get_abs_max_component(vec<T,S> vector, const std::size_t k = 0u) {
+        constexpr auto cmp = [](const auto& lhs, const auto& rhs) {
+            return abs(lhs) < abs(rhs);
+        };
+
+        detail::sort(std::begin(vector.v), std::end(vector.v), cmp);
+        return vector[S - k - 1u];
     }
 
     /* ========== arithmetic operators ========== */

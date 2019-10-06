@@ -24,11 +24,11 @@
 #include "mat.h"
 #include "quat.h"
 #include "util.h"
-// #include "bbox.h"
+#include "bbox.h"
 
 #include <array>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 namespace vm {
     /**
