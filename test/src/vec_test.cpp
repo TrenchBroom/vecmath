@@ -727,34 +727,4 @@ namespace vm {
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(3.0f * Cf::piOverTwo(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
     }
-
-    // ========== operations on ranges of vectors ==========
-
-    TEST(vec_ext_test, operator_plus_vector) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        ASSERT_EQ(exp, in + vec3f(-1, +1, -2));
-        ASSERT_EQ(exp, vec3f(-1, +1, -2) + in);
-    }
-
-    TEST(vec_ext_test, operator_plus_array) {
-        constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        constexpr auto exp = std::array<vec3f, 2>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        CER_ASSERT_EQ(exp, in + vec3f(-1, +1, -2))
-        CER_ASSERT_EQ(exp, vec3f(-1, +1, -2) + in)
-    }
-
-    TEST(vec_ext_test, operator_multiply_vector) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        ASSERT_EQ(exp, in * 3.0f);
-        ASSERT_EQ(exp, 3.0f * in);
-    }
-
-    TEST(vec_ext_test, operator_multiply_array) {
-        constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        constexpr auto exp = std::array<vec3f, 2>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        CER_ASSERT_EQ(exp, in * 3.0f)
-        CER_ASSERT_EQ(exp, 3.0f * in)
-    }
 }
