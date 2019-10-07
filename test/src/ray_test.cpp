@@ -90,7 +90,7 @@ namespace vm {
 
     TEST(ray_test, point_at_distance) {
         constexpr auto ray = ray3f(vec3f::zero(), vec3f::pos_x());
-        CER_ASSERT_VEC_EQ(vec3f(5.0f, 0.0f, 0.0f), pointAtDistance(ray, 5.0f))
+        CER_ASSERT_VEC_EQ(vec3f(5.0f, 0.0f, 0.0f), point_at_distance(ray, 5.0f))
     }
 
     TEST(ray_test, is_equal) {

@@ -52,7 +52,7 @@ namespace vm {
      * @return the distance from the origin to the orthogonal projection of the given point
      */
     template <typename AL>
-    constexpr typename AL::component_type distanceToProjectedPoint(const AL& abstract_line, const vec<typename AL::component_type, AL::size>& point) {
+    constexpr typename AL::component_type distance_to_projected_point(const AL& abstract_line, const vec<typename AL::component_type, AL::size>& point) {
         return dot(point - abstract_line.getOrigin(), abstract_line.getDirection());
     }
 
@@ -64,7 +64,7 @@ namespace vm {
      * @return the point
      */
     template <typename AL>
-    constexpr vec<typename AL::component_type, AL::size> pointAtDistance(const AL& abstract_line, const typename AL::component_type distance) {
+    constexpr vec<typename AL::component_type, AL::size> point_at_distance(const AL& abstract_line, const typename AL::component_type distance) {
         return abstract_line.getOrigin() + abstract_line.getDirection() * distance;
     }
 
@@ -76,8 +76,8 @@ namespace vm {
      * @return the projected point
      */
     template <typename AL>
-    constexpr vec<typename AL::component_type, AL::size> projectPoint(const AL& abstract_line, const vec<typename AL::component_type, AL::size>& point) {
-        return pointAtDistance(abstract_line, distanceToProjectedPoint(abstract_line, point));
+    constexpr vec<typename AL::component_type, AL::size> project_point(const AL& abstract_line, const vec<typename AL::component_type, AL::size>& point) {
+        return point_at_distance(abstract_line, distance_to_projected_point(abstract_line, point));
     }
 }
 

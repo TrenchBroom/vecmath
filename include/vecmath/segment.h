@@ -127,12 +127,12 @@ namespace vm {
          * @return true if the given point is contained in this segment and false otherwise
          */
         bool contains(const vec<T,S>& point, const T maxDistance) const {
-            const auto f = distanceToProjectedPoint(*this, point);
+            const auto f = distance_to_projected_point(*this, point);
             if (f < -maxDistance ||
                 f * f > squared_length() + maxDistance * maxDistance) {
                 return false;
             } else {
-                const auto proj = pointAtDistance(*this, f);
+                const auto proj = point_at_distance(*this, f);
                 return squared_distance(proj, point) <= (maxDistance * maxDistance);
             }
         }

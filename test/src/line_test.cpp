@@ -90,14 +90,14 @@ namespace vm {
 
     TEST(line_test, distance_to_projected_point) {
         constexpr auto l = line3f(vec3f(10, 0, 0), vec3f::pos_z());
-        CER_ASSERT_FLOAT_EQ(0.0f, distanceToProjectedPoint(l, vec3f(10,0,0)))
-        CER_ASSERT_FLOAT_EQ(10.0f, distanceToProjectedPoint(l, vec3f(10,0,10)))
-        CER_ASSERT_FLOAT_EQ(10.0f, distanceToProjectedPoint(l, vec3f(10,10,10)))
+        CER_ASSERT_FLOAT_EQ(0.0f, distance_to_projected_point(l, vec3f(10, 0, 0)))
+        CER_ASSERT_FLOAT_EQ(10.0f, distance_to_projected_point(l, vec3f(10, 0, 10)))
+        CER_ASSERT_FLOAT_EQ(10.0f, distance_to_projected_point(l, vec3f(10, 10, 10)))
     }
 
     TEST(line_test, project_point) {
         constexpr auto l = line3f(vec3f(10,0,0), vec3f::pos_z());
-        CER_ASSERT_VEC_EQ(vec3f(10,0,5), projectPoint(l, vec3f(100,100,5)))
+        CER_ASSERT_VEC_EQ(vec3f(10,0,5), project_point(l, vec3f(100, 100, 5)))
     }
 
     TEST(line_test, is_equal) {
