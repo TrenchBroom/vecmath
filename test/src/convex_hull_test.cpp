@@ -26,7 +26,7 @@
 #include "test_utils.h"
 
 namespace vm {
-    TEST(ConvexHullTest, convex_hull_simple) {
+    TEST(convex_hull_test, convex_hull_simple) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -46,7 +46,7 @@ namespace vm {
         ASSERT_VEC_EQ(p1, hull[3]);
     }
 
-    TEST(ConvexHullTest, convex_hull_simple_with_internal_point) {
+    TEST(convex_hull_test, convex_hull_simple_with_internal_point) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -68,7 +68,7 @@ namespace vm {
         ASSERT_VEC_EQ(p1, hull[3]);
     }
 
-    TEST(ConvexHullTest, convex_hull_simple_with_point_on_line) {
+    TEST(convex_hull_test, convex_hull_simple_with_point_on_line) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
