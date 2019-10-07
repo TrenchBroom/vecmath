@@ -26,7 +26,7 @@
 #include "test_utils.h"
 
 namespace vm {
-    TEST(ConvexHullTest, convexHull2dSimple) {
+    TEST(ConvexHullTest, convex_hull_simple) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -38,7 +38,7 @@ namespace vm {
         points.push_back(p3);
         points.push_back(p4);
 
-        const std::vector<vm::vec3d> hull = vm::convexHull2D<double>(points);
+        const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
         ASSERT_EQ(4u, hull.size());
         ASSERT_VEC_EQ(p3, hull[0]);
         ASSERT_VEC_EQ(p2, hull[1]);
@@ -46,7 +46,7 @@ namespace vm {
         ASSERT_VEC_EQ(p1, hull[3]);
     }
 
-    TEST(ConvexHullTest, convexHull2dSimpleWithInternalPoint) {
+    TEST(ConvexHullTest, convex_hull_simple_with_internal_point) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -60,7 +60,7 @@ namespace vm {
         points.push_back(p4);
         points.push_back(p5);
 
-        const std::vector<vm::vec3d> hull = vm::convexHull2D<double>(points);
+        const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
         ASSERT_EQ(4u, hull.size());
         ASSERT_VEC_EQ(p3, hull[0]);
         ASSERT_VEC_EQ(p2, hull[1]);
@@ -68,7 +68,7 @@ namespace vm {
         ASSERT_VEC_EQ(p1, hull[3]);
     }
 
-    TEST(ConvexHullTest, convexHull2dSimpleWithPointOnLine) {
+    TEST(ConvexHullTest, convex_hull_simple_with_point_on_line) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -82,7 +82,7 @@ namespace vm {
         points.push_back(p4);
         points.push_back(p5);
 
-        const std::vector<vm::vec3d> hull = vm::convexHull2D<double>(points);
+        const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
         ASSERT_EQ(4u, hull.size());
         ASSERT_VEC_EQ(p3, hull[0]);
         ASSERT_VEC_EQ(p2, hull[1]);
