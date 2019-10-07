@@ -151,7 +151,7 @@ namespace vm {
         for (size_t i = 0; i < 3; ++i) {
             ASSERT_FLOAT_EQ(std::numeric_limits<float>::min(), min[i]);
             ASSERT_FLOAT_EQ(std::numeric_limits<float>::max(), max[i]);
-            ASSERT_TRUE(std::isnan(nan[i]));
+            ASSERT_TRUE(is_nan(nan[i]));
         }
     }
 

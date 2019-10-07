@@ -508,7 +508,7 @@ namespace vm {
 
     TEST(scalar_test, sqrt) {
         for (double v = 0.0; v < 20.0; v += 0.1) {
-            ASSERT_SQRT(v);
+            ASSERT_SQRT(v)
         }
 
         ASSERT_TRUE(is_nan(sqrt(nan<double>())));

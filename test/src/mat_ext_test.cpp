@@ -260,7 +260,7 @@ namespace vm {
         ASSERT_MAT_EQ(mat4x4d::rot_90_x_ccw(), rotation_matrix(vec3d::pos_x(), to_radians(90.0)));
         ASSERT_MAT_EQ(mat4x4d::rot_90_y_ccw(), rotation_matrix(vec3d::pos_y(), to_radians(90.0)));
         ASSERT_MAT_EQ(mat4x4d::rot_90_z_ccw(), rotation_matrix(vec3d::pos_z(), to_radians(90.0)));
-        ASSERT_VEC_EQ(vec3d::pos_y(),          rotation_matrix(vec3d::pos_z(), to_radians(90.0)) * vec3d::pos_x());
+        ASSERT_VEC_EQ(vec3d::pos_y(), rotation_matrix(vec3d::pos_z(), to_radians(90.0)) * vec3d::pos_x());
     }
 
     TEST(mat_ext_test, rotation_matrix_with_quaternion) {
@@ -356,7 +356,8 @@ namespace vm {
                              {4.0, 0.0, 0.0},
                              {2.0, 2.0, 0.0}};
 
-        const auto M = translation_matrix(vec3d(100.0, 100.0, 100.0)) * scaling_matrix(vec3d(2.0, 2.0, 2.0)) * rotation_matrix(vec3d::pos_z(), to_radians(90.0));
+        const auto M = translation_matrix(vec3d(100.0, 100.0, 100.0)) * scaling_matrix(vec3d(2.0, 2.0, 2.0)) * rotation_matrix(vec3d::pos_z(),
+            to_radians(90.0));
 
         vec3d out[3];
         for (size_t i=0; i<3; ++i) {

@@ -91,7 +91,7 @@ namespace vm {
     }
 
     TEST(quat_test, conjugate) {
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto p = q.conjugate();
 
@@ -101,7 +101,7 @@ namespace vm {
     TEST(quat_test, is_equal) {
         CER_ASSERT_TRUE(is_equal(quatd(), quatd(), 0.0))
 
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         CER_ASSERT_TRUE(is_equal(q,  q, 0.0f))
         CER_ASSERT_TRUE(is_equal(q, -q, 0.0f))
@@ -110,7 +110,7 @@ namespace vm {
     TEST(quat_test, operator_equal) {
         CER_ASSERT_TRUE(quatd() == quatd())
 
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto p = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
 
@@ -124,7 +124,7 @@ namespace vm {
     TEST(quat_test, operator_not_equal) {
         CER_ASSERT_FALSE(quatd() != quatd())
 
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto p = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
 
@@ -140,7 +140,7 @@ namespace vm {
     }
 
     TEST(quat_test, operator_unary_minus) {
-        // create quaternion with axis pos_x and angle 15.0f degrees
+        // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto nq = -q;
 
@@ -149,14 +149,14 @@ namespace vm {
     }
 
     TEST(quat_test, operator_multiply_scalar_right) {
-        // create quaternion with axis pos_x and angle 15.0f degrees
+        // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto p = q * 2.0f;
         CER_ASSERT_FLOAT_EQ(q.r * 2.0f, p.r)
     }
 
     TEST(quat_test, operator_multiply_scalar_left) {
-        // create quaternion with axis pos_x and angle 15.0f degrees
+        // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto p = 2.0f * q;
         CER_ASSERT_FLOAT_EQ(q.r * 2.0f, p.r)
@@ -164,11 +164,11 @@ namespace vm {
 
     TEST(quat_test, operator_multiply_quaternions) {
         // constexpr auto angle1 = to_radians(15.0f);
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q1 = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
 
         // const float angle2 = to_radians(10.0f);
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q2 = quatf(0.99619472f, vec3f(0, 0, 0.0871557369f));
         constexpr quatf q = q1 * q2;
 
@@ -183,7 +183,7 @@ namespace vm {
 
     TEST(quat_test, operator_multiply_vector) {
         // constexpr auto angle = to_radians(15.0f);
-        // create quaternion with axis pos_z and angle 15.0f degrees
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto x = vec3f::pos_x();
 
