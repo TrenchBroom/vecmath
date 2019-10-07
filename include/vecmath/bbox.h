@@ -79,7 +79,7 @@ namespace vm {
              * @param end the end of the range
              * @param get the function that transforms the iterated type to a point
              */
-            template <typename I, typename G = vm::identity>
+            template <typename I, typename G = vm::identity()>
             constexpr void add(I cur, I end, G get = G()) {
                 while (cur != end) {
                     add(get(*cur));

@@ -96,10 +96,10 @@ namespace vm {
          * @tparam U the component type of the given vector
          * @param other the vector to copy
          */
-        template <typename U>
-        constexpr explicit vec(const vec<U, S>& other) :
+        template <typename U, std::size_t V>
+        constexpr explicit vec(const vec<U, V>& other) :
         v{} {
-            for (std::size_t i = 0u; i < S; ++i) {
+            for (std::size_t i = 0u; i < vm::min(S, V); ++i) {
                 v[i] = static_cast<T>(other[i]);
             }
         }
@@ -376,7 +376,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return -1 if the left hand size is less than the right hand size, +1 if the left hand size is greater than the right hand size, and 0 if both sides are equal
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr int compare(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = T(0.0)) {
         for (size_t i = 0; i < S; ++i) {
             // NaN handling: sort NaN's above non-NaN's, otherwise they would compare equal to any non-nan value since
@@ -448,7 +448,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vectors are component wise equal up to the given epsilon value
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_equal(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon) {
         return compare(lhs, rhs, epsilon) == 0;
     }
@@ -462,7 +462,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given vectors have equal values for each component, and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator==(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) == 0;
     }
@@ -476,7 +476,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given vectors do not have equal values for each component, and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator!=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) != 0;
     }
@@ -490,7 +490,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given left hand vector is less than the given right hand vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator<(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) < 0;
     }
@@ -504,7 +504,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given left hand vector is less than or equal to the given right hand vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator<=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) <= 0;
     }
@@ -518,7 +518,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given left hand vector is greater than than the given right hand vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator>(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) > 0;
     }
@@ -532,7 +532,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return true if the given left hand vector is greater than or equal to than the given right hand vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool operator>=(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return compare(lhs, rhs) >= 0;
     }
@@ -557,7 +557,7 @@ namespace vm {
         template <typename T, std::size_t S>
         using vector_index_elements = vector_index_element<T>[S];
 
-        template <typename T, size_t S, typename Cmp>
+        template <typename T, std::size_t S, typename Cmp>
         constexpr void sort_vector(const vec<T,S>& vector, const Cmp& cmp, vector_index_elements<T,S>& elements) {
             for (std::size_t i = 0u; i < S; ++i) {
                 elements[i].element = vector[i];
@@ -577,7 +577,7 @@ namespace vm {
      * @param k the value of k
      * @return the index of a k-largest component of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr std::size_t find_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
         assert(k < S);
 
@@ -600,7 +600,7 @@ namespace vm {
      * @param k the value of k
      * @return the index of a k-largest absolute component of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr std::size_t find_abs_max_component(const vec<T,S>& vector, const std::size_t k = 0u) {
         assert(k < S);
 
@@ -614,6 +614,26 @@ namespace vm {
     }
 
     /**
+     * Returns the coordinate system axis with the index of the k-largest absolute component of the given vector. If
+     * there are multiple such components, then any such axis may be returned.
+     *
+     * Example: Given vector (-1, 3, -5) and k=0 returns the negative Z axis. Given the same vector and k=1 returns the
+     * positive Y axis.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param vector the vector
+     * @param k the value of k
+     * @return the axis of the k-largest absolute component of the given vector
+     */
+    template <typename T, std::size_t S>
+    constexpr vec<T, S> get_abs_max_component_axis(const vec<T,S>& vector, const std::size_t k = 0u) {
+        const auto index = find_abs_max_component(vector, k);
+        const auto result = vec<T,S>::axis(index);
+        return vector[index] < static_cast<T>(0) ? -result : result;
+    }
+
+    /**
      * Returns the value of the k-largest component of the given vector.
      *
      * @tparam T the component type
@@ -622,7 +642,7 @@ namespace vm {
      * @param k the value of k
      * @return the value of a k-largest component value of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T get_max_component(vec<T,S> vector, const std::size_t k = 0u) {
         assert(k < S);
 
@@ -644,7 +664,7 @@ namespace vm {
      * @param k the value of k
      * @return the value of a k-largest component of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T get_abs_max_component(vec<T,S> vector, const std::size_t k = 0u) {
         constexpr auto cmp = [](const auto& lhs, const auto& rhs) {
             return abs(lhs) < abs(rhs);
@@ -661,7 +681,7 @@ namespace vm {
      *
      * @return the copy
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator+(const vec<T,S>& vector) {
         return vector;
     }
@@ -671,7 +691,7 @@ namespace vm {
      *
      * @return the inverted copy
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator-(const vec<T,S>& vector) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -690,7 +710,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return the sum of the given two vectors
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator+(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -709,7 +729,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return the difference of the given two vectors
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator-(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -729,7 +749,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return the product of the given two vectors
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator*(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -748,7 +768,7 @@ namespace vm {
      * @param rhs the scalar
      * @return the scalar product of the given vector with the given factor
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator*(const vec<T,S>& lhs, const T rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -768,7 +788,7 @@ namespace vm {
      * @param rhs the vector
      * @return the scalar product of the given vector with the given factor
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator*(const T lhs, const vec<T,S>& rhs) {
         return vec<T,S>(rhs) * lhs;
     }
@@ -783,7 +803,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return the division of the given two vectors
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator/(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -802,7 +822,7 @@ namespace vm {
      * @param rhs the scalar
      * @return the scalar division of the given vector with the given factor
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator/(const vec<T,S>& lhs, const T rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -821,7 +841,7 @@ namespace vm {
      * @param rhs the vector
      * @return the scalar division of the given factor with the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> operator/(const T lhs, const vec<T,S>& rhs) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -843,7 +863,7 @@ namespace vm {
      * @param rest the remaining vectors
      * @return the component wise minimum of the given vectors
      */
-    template <typename T, size_t S, typename... Rest>
+    template <typename T, std::size_t S, typename... Rest>
     constexpr vec<T,S> min(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -863,7 +883,7 @@ namespace vm {
      * @param rest the remaining vectors
      * @return the component wise maximum of the given vectors
      */
-    template <typename T, size_t S, typename... Rest>
+    template <typename T, std::size_t S, typename... Rest>
     constexpr vec<T,S> max(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -883,7 +903,7 @@ namespace vm {
      * @param rest the remaining vectors
      * @return the component wise absolute minimum of the given vectors
      */
-    template <typename T, size_t S, typename... Rest>
+    template <typename T, std::size_t S, typename... Rest>
     constexpr vec<T,S> abs_min(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -903,7 +923,7 @@ namespace vm {
      * @param rest the remaining vectors
      * @return the component wise absolute maximum of the given vectors
      */
-    template <typename T, size_t S, typename... Rest>
+    template <typename T, std::size_t S, typename... Rest>
     constexpr vec<T,S> abs_max(const vec<T,S>& lhs, const vec<T,S>& rhs, Rest... rest) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -923,7 +943,7 @@ namespace vm {
      * @param maxVal the maximum values
      * @return the clamped vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> clamp(const vec<T,S>& v, const vec<T,S>& minVal, const vec<T,S>& maxVal) {
         return min(max(v, minVal), maxVal);
     }
@@ -937,7 +957,7 @@ namespace vm {
      * @param v the vector to make absolute
      * @return the absolute vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> abs(const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -959,7 +979,7 @@ namespace vm {
      * @param v a vector
      * @return a vector indicating the signs of the components of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> sign(const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -978,7 +998,7 @@ namespace vm {
      * @param e the edge vector
      * @return a vector indicating whether the given value is less than the given edge value or not
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> step(const vec<T,S>& e, const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -998,7 +1018,7 @@ namespace vm {
      * @param v the vector to interpolate
      * @return the interpolated vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> smoothstep(const vec<T,S>& e0, const vec<T,S>& e1, const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1016,7 +1036,7 @@ namespace vm {
      * @param rhs the right hand vector
      * @return the dot product of the given vectors
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T dot(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         auto result = static_cast<T>(0.0);
         for (size_t i = 0; i < S; ++i) {
@@ -1048,7 +1068,7 @@ namespace vm {
      * @param vec the vector to normalize
      * @return the squared length of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T squared_length(const vec<T,S>& vec) {
         return dot(vec, vec);
     }
@@ -1061,7 +1081,7 @@ namespace vm {
      * @param vec the vector to return the length of
      * @return the length of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     T length(const vec<T,S>& vec) {
         return sqrt(squared_length(vec));
     }
@@ -1074,7 +1094,7 @@ namespace vm {
      * @param vec the vector to return the length of
      * @return the length of the given vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T length_c(const vec<T,S>& vec) {
         return sqrt_c(squared_length(vec));
     }
@@ -1087,7 +1107,7 @@ namespace vm {
      * @param vec the vector to return the squared length of
      * @return the normalized vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     vec<T,S> normalize(const vec<T,S>& vec) {
         return vec / length(vec);
     }
@@ -1100,7 +1120,7 @@ namespace vm {
      * @param vec the vector to return the squared length of
      * @return the normalized vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> normalize_c(const vec<T,S>& vec) {
         return vec / length_c(vec);
     }
@@ -1118,7 +1138,7 @@ namespace vm {
      * @return the swizzled point
      */
     template <typename T>
-    constexpr vec<T,3> swizzle(const vec<T,3>& point, const size_t axis) {
+    constexpr vec<T,3> swizzle(const vec<T,3>& point, const std::size_t axis) {
         assert(axis <= 3);
         switch (axis) {
             case 0: // x y z -> y z x
@@ -1140,7 +1160,7 @@ namespace vm {
      * @return the unswizzled point
      */
     template <typename T>
-    constexpr vec<T,3> unswizzle(const vec<T,3>& point, const size_t axis) {
+    constexpr vec<T,3> unswizzle(const vec<T,3>& point, const std::size_t axis) {
         assert(axis <= 3);
         switch (axis) {
             case 0:
@@ -1161,7 +1181,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vector has a length of 1 and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     bool is_unit(const vec<T,S>& v, const T epsilon) {
         return is_equal(length(v), T(1.0), epsilon);
     }
@@ -1175,7 +1195,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vector has a length of 1 and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_unit_c(const vec<T,S>& v, const T epsilon) {
         return is_equal(length_c(v), T(1.0), epsilon);
     }
@@ -1189,7 +1209,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vector has a length of 0 and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_zero(const vec<T,S>& v, const T epsilon) {
         for (size_t i = 0; i < S; ++i) {
             if (!is_zero(v[i], epsilon)) {
@@ -1207,7 +1227,7 @@ namespace vm {
      * @param v the vector to check
      * @return true if the given vector has NaN as any component
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_nan(const vec<T,S>& v) {
         for (size_t i = 0; i < S; ++i) {
             if (is_nan(v[i])) {
@@ -1226,7 +1246,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if all components of the given vector are integral under the above definition
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_integral(const vec<T,S>& v, const T epsilon = static_cast<T>(0.0)) {
         for (size_t i = 0; i < S; ++i) {
             if (abs(v[i] - round(v[i])) > epsilon) {
@@ -1249,7 +1269,7 @@ namespace vm {
      * @param f the mixing factors
      * @return the mixed vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> mix(const vec<T,S>& lhs, const vec<T,S>& rhs, const vec<T,S>& f) {
         return (vec<T,S>::one() - f) * lhs + f * rhs;
     }
@@ -1266,7 +1286,7 @@ namespace vm {
      * @param v the vector
      * @return the fractional vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> fract(const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1285,7 +1305,7 @@ namespace vm {
      * @param f the divisor
      * @return the fractional remainder
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> mod(const vec<T,S>& v, const vec<T,S>& f) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1303,7 +1323,7 @@ namespace vm {
      * @param rhs the second point
      * @return the distance between the given points
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     T distance(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return length(lhs - rhs);
     }
@@ -1317,7 +1337,7 @@ namespace vm {
      * @param rhs the second point
      * @return the distance between the given points
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T distance_c(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return length_c(lhs - rhs);
     }
@@ -1331,7 +1351,7 @@ namespace vm {
      * @param rhs the second point
      * @return the squared distance between the given points
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr T squared_distance(const vec<T,S>& lhs, const vec<T,S>& rhs) {
         return squared_length(lhs - rhs);
     }
@@ -1345,7 +1365,7 @@ namespace vm {
      * @param point the point in cartesian coordinates
      * @return the point in homogeneous coordinates
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S+1> to_homogeneous_coords(const vec<T,S>& point) {
         return vec<T,S+1>(point, static_cast<T>(1.0));
     }
@@ -1359,7 +1379,7 @@ namespace vm {
      * @param point the point in homogeneous coordinates
      * @return the point in cartesian coordinates
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S-1> to_cartesian_coords(const vec<T,S>& point) {
         vec<T,S-1> result;
         for (size_t i = 0; i < S-1; ++i) {
@@ -1379,7 +1399,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given three points are colinear, and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_colinear(const vec<T,S>& a, const vec<T,S>& b, const vec<T,S>& c, const T epsilon = constants<T>::colinearEpsilon()) {
         // see http://math.stackexchange.com/a/1778739
 
@@ -1408,7 +1428,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vectors are parallel, and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     bool is_parallel(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
         const T cos = dot(normalize(lhs), normalize(rhs));
         return is_equal(abs(cos), T(1.0), epsilon);
@@ -1425,7 +1445,7 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return true if the given vectors are parallel, and false otherwise
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_parallel_c(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
         const T cos = dot(normalize_c(lhs), normalize_c(rhs));
         return is_equal(abs(cos), T(1.0), epsilon);
@@ -1442,7 +1462,7 @@ namespace vm {
      * @param v the value
      * @return a vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> floor(const vec<T,S>& v) {
         static_assert(std::is_floating_point<T>::value, "T must be a float point type");
         vec<T,S> result;
@@ -1461,7 +1481,7 @@ namespace vm {
      * @param v the value
      * @return a vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> ceil(const vec<T,S>& v) {
         static_assert(std::is_floating_point<T>::value, "T must be a float point type");
         vec<T,S> result;
@@ -1480,7 +1500,7 @@ namespace vm {
      * @param v the vector to truncate
      * @return the truncated vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> trunc(const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1498,7 +1518,7 @@ namespace vm {
      * @param v the vector to round
      * @return the rounded vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> round(const vec<T,S>& v) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1516,7 +1536,7 @@ namespace vm {
      * @param m the multiples to round down to
      * @return the rounded vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> snapDown(const vec<T,S>& v, const vec<T,S>& m) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1534,7 +1554,7 @@ namespace vm {
      * @param m the multiples to round up to
      * @return the rounded vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> snapUp(const vec<T,S>& v, const vec<T,S>& m) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1552,7 +1572,7 @@ namespace vm {
      * @param m the multiples to round to
      * @return the rounded vector
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr vec<T,S> snap(const vec<T,S>& v, const vec<T,S>& m) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
@@ -1571,8 +1591,8 @@ namespace vm {
      * @param epsilon the epsilon value
      * @return the corrected vector
      */
-    template <typename T, size_t S>
-    constexpr vec<T,S> correct(const vec<T,S>& v, const size_t decimals = 0, const T epsilon = constants<T>::correctEpsilon()) {
+    template <typename T, std::size_t S>
+    constexpr vec<T,S> correct(const vec<T,S>& v, const std::size_t decimals = 0, const T epsilon = constants<T>::correctEpsilon()) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
             result[i] = correct(v[i], decimals, epsilon);
@@ -1593,7 +1613,7 @@ namespace vm {
      * @param end the segment end
      * @return true if the given point is contained within the segment
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     bool is_between(const vec<T,S>& p, const vec<T,S>& start, const vec<T,S>& end) {
         assert(is_colinear(p, start, end));
 
@@ -1621,7 +1641,7 @@ namespace vm {
      * @param end the segment end
      * @return true if the given point is contained within the segment
      */
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     constexpr bool is_between_c(const vec<T,S>& p, const vec<T,S>& start, const vec<T,S>& end) {
         assert(is_colinear(p, start, end));
 
@@ -1691,7 +1711,7 @@ namespace vm {
 
     /* ========== stream operators ========== */
 
-    template <typename T, size_t S>
+    template <typename T, std::size_t S>
     std::ostream& operator<<(std::ostream& stream, const vec<T,S>& vec) {
         if (S > 0) {
             stream << vec[0];

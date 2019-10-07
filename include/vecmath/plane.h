@@ -440,9 +440,7 @@ namespace vm {
      */
     template <typename T>
     constexpr plane<T,3> aligned_orthogonal_plane(const vec<T, 3>& position, const vec<T, 3>& direction) {
-        const auto index = find_abs_max_component(direction);
-        const auto axis = vec<T, 3>::axis(index);
-        return plane<T,3>(position, axis);
+        return plane<T,3>(position, get_abs_max_component_axis(direction));
     }
 
     /**

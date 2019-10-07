@@ -311,7 +311,7 @@ namespace vm {
         if (!valid) {
             return nan<T>();
         } else {
-            return intersectRayAndPolygon(r, plane, cur, end, get);
+            return intersect_ray_polygon(r, plane, cur, end, get);
         }
     }
 

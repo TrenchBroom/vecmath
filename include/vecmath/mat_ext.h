@@ -560,23 +560,23 @@ namespace vm {
         // and the Z axis is the projection direction
         vec<T, 3> xAxis;
 
-        switch (firstComponent(normal)) {
+        switch (find_max_component(normal)) {
             case axis::x:
-                xAxis = normalize(cross(normal, vec<T, 3>::pos_z));
+                xAxis = normalize(cross(normal, vec<T, 3>::pos_z()));
                 break;
             default:
-                xAxis = normalize(cross(normal, vec<T, 3>::pos_x));
+                xAxis = normalize(cross(normal, vec<T, 3>::pos_x()));
                 break;
         }
 
         const auto  yAxis = normalize(cross(normal, xAxis));
         const auto& zAxis = direction;
 
-        assert(isUnit(xAxis, constants<T>::almostZero()));
-        assert(isUnit(yAxis, constants<T>::almostZero()));
-        assert(isUnit(zAxis, constants<T>::almostZero()));
+        assert(is_unit(xAxis, constants<T>::almostZero()));
+        assert(is_unit(yAxis, constants<T>::almostZero()));
+        assert(is_unit(zAxis, constants<T>::almostZero()));
 
-        return coordinateSystemMatrix(xAxis, yAxis, zAxis, distance * normal);
+        return coordinate_system_matrix(xAxis, yAxis, zAxis, distance * normal);
     }
 
     /**
@@ -626,14 +626,14 @@ namespace vm {
     template <typename T>
     constexpr mat<T, 4, 4> scale_bbox_matrix(const bbox<T, 3>& oldBBox, const bbox<T, 3>& newBBox) {
         const auto scaleFactors = newBBox.size() / oldBBox.size();
-        return translationMatrix(newBBox.min) * scalingMatrix(scaleFactors) * translationMatrix(-oldBBox.min);
+        return translation_matrix(newBBox.min) * scaling_matrix(scaleFactors) * translation_matrix(-oldBBox.min);
     }
 
     // TODO: add documentation and tests
     template <typename T>
     constexpr mat<T, 4, 4> scale_bbox_matrix_with_anchor(const bbox<T, 3>& oldBBox, const vec<T, 3>& newSize, const vec<T, 3>& anchorPoint) {
         const auto scaleFactors = newSize / oldBBox.size();
-        return translationMatrix(anchorPoint) * scalingMatrix(scaleFactors) * translationMatrix(-anchorPoint);
+        return translation_matrix(anchorPoint) * scaling_matrix(scaleFactors) * translation_matrix(-anchorPoint);
     }
 
     // TODO: add documentation and tests
@@ -643,22 +643,22 @@ namespace vm {
 
         // shearMatrix(const T Sxy, const T Sxz, const T Syx, const T Syz, const T Szx, const T Szy) {
         mat<T, 4, 4> shearMat;
-        if (sideToShear == vec<T, 3>::pos_x) {
+        if (sideToShear == vec<T, 3>::pos_x()) {
             const auto relativeDelta = delta / oldSize.x();
             shearMat = shearMatrix(relativeDelta.y(), relativeDelta.z(), 0., 0., 0., 0.);
-        } else if (sideToShear == vec<T, 3>::neg_x) {
+        } else if (sideToShear == vec<T, 3>::neg_x()) {
             const auto relativeDelta = delta / oldSize.x();
             shearMat = shearMatrix(-relativeDelta.y(), -relativeDelta.z(), 0., 0., 0., 0.);
-        } else if (sideToShear == vec<T, 3>::pos_y) {
+        } else if (sideToShear == vec<T, 3>::pos_y()) {
             const auto relativeDelta = delta / oldSize.y();
             shearMat = shearMatrix(0., 0., relativeDelta.x(), relativeDelta.z(), 0., 0.);
-        } else if (sideToShear == vec<T, 3>::neg_y) {
+        } else if (sideToShear == vec<T, 3>::neg_y()) {
             const auto relativeDelta = delta / oldSize.y();
             shearMat = shearMatrix(0., 0., -relativeDelta.x(), -relativeDelta.z(), 0., 0.);
-        } else if (sideToShear == vec<T, 3>::pos_z) {
+        } else if (sideToShear == vec<T, 3>::pos_z()) {
             const auto relativeDelta = delta / oldSize.z();
             shearMat = shearMatrix(0., 0., 0., 0., relativeDelta.x(), relativeDelta.y());
-        } else if (sideToShear == vec<T, 3>::neg_z) {
+        } else if (sideToShear == vec<T, 3>::neg_z()) {
             const auto relativeDelta = delta / oldSize.z();
             shearMat = shearMatrix(0., 0., 0., 0., -relativeDelta.x(), -relativeDelta.y());
         }
@@ -676,7 +676,7 @@ namespace vm {
         box.forEachFace(visitor);
         assert(didGrab);
 
-        return translationMatrix(vertOnOppositeSide) * shearMat * translationMatrix(-vertOnOppositeSide);
+        return translation_matrix(vertOnOppositeSide) * shearMat * translation_matrix(-vertOnOppositeSide);
     }
 
     /**
