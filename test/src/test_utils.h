@@ -28,7 +28,7 @@
 #define CE_ASSERT_NE(exp, expr) { constexpr auto _r_r = (expr); ASSERT_NE((exp), _r_r); }
 #define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_FLOAT_EQ((exp), _r_r); }
 #define CE_ASSERT_DOUBLE_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_DOUBLE_EQ((exp), _r_r); }
-#define CE_ASSERT_NEAR(exp, expr, epsilon) { constexpr auto _r_r = (expr); ASSERT_NEAR((exp), _r_r, (epsilon))M }
+#define CE_ASSERT_NEAR(exp, expr, epsilon) { constexpr auto _r_r = (expr); ASSERT_NEAR((exp), _r_r, (epsilon)); }
 #define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_VEC_EQ((exp), _r_r); }
 #define CE_ASSERT_MAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_MAT_EQ((exp), _r_r); }
 

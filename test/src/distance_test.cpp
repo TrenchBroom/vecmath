@@ -94,29 +94,29 @@ namespace vm {
 
         constexpr auto segDist1 = squared_distance(ray1, ray1);
         CER_ASSERT_TRUE(segDist1.parallel)
-        CER_ASSERT_FLOAT_EQ(0.0f, segDist1.distance)
+        CER_ASSERT_NEAR(0.0f, segDist1.distance, 0.001f)
 
         constexpr auto segDist2 = squared_distance(ray1, ray3f(vec3f(1.0f, 1.0, 0.0f), vec3f::pos_z()));
         CER_ASSERT_TRUE(segDist2.parallel)
-        CER_ASSERT_FLOAT_EQ(2.0f, segDist2.distance)
+        CER_ASSERT_NEAR(2.0f, segDist2.distance, 0.001f)
 
         constexpr auto segDist3 = squared_distance(ray1, ray3f(vec3f(1.0f, 1.0f, 0.0f), normalize_c(vec3f(1.0f, 1.0f, 1.0f))));
         CER_ASSERT_FALSE(segDist3.parallel)
-        CER_ASSERT_FLOAT_EQ(0.0f, segDist3.position1)
-        CER_ASSERT_FLOAT_EQ(2.0f, segDist3.distance)
-        CER_ASSERT_FLOAT_EQ(0.0f, segDist3.position2)
+        CER_ASSERT_NEAR(0.0f, segDist3.position1, 0.001f)
+        CER_ASSERT_NEAR(2.0f, segDist3.distance, 0.001f)
+        CER_ASSERT_NEAR(0.0f, segDist3.position2, 0.001f)
 
         constexpr auto segDist4 = squared_distance(ray1, ray3f(vec3f(1.0f, 1.0f, 0.0f), normalize_c(vec3f(-1.0f, -1.0f, +1.0f))));
         CER_ASSERT_FALSE(segDist4.parallel)
-        CER_ASSERT_FLOAT_EQ(1.0f, segDist4.position1)
-        CER_ASSERT_FLOAT_EQ(0.0f, segDist4.distance)
-        CER_ASSERT_FLOAT_EQ(length(vec3f(1.0f, 1.0f, 1.0f)), segDist4.position2)
+        CER_ASSERT_NEAR(1.0f, segDist4.position1, 0.001f)
+        CER_ASSERT_NEAR(0.0f, segDist4.distance, 0.001f)
+        CER_ASSERT_NEAR(length(vec3f(1.0f, 1.0f, 1.0f)), segDist4.position2, 0.001f)
 
         constexpr auto segDist5 = squared_distance(ray1, ray3f(vec3f(1.0f, 1.0f, 0.0f), normalize_c(vec3f(-1.0f, 0.0f, +1.0f))));
         CER_ASSERT_FALSE(segDist5.parallel)
-        CER_ASSERT_FLOAT_EQ(1.0f, segDist5.position1)
-        CER_ASSERT_FLOAT_EQ(1.0f, segDist5.distance)
-        CER_ASSERT_FLOAT_EQ(length(vec3f(1.0f, 0.0f, 1.0f)), segDist5.position2)
+        CER_ASSERT_NEAR(1.0f, segDist5.position1, 0.001f)
+        CER_ASSERT_NEAR(1.0f, segDist5.distance, 0.001f)
+        CER_ASSERT_NEAR(length(vec3f(1.0f, 0.0f, 1.0f)), segDist5.position2, 0.001f)
     }
 
     TEST(distance_test, distance_ray_line) {
