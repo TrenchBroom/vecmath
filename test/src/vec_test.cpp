@@ -279,6 +279,7 @@ namespace vm {
         CER_ASSERT_EQ(0u, find_max_component(vec3f(3.0f, 1.0f, -2.0f), 0))
         CER_ASSERT_EQ(1u, find_max_component(vec3f(3.0f, 1.0f, -2.0f), 1))
         CER_ASSERT_EQ(2u, find_max_component(vec3f(3.0f, 1.0f, -2.0f), 2))
+        CER_ASSERT_EQ(1u, find_max_component(normalize_c(vec3f(1.0f, 2.0f, -3.0f)), 0))
     }
 
     TEST(vec_test, find_abs_max_component) {
@@ -292,6 +293,7 @@ namespace vm {
         CER_ASSERT_EQ(0u, find_abs_max_component(vec3f(3.0f, 1.0f, -2.0f), 0))
         CER_ASSERT_EQ(2u, find_abs_max_component(vec3f(3.0f, 1.0f, -2.0f), 1))
         CER_ASSERT_EQ(1u, find_abs_max_component(vec3f(3.0f, 1.0f, -2.0f), 2))
+        CER_ASSERT_EQ(2u, find_abs_max_component(normalize_c(vec3f(1.0f, 2.0f, -3.0f)), 0))
     }
 
     TEST(vec_test, get_max_component) {
