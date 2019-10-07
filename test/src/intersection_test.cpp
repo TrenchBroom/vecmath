@@ -252,9 +252,9 @@ namespace vm {
     }
 
     bool lineOnPlane(const plane3f& plane, const line3f& line) {
-        if (plane.point_status(line.point) != point_status::inside){
+        if (plane.point_status(line.point) != plane_status::inside){
             return false;
-        } else if (plane.point_status(point_at_distance(line, 16.0f)) != point_status::inside) {
+        } else if (plane.point_status(point_at_distance(line, 16.0f)) != plane_status::inside) {
             return false;
         } else {
             return true;

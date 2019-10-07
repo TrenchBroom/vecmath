@@ -45,7 +45,7 @@ namespace vm {
 
     };
 
-    enum class point_status {
+    enum class plane_status {
         above,
         below,
         inside

@@ -114,9 +114,9 @@ namespace vm {
 
     TEST(plane_test, point_status) {
         constexpr auto p = plane3f(10.0f, vec3f::pos_z());
-        CER_ASSERT_EQ(point_status::above, p.point_status(vec3f(0.0f, 0.0f, 11.0f)))
-        CER_ASSERT_EQ(point_status::below, p.point_status(vec3f(0.0f, 0.0f, 9.0f)))
-        CER_ASSERT_EQ(point_status::inside, p.point_status(vec3f(0.0f, 0.0f, 10.0f)))
+        CER_ASSERT_EQ(plane_status::above, p.point_status(vec3f(0.0f, 0.0f, 11.0f)))
+        CER_ASSERT_EQ(plane_status::below, p.point_status(vec3f(0.0f, 0.0f, 9.0f)))
+        CER_ASSERT_EQ(plane_status::inside, p.point_status(vec3f(0.0f, 0.0f, 10.0f)))
     }
 
     TEST(plane_test, flip) {
@@ -131,7 +131,7 @@ namespace vm {
 
         const auto pt = p.transform(rm * tm);
         ASSERT_TRUE(is_unit(p.normal, vm::Cd::almostZero()));
-        ASSERT_EQ(point_status::inside, pt.point_status(rm * tm * p.anchor()));
+        ASSERT_EQ(plane_status::inside, pt.point_status(rm * tm * p.anchor()));
         ASSERT_VEC_EQ(rm * p.normal, pt.normal);
     }
 
@@ -142,7 +142,7 @@ namespace vm {
 
         constexpr auto pt = p.transform_c(sm * tm);
         CER_ASSERT_TRUE(is_unit_c(p.normal, vm::Cd::almostZero()))
-        CER_ASSERT_EQ(point_status::inside, pt.point_status(sm * tm * p.anchor()))
+        CER_ASSERT_EQ(plane_status::inside, pt.point_status(sm * tm * p.anchor()))
         CER_ASSERT_VEC_EQ(normalize_c(sm * p.normal), pt.normal)
     }
 
@@ -317,7 +317,7 @@ namespace vm {
     TEST(plane_test, horizontal_plane) {
         constexpr auto position = vec3f(322.0f, -122.2392f, 34.0f);
         constexpr auto p = horizontal_plane(position);
-        CER_ASSERT_TRUE(p.point_status(position) == point_status::inside)
+        CER_ASSERT_TRUE(p.point_status(position) == plane_status::inside)
         CER_ASSERT_VEC_EQ(vec3f::pos_z(), p.normal)
     }
 
@@ -325,7 +325,7 @@ namespace vm {
         const auto position = vec3f(322.0f, -122.2392f, 34.0f);
         const auto direction = normalize(vec3f(1.0f, 2.0f, -3.0f));
         const auto p = orthogonal_plane(position, direction);
-        ASSERT_TRUE(p.point_status(position) == point_status::inside);
+        ASSERT_TRUE(p.point_status(position) == plane_status::inside);
         ASSERT_VEC_EQ(direction, p.normal);
     }
 
@@ -333,7 +333,7 @@ namespace vm {
         constexpr auto position = vec3f(322.0f, -122.2392f, 34.0f);
         constexpr auto direction = normalize_c(vec3f(1.0f, 2.0f, -3.0f));
         constexpr auto p = aligned_orthogonal_plane(position, direction);
-        CER_ASSERT_TRUE(p.point_status(position) == point_status::inside)
+        CER_ASSERT_TRUE(p.point_status(position) == plane_status::inside)
         CER_ASSERT_VEC_EQ(vec3f::pos_z(), p.normal)
     }
 }

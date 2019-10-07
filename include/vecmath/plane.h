@@ -156,14 +156,14 @@ namespace vm {
          * @param epsilon an epsilon value (the maximum absolute distance up to which a point will be considered to be inside)
          * @return a value indicating the point status
          */
-        constexpr point_status point_status(const vec<T,S>& point, const T epsilon = constants<T>::pointStatusEpsilon()) const {
+        constexpr plane_status point_status(const vec<T,S>& point, const T epsilon = constants<T>::pointStatusEpsilon()) const {
             const auto dist = point_distance(point);
             if (dist >  epsilon) {
-                return point_status::above;
+                return plane_status::above;
             } else if (dist < -epsilon) {
-                return point_status::below;
+                return plane_status::below;
             } else {
-                return point_status::inside;
+                return plane_status::inside;
             }
         }
 

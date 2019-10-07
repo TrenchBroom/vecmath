@@ -83,9 +83,9 @@ namespace vm {
 
     TEST(ray_test, point_status) {
         constexpr auto ray =  ray3f(vec3f::zero(), vec3f::pos_z());
-        CER_ASSERT_EQ(point_status::above, ray.pointStatus(vec3f(0.0f, 0.0f, 1.0f)))
-        CER_ASSERT_EQ(point_status::inside, ray.pointStatus(vec3f(0.0f, 0.0f, 0.0f)))
-        CER_ASSERT_EQ(point_status::below, ray.pointStatus(vec3f(0.0f, 0.0f, -1.0f)))
+        CER_ASSERT_EQ(plane_status::above, ray.pointStatus(vec3f(0.0f, 0.0f, 1.0f)))
+        CER_ASSERT_EQ(plane_status::inside, ray.pointStatus(vec3f(0.0f, 0.0f, 0.0f)))
+        CER_ASSERT_EQ(plane_status::below, ray.pointStatus(vec3f(0.0f, 0.0f, -1.0f)))
     }
 
     TEST(ray_test, point_at_distance) {

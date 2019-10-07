@@ -131,14 +131,14 @@ namespace vm {
          * @param point the point to check
          * @return a value indicating the relative position of the given point
          */
-        constexpr point_status pointStatus(const vec<T,S>& point) const {
+        constexpr plane_status pointStatus(const vec<T,S>& point) const {
             const auto scale = dot(direction, point - origin);
             if (scale >  constants<T>::pointStatusEpsilon()) {
-                return point_status::above;
+                return plane_status::above;
             } else if (scale < -constants<T>::pointStatusEpsilon()) {
-                return point_status::below;
+                return plane_status::below;
             } else {
-                return point_status::inside;
+                return plane_status::inside;
             }
         }
     };
