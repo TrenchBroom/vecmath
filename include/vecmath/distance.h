@@ -150,7 +150,7 @@ namespace vm {
      */
     template <typename T, size_t S>
     point_distance<T> distance(const segment<T,S>& s, const vec<T,S>& p) {
-        auto distance2 = squaredDistance(s, p);
+        auto distance2 = squared_distance(s, p);
         distance2.distance = sqrt(distance2.distance);
         return distance2;
     }
