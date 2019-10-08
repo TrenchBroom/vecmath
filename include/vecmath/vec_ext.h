@@ -58,7 +58,7 @@ namespace vm {
      */
     template <typename T, std::size_t S, std::size_t N>
     constexpr std::array<vec<T,S>, N> operator+(const std::array<vec<T,S>, N>& lhs, const vec<T,S>& rhs) {
-        std::array<vec<T,S>, N> result;
+        auto result = std::array<vec<T, S>, N> {};
         for (std::size_t i = 0; i < N; ++i) {
             result[i] = lhs[i] + rhs;
         }
@@ -124,7 +124,7 @@ namespace vm {
      */
     template <typename T, std::size_t S, std::size_t N>
     constexpr std::array<vec<T,S>, N> operator*(const std::array<vec<T,S>, N>& lhs, const T rhs) {
-        std::array<vec<T,S>, N> result;
+        auto result = std::array<vec<T, S>, N> {};
         for (std::size_t i = 0u; i < N; ++i) {
             result[i] = lhs[i] * rhs;
         }
