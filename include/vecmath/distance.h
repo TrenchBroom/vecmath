@@ -166,8 +166,10 @@ namespace vm {
      * Uses the notions of the "closest point" on each segment, which is the point at which the distance to the other segment
      * is minimal.
      */
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpadded"
+#endif
     template <typename T>
     struct line_distance {
         /**
@@ -232,7 +234,9 @@ namespace vm {
             return parallel && distance <= maxDistance;
         }
     };
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 
     /**
      * Computes the squared minimal distance of the given ray and the given line segment.

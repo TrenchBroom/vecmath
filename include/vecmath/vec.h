@@ -540,8 +540,10 @@ namespace vm {
     /* ========== sorting and finding components ========== */
 
     namespace detail {
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpadded"
+#endif
         template <typename T>
         struct index_pair {
             T element;
@@ -549,7 +551,9 @@ namespace vm {
 
             constexpr index_pair() : element{}, index{} {}
         };
+#ifdef __clang
 #pragma clang diagnostic pop
+#endif
 
         template <typename T>
         using vector_index_element = index_pair<T>;
