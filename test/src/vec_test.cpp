@@ -65,6 +65,22 @@ namespace vm {
         ASSERT_EQ(static_cast<double>(vf[2]), vd[2]);
     }
 
+    TEST(vec_test, converting_constructor_embed) {
+        constexpr auto vf = vec3f(1.0f, 2.0f, 3.0f);
+        constexpr auto vd = vec4d(vf);
+        ASSERT_EQ(static_cast<double>(vf[0]), vd[0]);
+        ASSERT_EQ(static_cast<double>(vf[1]), vd[1]);
+        ASSERT_EQ(static_cast<double>(vf[2]), vd[2]);
+        ASSERT_EQ(0.0, vd[3]);
+    }
+
+    TEST(vec_test, converting_constructor_trunc) {
+        constexpr auto vf = vec3f(1.0f, 2.0f, 3.0f);
+        constexpr auto vd = vec2d(vf);
+        ASSERT_EQ(static_cast<double>(vf[0]), vd[0]);
+        ASSERT_EQ(static_cast<double>(vf[1]), vd[1]);
+    }
+
     TEST(vec_test, embedding_constructor) {
         constexpr auto vf = vec2f(1.0f, 2.0f);
         constexpr auto vd = vec3d(vf, 3.0f);
@@ -294,6 +310,19 @@ namespace vm {
         CER_ASSERT_EQ(2u, find_abs_max_component(vec3f(3.0f, 1.0f, -2.0f), 1))
         CER_ASSERT_EQ(1u, find_abs_max_component(vec3f(3.0f, 1.0f, -2.0f), 2))
         CER_ASSERT_EQ(2u, find_abs_max_component(normalize_c(vec3f(1.0f, 2.0f, -3.0f)), 0))
+    }
+
+    TEST(vec_test, get_abs_max_component_axis) {
+        CER_ASSERT_EQ(vec3f::pos_x(), get_abs_max_component_axis(vec3f::pos_x()))
+        CER_ASSERT_EQ(vec3f::neg_x(), get_abs_max_component_axis(vec3f::neg_x()))
+        CER_ASSERT_EQ(vec3f::pos_y(), get_abs_max_component_axis(vec3f::pos_y()))
+        CER_ASSERT_EQ(vec3f::neg_y(), get_abs_max_component_axis(vec3f::neg_y()))
+        CER_ASSERT_EQ(vec3f::pos_z(), get_abs_max_component_axis(vec3f::pos_z()))
+        CER_ASSERT_EQ(vec3f::neg_z(), get_abs_max_component_axis(vec3f::neg_z()))
+
+        CER_ASSERT_EQ(vec3f::pos_x(), get_abs_max_component_axis(vec3f(3.0f, -1.0f, 2.0f), 0u))
+        CER_ASSERT_EQ(vec3f::pos_z(), get_abs_max_component_axis(vec3f(3.0f, -1.0f, 2.0f), 1u))
+        CER_ASSERT_EQ(vec3f::neg_y(), get_abs_max_component_axis(vec3f(3.0f, -1.0f, 2.0f), 2u))
     }
 
     TEST(vec_test, get_max_component) {
@@ -726,35 +755,5 @@ namespace vm {
         ASSERT_FLOAT_EQ(Cf::piOverTwo(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(3.0f * Cf::piOverTwo(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
-    }
-
-    // ========== operations on ranges of vectors ==========
-
-    TEST(vec_ext_test, operator_plus_vector) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        ASSERT_EQ(exp, in + vec3f(-1, +1, -2));
-        ASSERT_EQ(exp, vec3f(-1, +1, -2) + in);
-    }
-
-    TEST(vec_ext_test, operator_plus_array) {
-        constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        constexpr auto exp = std::array<vec3f, 2>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        CER_ASSERT_EQ(exp, in + vec3f(-1, +1, -2))
-        CER_ASSERT_EQ(exp, vec3f(-1, +1, -2) + in)
-    }
-
-    TEST(vec_ext_test, operator_multiply_vector) {
-        const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        const auto exp = std::vector<vec3f>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        ASSERT_EQ(exp, in * 3.0f);
-        ASSERT_EQ(exp, 3.0f * in);
-    }
-
-    TEST(vec_ext_test, operator_multiply_array) {
-        constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
-        constexpr auto exp = std::array<vec3f, 2>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        CER_ASSERT_EQ(exp, in * 3.0f)
-        CER_ASSERT_EQ(exp, 3.0f * in)
     }
 }

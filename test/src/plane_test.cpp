@@ -334,6 +334,6 @@ namespace vm {
         constexpr auto direction = normalize_c(vec3f(1.0f, 2.0f, -3.0f));
         constexpr auto p = aligned_orthogonal_plane(position, direction);
         CER_ASSERT_TRUE(p.point_status(position) == plane_status::inside)
-        CER_ASSERT_VEC_EQ(vec3f::pos_z(), p.normal)
+        CER_ASSERT_VEC_EQ(vec3f::neg_z(), p.normal)
     }
 }
