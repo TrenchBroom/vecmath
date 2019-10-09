@@ -111,7 +111,7 @@ namespace vm {
          * @return the missing component to transform the given point to the point of intersection
          */
         constexpr T at(const vec<T,S-1>& point, const axis::type axis) const {
-            if (is_zero(normal[axis], constants<T>::almostZero())) {
+            if (is_zero(normal[axis], constants<T>::almost_zero())) {
                 return static_cast<T>(0.0);
             }
 
@@ -156,7 +156,7 @@ namespace vm {
          * @param epsilon an epsilon value (the maximum absolute distance up to which a point will be considered to be inside)
          * @return a value indicating the point status
          */
-        constexpr plane_status point_status(const vec<T,S>& point, const T epsilon = constants<T>::pointStatusEpsilon()) const {
+        constexpr plane_status point_status(const vec<T,S>& point, const T epsilon = constants<T>::point_status_epsilon()) const {
             const auto dist = point_distance(point);
             if (dist >  epsilon) {
                 return plane_status::above;
@@ -217,7 +217,7 @@ namespace vm {
          */
         constexpr vec<T,S> project_point(const vec<T,S>& point, const vec<T,S>& direction) const {
             const auto cos = dot(direction, normal);
-            if (is_zero(cos, constants<T>::almostZero())) {
+            if (is_zero(cos, constants<T>::almost_zero())) {
                 return vec<T,S>::nan();
             }
             const auto d = dot(distance * normal - point, normal) / cos;
@@ -314,7 +314,7 @@ namespace vm {
      * @return a pair of a boolean indicating whether the plane is valid, and the normal
      */
     template <typename T>
-    std::tuple<bool, vec<T,3>> plane_normal(const vec<T,3>& p1, const vec<T,3>& p2, const vec<T,3>& p3, const T epsilon = constants<T>::angleEpsilon()) {
+    std::tuple<bool, vec<T,3>> plane_normal(const vec<T,3>& p1, const vec<T,3>& p2, const vec<T,3>& p3, const T epsilon = constants<T>::angle_epsilon()) {
         const auto v1 = p3 - p1;
         const auto v2 = p2 - p1;
         const auto normal = cross(v1, v2);

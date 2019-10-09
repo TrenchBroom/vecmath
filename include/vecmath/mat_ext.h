@@ -341,10 +341,10 @@ namespace vm {
         } else {
             phi = 0.0;
             if (rotMat[0][2] == T(-1.0)) {
-                theta = vm::constants<T>::piOverTwo();
+                theta = vm::constants<T>::half_pi();
                 psi = std::atan2(rotMat[1][0], rotMat[2][0]);
             } else {
-                theta = -vm::constants<T>::piOverTwo();
+                theta = -vm::constants<T>::half_pi();
                 psi = std::atan2(-rotMat[1][0], -rotMat[2][0]);
             }
         }
@@ -572,9 +572,9 @@ namespace vm {
         const auto  yAxis = normalize(cross(normal, xAxis));
         const auto& zAxis = direction;
 
-        assert(is_unit(xAxis, constants<T>::almostZero()));
-        assert(is_unit(yAxis, constants<T>::almostZero()));
-        assert(is_unit(zAxis, constants<T>::almostZero()));
+        assert(is_unit(xAxis, constants<T>::almost_zero()));
+        assert(is_unit(yAxis, constants<T>::almost_zero()));
+        assert(is_unit(zAxis, constants<T>::almost_zero()));
 
         return coordinate_system_matrix(xAxis, yAxis, zAxis, distance * normal);
     }
@@ -645,22 +645,22 @@ namespace vm {
         mat<T, 4, 4> shearMat;
         if (sideToShear == vec<T, 3>::pos_x()) {
             const auto relativeDelta = delta / oldSize.x();
-            shearMat = shearMatrix(relativeDelta.y(), relativeDelta.z(), 0., 0., 0., 0.);
+            shearMat = shear_matrix(relativeDelta.y(), relativeDelta.z(), 0., 0., 0., 0.);
         } else if (sideToShear == vec<T, 3>::neg_x()) {
             const auto relativeDelta = delta / oldSize.x();
-            shearMat = shearMatrix(-relativeDelta.y(), -relativeDelta.z(), 0., 0., 0., 0.);
+            shearMat = shear_matrix(-relativeDelta.y(), -relativeDelta.z(), 0., 0., 0., 0.);
         } else if (sideToShear == vec<T, 3>::pos_y()) {
             const auto relativeDelta = delta / oldSize.y();
-            shearMat = shearMatrix(0., 0., relativeDelta.x(), relativeDelta.z(), 0., 0.);
+            shearMat = shear_matrix(0., 0., relativeDelta.x(), relativeDelta.z(), 0., 0.);
         } else if (sideToShear == vec<T, 3>::neg_y()) {
             const auto relativeDelta = delta / oldSize.y();
-            shearMat = shearMatrix(0., 0., -relativeDelta.x(), -relativeDelta.z(), 0., 0.);
+            shearMat = shear_matrix(0., 0., -relativeDelta.x(), -relativeDelta.z(), 0., 0.);
         } else if (sideToShear == vec<T, 3>::pos_z()) {
             const auto relativeDelta = delta / oldSize.z();
-            shearMat = shearMatrix(0., 0., 0., 0., relativeDelta.x(), relativeDelta.y());
+            shearMat = shear_matrix(0., 0., 0., 0., relativeDelta.x(), relativeDelta.y());
         } else if (sideToShear == vec<T, 3>::neg_z()) {
             const auto relativeDelta = delta / oldSize.z();
-            shearMat = shearMatrix(0., 0., 0., 0., -relativeDelta.x(), -relativeDelta.y());
+            shearMat = shear_matrix(0., 0., 0., 0., -relativeDelta.x(), -relativeDelta.y());
         }
 
         // grab any vertex on side that is opposite the one being sheared.
@@ -673,7 +673,7 @@ namespace vm {
                 didGrab = true;
             }
         };
-        box.forEachFace(visitor);
+        box.for_each_face(visitor);
         assert(didGrab);
 
         return translation_matrix(vertOnOppositeSide) * shearMat * translation_matrix(-vertOnOppositeSide);

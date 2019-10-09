@@ -518,32 +518,32 @@ namespace vm {
     }
 
     TEST(vec_test, is_unit) {
-        ASSERT_TRUE(is_unit(vec3f::pos_x(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(vec3f::pos_y(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(vec3f::pos_z(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(vec3f::neg_x(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(vec3f::neg_y(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(vec3f::neg_z(), vm::Cf::almostZero()));
-        ASSERT_TRUE(is_unit(normalize(vec3f::one()), vm::Cf::almostZero()));
-        ASSERT_FALSE(is_unit(vec3f::one(), vm::Cf::almostZero()));
-        ASSERT_FALSE(is_unit(vec3f::zero(), vm::Cf::almostZero()));
+        ASSERT_TRUE(is_unit(vec3f::pos_x(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(vec3f::pos_y(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(vec3f::pos_z(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(vec3f::neg_x(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(vec3f::neg_y(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(vec3f::neg_z(), vm::Cf::almost_zero()));
+        ASSERT_TRUE(is_unit(normalize(vec3f::one()), vm::Cf::almost_zero()));
+        ASSERT_FALSE(is_unit(vec3f::one(), vm::Cf::almost_zero()));
+        ASSERT_FALSE(is_unit(vec3f::zero(), vm::Cf::almost_zero()));
     }
 
     TEST(vec_test, is_unit_c) {
-        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_x(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_y(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_z(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_x(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_y(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_z(), vm::Cf::almostZero()))
-        CE_ASSERT_TRUE(is_unit_c(normalize_c(vec3f::one()), vm::Cf::almostZero()))
-        CE_ASSERT_FALSE(is_unit_c(vec3f::one(), vm::Cf::almostZero()))
-        CE_ASSERT_FALSE(is_unit_c(vec3f::zero(), vm::Cf::almostZero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_x(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_y(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::pos_z(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_x(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_y(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(vec3f::neg_z(), vm::Cf::almost_zero()))
+        CE_ASSERT_TRUE(is_unit_c(normalize_c(vec3f::one()), vm::Cf::almost_zero()))
+        CE_ASSERT_FALSE(is_unit_c(vec3f::one(), vm::Cf::almost_zero()))
+        CE_ASSERT_FALSE(is_unit_c(vec3f::zero(), vm::Cf::almost_zero()))
     }
 
     TEST(vec_test, is_zero) {
-        CER_ASSERT_TRUE(is_zero(vec3f::zero(), vm::Cf::almostZero()))
-        CER_ASSERT_FALSE(is_zero(vec3f::pos_x(), vm::Cf::almostZero()))
+        CER_ASSERT_TRUE(is_zero(vec3f::zero(), vm::Cf::almost_zero()))
+        CER_ASSERT_FALSE(is_zero(vec3f::pos_x(), vm::Cf::almost_zero()))
     }
 
     TEST(vec_test, is_nan) {
@@ -752,8 +752,8 @@ namespace vm {
 
     TEST(vec_test, measure_angle) {
         ASSERT_FLOAT_EQ(0.0f, measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z()));
-        ASSERT_FLOAT_EQ(Cf::piOverTwo(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
+        ASSERT_FLOAT_EQ(Cf::half_pi(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
-        ASSERT_FLOAT_EQ(3.0f * Cf::piOverTwo(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
+        ASSERT_FLOAT_EQ(3.0f * Cf::half_pi(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
     }
 }

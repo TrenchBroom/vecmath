@@ -21,7 +21,6 @@
 
 #include "test_utils.h"
 
-#include <vecmath/abstract_line.h>
 #include <vecmath/forward.h>
 #include <vecmath/line.h>
 #include <vecmath/mat.h>
@@ -52,12 +51,12 @@ namespace vm {
 
     TEST(line_test, get_origin) {
         constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
-        CER_ASSERT_VEC_EQ(l.point, l.getOrigin())
+        CER_ASSERT_VEC_EQ(l.point, l.get_origin())
     }
 
     TEST(line_test, get_direction) {
         constexpr auto l = line3d(vec3d::one(), vec3d::pos_z());
-        CER_ASSERT_VEC_EQ(l.direction, l.getDirection());
+        CER_ASSERT_VEC_EQ(l.direction, l.get_direction());
     }
 
     TEST(line_test, transform) {
@@ -66,7 +65,7 @@ namespace vm {
         const auto tm = translation_matrix(vec3d::one());
 
         const auto lt = l.transform(rm * tm);
-        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almost_zero()));
         ASSERT_VEC_EQ(rm * tm * l.point, lt.point);
         ASSERT_VEC_EQ(rm * l.direction, lt.direction);
     }
@@ -77,7 +76,7 @@ namespace vm {
         constexpr auto tm = translation_matrix(vec3d::one());
 
         constexpr auto lt = l.transform_c(sm * tm);
-        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(l.direction, vm::Cd::almost_zero()));
         ASSERT_VEC_EQ(sm * tm * l.point, lt.point);
         ASSERT_VEC_EQ(normalize_c(sm * l.direction), lt.direction);
     }
@@ -85,7 +84,7 @@ namespace vm {
     TEST(line_test, make_canonical) {
         constexpr auto l1 = line3d(vec3d(-10, 0, 10), vec3d::pos_x());
         constexpr auto l2 = line3d(vec3d(+10, 0, 10), vec3d::pos_x());
-        CER_ASSERT_EQ(l1.makeCanonical(), l2.makeCanonical())
+        CER_ASSERT_EQ(l1.make_canonical(), l2.make_canonical())
     }
 
     TEST(line_test, distance_to_projected_point) {

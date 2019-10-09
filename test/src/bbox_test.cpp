@@ -314,4 +314,14 @@ namespace vm {
         ASSERT_TRUE(builder.initialized());
         ASSERT_EQ(vm::bbox3f(point1, point2), builder.bounds());
     }
+
+    TEST(bbox_builder_test, add_one_bbox) {
+        const auto bbox = vm::bbox3f(vec3f(2, 3, 4), vec3f(5, 6, 7));
+
+        vm::bbox3f::builder builder;
+        builder.add(bbox);
+
+        ASSERT_TRUE(builder.initialized());
+        ASSERT_EQ(bbox, builder.bounds());
+    }
 }

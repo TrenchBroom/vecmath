@@ -20,7 +20,6 @@
 #ifndef TRENCHBROOM_DISTANCE_H
 #define TRENCHBROOM_DISTANCE_H
 
-#include "abstract_line.h"
 #include "vec.h"
 #include "line.h"
 #include "ray.h"
@@ -230,7 +229,7 @@ namespace vm {
          * @param maxDistance the maximal distance
          * @return true if the two segments are colinear and their distance is at most the given value
          */
-        constexpr bool is_colinear(const T maxDistance = constants<T>::almostZero()) const {
+        constexpr bool is_colinear(const T maxDistance = constants<T>::almost_zero()) const {
             return parallel && distance <= maxDistance;
         }
     };
@@ -263,7 +262,7 @@ namespace vm {
         const auto e = dot(v, w);
         const auto D = a * c - b * b;
 
-        if (is_zero(D, constants<T>::almostZero())) {
+        if (is_zero(D, constants<T>::almost_zero())) {
             const auto f = dot(w, v);
             const auto z = w - f * v;
             return line_distance<T>::Parallel(squared_length(z));
@@ -284,8 +283,8 @@ namespace vm {
             tD = c;
         }
 
-        const auto sc = is_zero(sN, constants<T>::almostZero()) ? static_cast<T>(0.0) : sN / sD;
-        const auto tc = max(is_zero(tN, constants<T>::almostZero()) ? static_cast<T>(0.0) : tN / tD, static_cast<T>(0.0));
+        const auto sc = is_zero(sN, constants<T>::almost_zero()) ? static_cast<T>(0.0) : sN / sD;
+        const auto tc = max(is_zero(tN, constants<T>::almost_zero()) ? static_cast<T>(0.0) : tN / tD, static_cast<T>(0.0));
 
         u = u * sc; // vector from p1 to the closest point on the segment
         v = v * tc; // vector from ray origin to closest point on the ray
@@ -335,7 +334,7 @@ namespace vm {
         auto sD = D;
         auto tD = D;
 
-        if (is_zero(D, constants<T>::almostZero())) {
+        if (is_zero(D, constants<T>::almost_zero())) {
             const auto f = dot(w, v);
             const auto z = w - f * v;
             return line_distance<T>::Parallel(squared_length(z));
@@ -349,8 +348,8 @@ namespace vm {
             tD = c;
         }
 
-        const auto sc = is_zero(sN, constants<T>::almostZero()) ? static_cast<T>(0.0) : sN / sD;
-        const auto tc = max(is_zero(tN, constants<T>::almostZero()) ? static_cast<T>(0.0) : tN / tD, static_cast<T>(0.0));
+        const auto sc = is_zero(sN, constants<T>::almost_zero()) ? static_cast<T>(0.0) : sN / sD;
+        const auto tc = max(is_zero(tN, constants<T>::almost_zero()) ? static_cast<T>(0.0) : tN / tD, static_cast<T>(0.0));
 
         u = u * sc; // vector from the second ray's origin to the closest point on first ray
         v = v * tc; // vector from the first ray's origin to closest point on the first ray
@@ -395,7 +394,7 @@ namespace vm {
         const auto e = dot(l.direction, w0);
 
         const auto D = a * c - b * b;
-        if (is_zero(D, constants<T>::almostZero())) {
+        if (is_zero(D, constants<T>::almost_zero())) {
             const auto f = dot(w0, l.direction);
             const auto z = w0 - f * l.direction;
             return line_distance<T>::Parallel(squared_length(z));

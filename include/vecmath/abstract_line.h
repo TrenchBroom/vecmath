@@ -37,8 +37,8 @@ namespace vm {
      *
      * - Line::component_type, the component type of the origin and direction
      * - Line::size, the number of dimensions
-     * - vec<component_type, size> Line::getOrigin() const, returns the line's origin
-     * - vec<component_type, size> Line::getDirection() const, returns the line's direction
+     * - vec<component_type, size> Line::get_origin() const, returns the line's origin
+     * - vec<component_type, size> Line::get_direction() const, returns the line's direction
      *
      * The functions in this file operate on this concept.
      */
@@ -53,7 +53,7 @@ namespace vm {
      */
     template <typename AL>
     constexpr typename AL::component_type distance_to_projected_point(const AL& abstract_line, const vec<typename AL::component_type, AL::size>& point) {
-        return dot(point - abstract_line.getOrigin(), abstract_line.getDirection());
+        return dot(point - abstract_line.get_origin(), abstract_line.get_direction());
     }
 
     /**
@@ -65,7 +65,7 @@ namespace vm {
      */
     template <typename AL>
     constexpr vec<typename AL::component_type, AL::size> point_at_distance(const AL& abstract_line, const typename AL::component_type distance) {
-        return abstract_line.getOrigin() + abstract_line.getDirection() * distance;
+        return abstract_line.get_origin() + abstract_line.get_direction() * distance;
     }
 
     /**

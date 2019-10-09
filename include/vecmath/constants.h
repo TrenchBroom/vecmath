@@ -29,7 +29,7 @@ namespace vm {
          *
          * @return an epsilon value
          */
-        constexpr static T almostZero() {
+        constexpr static T almost_zero() {
             constexpr T value = static_cast<T>(0.001);
             return value;
         }
@@ -40,7 +40,7 @@ namespace vm {
          *
          * @return an epsilon value
          */
-        constexpr static T pointStatusEpsilon() {
+        constexpr static T point_status_epsilon() {
             constexpr T value = static_cast<T>(0.0001); // this is what tyrbsp uses
             return value;
         }
@@ -50,7 +50,7 @@ namespace vm {
          *
          * @return an epsilon value
          */
-        constexpr static T correctEpsilon() {
+        constexpr static T correct_epsilon() {
             constexpr T value = static_cast<T>(0.001); // this is what QBSP uses
             return value;
         }
@@ -60,7 +60,7 @@ namespace vm {
          *
          * @return an epsilon value
          */
-        constexpr static T colinearEpsilon() {
+        constexpr static T colinear_epsilon() {
             constexpr T value = static_cast<T>(0.00001); // this value seems to hit a sweet spot in relation to the point status epsilon
             return value;
         }
@@ -70,7 +70,7 @@ namespace vm {
          *
          * @return an epsilon value
          */
-        constexpr static T angleEpsilon() {
+        constexpr static T angle_epsilon() {
             constexpr T value = static_cast<T>(0.00000001); // if abs(sin()) of the angle between two vectors is less than this, they are considered to be parallel or opposite
             return value;
         }
@@ -90,7 +90,7 @@ namespace vm {
          *
          * @return the value of 2 * PI
          */
-        constexpr static T twoPi() {
+        constexpr static T two_pi() {
             constexpr T value = static_cast<T>(2.0) * pi();
             return value;
         }
@@ -100,7 +100,7 @@ namespace vm {
          *
          * @return the value of PI / 2
          */
-        constexpr static T piOverTwo() {
+        constexpr static T half_pi() {
             constexpr T value = pi() / static_cast<T>(2.0);
             return value;
         }
@@ -110,7 +110,7 @@ namespace vm {
          *
          * @return the value of PI / 4
          */
-        constexpr static T piOverFour() {
+        constexpr static T quarter_pi() {
             constexpr T value = pi() / static_cast<T>(4.0);
             return value;
         }
@@ -120,28 +120,8 @@ namespace vm {
          *
          * @return the value of 3 * PI / 2
          */
-        constexpr static T threePiOverTwo() {
+        constexpr static T three_half_pi() {
             constexpr T value = static_cast<T>(3.0) * pi() / static_cast<T>(2.0);
-            return value;
-        }
-
-        /**
-         * Returns the value of PI / 180.
-         *
-         * @return the value of PI / 180
-         */
-        constexpr static T piOverStraightAngle() {
-            constexpr T value = pi() / static_cast<T>(180.0);
-            return value;
-        }
-
-        /**
-         * Returns the value of 180 / PI.
-         *
-         * @return the value of 180 / PI.
-         */
-        constexpr static T straightAngleOverPi() {
-            constexpr T value = static_cast<T>(180.0) / pi();
             return value;
         }
 

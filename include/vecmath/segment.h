@@ -20,6 +20,7 @@
 #ifndef TRENCHBROOM_SEGMENT_DECL_H
 #define TRENCHBROOM_SEGMENT_DECL_H
 
+#include "abstract_line.h"
 #include "vec.h"
 #include "mat.h"
 
@@ -81,14 +82,14 @@ namespace vm {
         /**
          * Returns the origin of this segment.
          */
-        constexpr vec<T,S> getOrigin() const {
+        constexpr vec<T,S> get_origin() const {
             return start();
         }
 
         /**
          * Returns the direction of this segment.
          */
-        constexpr vec<T,S> getDirection() const {
+        constexpr vec<T,S> get_direction() const {
             return direction();
         }
 
@@ -194,6 +195,7 @@ namespace vm {
             return normalize(m_end - m_start);
         }
 
+        // FIXME: this is only here because TB's VertexToolBase needs it, it should be moved elsewhere
         /**
          * Adds the start and end points of the given range of segments to the given output iterator.
          *

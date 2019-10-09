@@ -51,7 +51,7 @@ namespace vm {
          */
         polygon(std::initializer_list<vec<T,S>> i_vertices) :
         m_vertices(i_vertices) {
-            rotateMinToFront();
+            rotate_min_to_front();
         }
 
         /**
@@ -61,7 +61,7 @@ namespace vm {
          */
         explicit polygon(const std::vector<vec<T,S>>& i_vertices) :
         m_vertices(i_vertices) {
-            rotateMinToFront();
+            rotate_min_to_front();
         }
 
         /**
@@ -71,10 +71,10 @@ namespace vm {
          */
         explicit polygon(std::vector<vec<T,S>>&& i_vertices) :
         m_vertices(std::move(i_vertices)) {
-            rotateMinToFront();
+            rotate_min_to_front();
         }
     private:
-        void rotateMinToFront() {
+        void rotate_min_to_front() {
             if (!m_vertices.empty()) {
                 const auto begin = std::begin(m_vertices);
                 const auto end = std::end(m_vertices);
@@ -222,6 +222,7 @@ namespace vm {
             return polygon<T,S>(mat * vertices());
         }
 
+        // FIXME: this is only here because TB's VertexToolBase needs it, it should be moved elsewhere
         /**
          * Adds the vertices of the given range of polygons to the given output iterator.
          *
@@ -232,7 +233,7 @@ namespace vm {
          * @param out the output iterator
          */
         template <typename I, typename O>
-        static void getVertices(I cur, I end, O out) {
+        static void get_vertices(I cur, I end, O out) {
             while (cur != end) {
                 const auto& polygon = *cur;
                 for (const auto& vertex : polygon) {

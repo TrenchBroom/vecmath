@@ -30,7 +30,7 @@ namespace vm {
     TEST(quat_test, constructor_default) {
         constexpr auto q = quatf();
         CER_ASSERT_FLOAT_EQ(0.0f, q.r)
-        CER_ASSERT_TRUE(is_zero(q.v, vm::Cf::almostZero()))
+        CER_ASSERT_TRUE(is_zero(q.v, vm::Cf::almost_zero()))
     }
 
     TEST(quat_test, construtor_with_rotation) {

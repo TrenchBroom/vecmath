@@ -448,31 +448,31 @@ namespace vm {
         using c = constants<double>;
 
         CER_ASSERT_EQ(0.0, to_radians(0.0))
-        CER_ASSERT_EQ(c::piOverTwo(), to_radians(90.0))
+        CER_ASSERT_EQ(c::half_pi(), to_radians(90.0))
         CER_ASSERT_EQ(c::pi(), to_radians(180.0))
-        CER_ASSERT_EQ(c::twoPi(), to_radians(360.0))
+        CER_ASSERT_EQ(c::two_pi(), to_radians(360.0))
         CER_ASSERT_EQ(-c::pi(), to_radians(-180.0))
-        CER_ASSERT_EQ(-c::twoPi(), to_radians(-360.0))
+        CER_ASSERT_EQ(-c::two_pi(), to_radians(-360.0))
     }
 
     TEST(scalar_test, to_degrees) {
         using c = constants<double>;
 
         CER_ASSERT_EQ(0.0, to_degrees(0.0))
-        CER_ASSERT_EQ(90.0, to_degrees(c::piOverTwo()))
+        CER_ASSERT_EQ(90.0, to_degrees(c::half_pi()))
         CER_ASSERT_EQ(180.0, to_degrees(c::pi()))
-        CER_ASSERT_EQ(360.0, to_degrees(c::twoPi()))
+        CER_ASSERT_EQ(360.0, to_degrees(c::two_pi()))
         CER_ASSERT_EQ(-180.0, to_degrees(-c::pi()))
-        CER_ASSERT_EQ(-360.0, to_degrees(-c::twoPi()))
+        CER_ASSERT_EQ(-360.0, to_degrees(-c::two_pi()))
     }
 
     TEST(scalar_test, normalize_radians) {
         using c = constants<double>;
 
-        CER_ASSERT_EQ(0.0, normalize_radians(c::twoPi()))
-        CER_ASSERT_EQ(c::piOverTwo(), normalize_radians(c::piOverTwo()))
-        CER_ASSERT_EQ(c::threePiOverTwo(), normalize_radians(-c::piOverTwo()))
-        CER_ASSERT_EQ(c::piOverTwo(), normalize_radians(c::piOverTwo() + c::twoPi()))
+        CER_ASSERT_EQ(0.0, normalize_radians(c::two_pi()))
+        CER_ASSERT_EQ(c::half_pi(), normalize_radians(c::half_pi()))
+        CER_ASSERT_EQ(c::three_half_pi(), normalize_radians(-c::half_pi()))
+        CER_ASSERT_EQ(c::half_pi(), normalize_radians(c::half_pi() + c::two_pi()))
     }
 
     TEST(scalar_test, normalize_degrees) {
@@ -547,23 +547,23 @@ namespace vm {
 
         assertSolution(
             { 2, 2.0, -8.0 },
-            solve_quadratic(1.0, 6.0, -16.0, c::almostZero())
+            solve_quadratic(1.0, 6.0, -16.0, c::almost_zero())
         );
         assertSolution(
             { 2, -1.0, -9.0 },
-            solve_quadratic(1.0, 10.0, 9.0, c::almostZero())
+            solve_quadratic(1.0, 10.0, 9.0, c::almost_zero())
         );
         assertSolution(
             { 2, 7.0, -4.0 },
-            solve_quadratic(0.5, -1.5, -14.0, c::almostZero())
+            solve_quadratic(0.5, -1.5, -14.0, c::almost_zero())
         );
         assertSolution(
             { 1, 2.0, nan<double>() },
-            solve_quadratic(1.0, -4.0, 4.0, c::almostZero())
+            solve_quadratic(1.0, -4.0, 4.0, c::almost_zero())
         );
         assertSolution(
             { 0, nan<double>(), nan<double>() },
-            solve_quadratic(1.0, 12.0, 37.0, c::almostZero())
+            solve_quadratic(1.0, 12.0, 37.0, c::almost_zero())
         );
     }
 
@@ -572,26 +572,26 @@ namespace vm {
 
         assertSolution(
             { 1, -2.0, nan<double>(), nan<double>() },
-            solve_cubic(1.0, 0.0, -2.0, 4.0, c::almostZero())
+            solve_cubic(1.0, 0.0, -2.0, 4.0, c::almost_zero())
         );
         assertSolution(
             { 1, 7.0 / 9.0, nan<double>(), nan<double>() },
-            solve_cubic(9.0, -43.0, 145.0, -91.0, c::almostZero())
+            solve_cubic(9.0, -43.0, 145.0, -91.0, c::almost_zero())
         );
         assertSolution(
             { 3, 4.464101615, 2.0, -2.464101615 },
-            solve_cubic(1.0, -4.0, -7.0, 22.0, c::almostZero())
+            solve_cubic(1.0, -4.0, -7.0, 22.0, c::almost_zero())
         );
 
 
         // casus irreducibilis
         assertSolution(
             { 2, -2.0, 1.0, nan<double>() },
-            solve_cubic(1.0, 0.0, -3.0, 2.0, c::almostZero())
+            solve_cubic(1.0, 0.0, -3.0, 2.0, c::almost_zero())
         );
         assertSolution(
             { 3, 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 },
-            solve_cubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almostZero())
+            solve_cubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almost_zero())
         );
     }
 
@@ -600,27 +600,27 @@ namespace vm {
 
         assertSolution(
             { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
-            solve_quartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almostZero())
+            solve_quartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almost_zero())
         );
         assertSolution(
              { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
-            solve_quartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almostZero())
+            solve_quartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almost_zero())
         );
         assertSolution(
              { 4, -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 },
-            solve_quartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almostZero())
+            solve_quartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almost_zero())
         );
         assertSolution(
              { 2, 1.5986745079, -1.0, nan<double>(), nan<double>() },
-            solve_quartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almostZero())
+            solve_quartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almost_zero())
         );
         assertSolution(
              { 2, -1.0, -1.0, nan<double>(), nan<double>() },
-            solve_quartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almostZero())
+            solve_quartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almost_zero())
         );
         assertSolution(
              { 2, -3.0, 2.0, nan<double>(), nan<double>() },
-            solve_quartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almostZero())
+            solve_quartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almost_zero())
         );
         assertSolution(
             { 4,
@@ -629,7 +629,7 @@ namespace vm {
                 sqrt(11.0) - 1.0,
                 sqrt(6.0) - 1.0
             },
-            solve_quartic(1.0, 4.0, -11.0, -30.0, 50.0, c::almostZero())
+            solve_quartic(1.0, 4.0, -11.0, -30.0, 50.0, c::almost_zero())
         );
     }
 

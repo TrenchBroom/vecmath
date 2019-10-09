@@ -434,8 +434,8 @@ namespace vm {
     }
 
     TEST(mat_test, is_zero) {
-        ASSERT_TRUE(is_zero(mat4x4d::zero(), vm::Cd::almostZero()));
-        ASSERT_FALSE(is_zero(mat4x4d::identity(), vm::Cd::almostZero()));
+        ASSERT_TRUE(is_zero(mat4x4d::zero(), vm::Cd::almost_zero()));
+        ASSERT_FALSE(is_zero(mat4x4d::identity(), vm::Cd::almost_zero()));
     }
 
     TEST(mat_test, operator_equal) {

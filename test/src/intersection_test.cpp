@@ -21,7 +21,6 @@
 
 #include "test_utils.h"
 
-#include <vecmath/abstract_line.h>
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
 #include <vecmath/vec_ext.h>

@@ -42,7 +42,7 @@ namespace vm {
          */
         template <typename T>
         constexpr int handle_polygon_edge_intersection(const vec<T,3>& v0, const vec<T,3>& v1) {
-            if (is_zero(v0, constants<T>::almostZero())) {
+            if (is_zero(v0, constants<T>::almost_zero())) {
                 // the point is identical to a polygon vertex, cancel search
                 return -1;
             }
@@ -62,7 +62,7 @@ namespace vm {
              */
 
             // Does Y segment covered by the given edge touch the X axis at all?
-            if ((is_zero(v0.y(), constants<T>::almostZero()) && is_zero(v1.y(), constants<T>::almostZero())) ||
+            if ((is_zero(v0.y(), constants<T>::almost_zero()) && is_zero(v1.y(), constants<T>::almost_zero())) ||
                 (v0.y() > T(0.0) && v1.y() > T(0.0)) ||
                 (v0.y() < T(0.0) && v1.y() < T(0.0))) {
                 return 0;
@@ -83,7 +83,7 @@ namespace vm {
             const T x = -v0.y() * (v1.x() - v0.x()) / (v1.y() - v0.y()) + v0.x();
 
             // Is the point of intersection on the given edge?
-            if (is_zero(x, constants<T>::almostZero())) {
+            if (is_zero(x, constants<T>::almost_zero())) {
                 return -1;
             }
 
@@ -203,12 +203,12 @@ namespace vm {
     template <typename T, size_t S>
     constexpr T intersect_ray_plane(const ray<T,S>& r, const plane<T,S>& p) {
         const auto d = dot(r.direction, p.normal);
-        if (is_zero(d, constants<T>::almostZero())) {
+        if (is_zero(d, constants<T>::almost_zero())) {
             return nan<T>();
         }
 
         const auto s = dot(p.anchor() - r.origin, p.normal) / d;
-        if (s < -constants<T>::almostZero()) {
+        if (s < -constants<T>::almost_zero()) {
             return nan<T>();
         }
 
@@ -235,7 +235,7 @@ namespace vm {
         const auto  e2 = p3 - p1;
         const auto  p  = cross(d, e2);
         const auto  a  = dot(p, e1);
-        if (is_zero(a, constants<T>::almostZero())) {
+        if (is_zero(a, constants<T>::almost_zero())) {
             return nan<T>();
         }
 
@@ -472,7 +472,7 @@ namespace vm {
         const auto e = omM * omM - T(4.0) * MM * (mm - oz * oz);
 
 
-        auto [num, s1, s2, s3, s4] = vm::solve_quartic(a, b, c, d, e, vm::constants<T>::almostZero());
+        auto [num, s1, s2, s3, s4] = vm::solve_quartic(a, b, c, d, e, vm::constants<T>::almost_zero());
         if (num == 0) {
             return vm::nan<T>();
         } else {
@@ -506,7 +506,7 @@ namespace vm {
     template <typename T, size_t S>
     constexpr T intersect_line_plane(const line<T,S>& l, const plane<T,3>& p) {
         const auto f = dot(l.direction, p.normal);
-        if (is_zero(f, constants<T>::almostZero())) {
+        if (is_zero(f, constants<T>::almost_zero())) {
             return nan<T>();
         } else {
             return dot(p.distance * p.normal - l.point, p.normal) / f;

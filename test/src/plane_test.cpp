@@ -130,7 +130,7 @@ namespace vm {
         const auto tm = translation_matrix(vec3d::one());
 
         const auto pt = p.transform(rm * tm);
-        ASSERT_TRUE(is_unit(p.normal, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(p.normal, vm::Cd::almost_zero()));
         ASSERT_EQ(plane_status::inside, pt.point_status(rm * tm * p.anchor()));
         ASSERT_VEC_EQ(rm * p.normal, pt.normal);
     }
@@ -141,7 +141,7 @@ namespace vm {
         constexpr auto tm = translation_matrix(vec3d::one());
 
         constexpr auto pt = p.transform_c(sm * tm);
-        CER_ASSERT_TRUE(is_unit_c(p.normal, vm::Cd::almostZero()))
+        CER_ASSERT_TRUE(is_unit_c(p.normal, vm::Cd::almost_zero()))
         CER_ASSERT_EQ(plane_status::inside, pt.point_status(sm * tm * p.anchor()))
         CER_ASSERT_VEC_EQ(normalize_c(sm * p.normal), pt.normal)
     }
@@ -172,11 +172,16 @@ namespace vm {
     }
 
     TEST(plane_test, is_equal) {
-        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::pos_x()), constants<float>::almostZero()))
-        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_y()), plane3f(0.0f, vec3f::pos_y()), constants<float>::almostZero()))
-        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_z()), plane3f(0.0f, vec3f::pos_z()), constants<float>::almostZero()))
-        CER_ASSERT_FALSE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::neg_x()), constants<float>::almostZero()))
-        CER_ASSERT_FALSE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::pos_y()), constants<float>::almostZero()))
+        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::pos_x()),
+            constants<float>::almost_zero()))
+        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_y()), plane3f(0.0f, vec3f::pos_y()),
+            constants<float>::almost_zero()))
+        CER_ASSERT_TRUE(is_equal(plane3f(0.0f, vec3f::pos_z()), plane3f(0.0f, vec3f::pos_z()),
+            constants<float>::almost_zero()))
+        CER_ASSERT_FALSE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::neg_x()),
+            constants<float>::almost_zero()))
+        CER_ASSERT_FALSE(is_equal(plane3f(0.0f, vec3f::pos_x()), plane3f(0.0f, vec3f::pos_y()),
+            constants<float>::almost_zero()))
     }
 
     TEST(plane_test, operator_equal) {
@@ -221,7 +226,7 @@ namespace vm {
         bool valid;
         plane3f plane;
         std::array<vec3f, 3> points;
-        const float epsilon = constants<float>::pointStatusEpsilon();
+        const float epsilon = constants<float>::point_status_epsilon();
 
         points[0] = vec3f(0.0f, 0.0f, 0.0f);
         points[1] = vec3f(0.0f, 1.0f, 0.0f);

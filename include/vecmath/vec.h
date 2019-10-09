@@ -363,6 +363,23 @@ namespace vm {
             constexpr auto result = fill(std::numeric_limits<T>::max());
             return result;
         }
+
+        // FIXME: this is only here because TB's VertexToolBase needs it, it should be moved elsewhere
+        /**
+        * Adds the given range of vertices to the given output iterator.
+        *
+        * @tparam I the range iterator type
+        * @tparam O the output iterator type
+        * @param cur the range start
+        * @param end the range end
+        * @param out the output iterator
+        */
+        template <typename I, typename O>
+        static constexpr void get_vertices(I cur, I end, O out) {
+            while (cur != end) {
+                out++ = *cur++;
+            }
+        }
     };
 
     /* ========== comparison operators ========== */
@@ -1404,7 +1421,7 @@ namespace vm {
      * @return true if the given three points are colinear, and false otherwise
      */
     template <typename T, std::size_t S>
-    constexpr bool is_colinear(const vec<T,S>& a, const vec<T,S>& b, const vec<T,S>& c, const T epsilon = constants<T>::colinearEpsilon()) {
+    constexpr bool is_colinear(const vec<T,S>& a, const vec<T,S>& b, const vec<T,S>& c, const T epsilon = constants<T>::colinear_epsilon()) {
         // see http://math.stackexchange.com/a/1778739
 
         T j = 0.0;
@@ -1433,7 +1450,7 @@ namespace vm {
      * @return true if the given vectors are parallel, and false otherwise
      */
     template <typename T, std::size_t S>
-    bool is_parallel(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
+    bool is_parallel(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinear_epsilon()) {
         const T cos = dot(normalize(lhs), normalize(rhs));
         return is_equal(abs(cos), T(1.0), epsilon);
     }
@@ -1450,7 +1467,7 @@ namespace vm {
      * @return true if the given vectors are parallel, and false otherwise
      */
     template <typename T, std::size_t S>
-    constexpr bool is_parallel_c(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinearEpsilon()) {
+    constexpr bool is_parallel_c(const vec<T,S>& lhs, const vec<T,S>& rhs, const T epsilon = constants<T>::colinear_epsilon()) {
         const T cos = dot(normalize_c(lhs), normalize_c(rhs));
         return is_equal(abs(cos), T(1.0), epsilon);
     }
@@ -1596,7 +1613,7 @@ namespace vm {
      * @return the corrected vector
      */
     template <typename T, std::size_t S>
-    constexpr vec<T,S> correct(const vec<T,S>& v, const std::size_t decimals = 0, const T epsilon = constants<T>::correctEpsilon()) {
+    constexpr vec<T,S> correct(const vec<T,S>& v, const std::size_t decimals = 0, const T epsilon = constants<T>::correct_epsilon()) {
         vec<T,S> result;
         for (size_t i = 0; i < S; ++i) {
             result[i] = correct(v[i], decimals, epsilon);
@@ -1699,16 +1716,16 @@ namespace vm {
     template <typename T>
     T measure_angle(const vec<T,3>& v, const vec<T,3>& axis, const vec<T,3>& up) {
         const auto cos = dot(v, axis);
-        if (is_equal(cos, T(+1.0), vm::constants<T>::almostZero())) {
+        if (is_equal(cos, T(+1.0), vm::constants<T>::almost_zero())) {
             return T(0.0);
-        } else if (is_equal(cos, T(-1.0), vm::constants<T>::almostZero())) {
+        } else if (is_equal(cos, T(-1.0), vm::constants<T>::almost_zero())) {
             return constants<T>::pi();
         } else {
             const auto perp = cross(axis, v);
             if (dot(perp, up) >= T(0.0)) {
                 return std::acos(cos);
             } else {
-                return constants<T>::twoPi() - std::acos(cos);
+                return constants<T>::two_pi() - std::acos(cos);
             }
         }
     }

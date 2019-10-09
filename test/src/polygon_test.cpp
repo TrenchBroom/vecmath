@@ -174,7 +174,7 @@ namespace vm {
         exp.insert(std::end(exp), std::begin(p2), std::end(p2));
 
         auto act = std::vector<vec3d>();
-        polygon3d::getVertices(std::begin(ps), std::end(ps), std::back_inserter(act));
+        polygon3d::get_vertices(std::begin(ps), std::end(ps), std::back_inserter(act));
 
         ASSERT_EQ(exp, act);
     }

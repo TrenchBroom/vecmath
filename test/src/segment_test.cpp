@@ -19,7 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#include <vecmath/abstract_line.h>
 #include <vecmath/constants.h>
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
@@ -59,14 +58,14 @@ namespace vm {
 
     TEST(segment_test, get_origin) {
         constexpr auto s = segment3d(vec3d(3, 0, 0), vec3d(2, 0, 0));
-        CER_ASSERT_EQ(s.start(), s.getOrigin())
+        CER_ASSERT_EQ(s.start(), s.get_origin())
     }
 
     TEST(segment_test, get_direction) {
         const auto start = vec3d(3, 0, 0);
         const auto end = vec3d(2, 0, 0);
         const auto s = segment3d(start, end);
-        ASSERT_EQ(normalize(s.end() - s.start()), s.getDirection());
+        ASSERT_EQ(normalize(s.end() - s.start()), s.get_direction());
     }
 
     TEST(segment_test, length) {
@@ -90,18 +89,18 @@ namespace vm {
         constexpr auto h = vec3d(0.5, 0.0, 0.0);
         constexpr auto n = vec3d(0.5, 1.0, 0.0);
 
-        ASSERT_TRUE( segment3d(z, o).contains(z, Cd::almostZero()));
-        ASSERT_TRUE( segment3d(z, o).contains(h, Cd::almostZero()));
-        ASSERT_TRUE( segment3d(z, o).contains(o, Cd::almostZero()));
-        ASSERT_FALSE(segment3d(z, o).contains(n, Cd::almostZero()));
+        ASSERT_TRUE( segment3d(z, o).contains(z, Cd::almost_zero()));
+        ASSERT_TRUE( segment3d(z, o).contains(h, Cd::almost_zero()));
+        ASSERT_TRUE( segment3d(z, o).contains(o, Cd::almost_zero()));
+        ASSERT_FALSE(segment3d(z, o).contains(n, Cd::almost_zero()));
     }
 
     TEST(segment_test, contains2) {
         const auto z = vec3d(-64.0, -64.0, 0.0);
         const auto o = vec3d(  0.0, +64.0, 0.0);
 
-        ASSERT_TRUE( segment3d(z, o).contains(z, Cd::almostZero()));
-        ASSERT_TRUE( segment3d(z, o).contains(o, Cd::almostZero()));
+        ASSERT_TRUE( segment3d(z, o).contains(z, Cd::almost_zero()));
+        ASSERT_TRUE( segment3d(z, o).contains(o, Cd::almost_zero()));
     }
 
     TEST(segment_test, transform) {

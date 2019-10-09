@@ -95,18 +95,18 @@ namespace vm {
          * @param to the vector to rotate onto
          */
         quat(const vec<T,3>& from, const vec<T,3>& to) {
-            assert(is_unit(from, constants<T>::almostZero()));
-            assert(is_unit(to, constants<T>::almostZero()));
+            assert(is_unit(from, constants<T>::almost_zero()));
+            assert(is_unit(to, constants<T>::almost_zero()));
 
             const auto cos = dot(from, to);
-            if (is_equal(+cos, T(1.0), constants<T>::almostZero())) {
+            if (is_equal(+cos, T(1.0), constants<T>::almost_zero())) {
                 // `from` and `to` are equal.
                 set_rotation(vec<T, 3>::pos_z(), T(0.0));
-            } else if (is_equal(-cos, T(1.0), constants<T>::almostZero())) {
+            } else if (is_equal(-cos, T(1.0), constants<T>::almost_zero())) {
                 // `from` and `to` are opposite.
                 // We need to find a rotation axis that is perpendicular to `from`.
                 auto axis = cross(from, vec<T,3>::pos_z());
-                if (is_zero(squared_length(axis), constants<T>::almostZero())) {
+                if (is_zero(squared_length(axis), constants<T>::almost_zero())) {
                     axis = cross(from, vec<T,3>::pos_x());
                 }
                 set_rotation(normalize(axis), to_radians(T(180)));
@@ -118,7 +118,7 @@ namespace vm {
         }
     private:
         void set_rotation(const vec<T,3>& axis, const T angle) {
-            assert(is_unit(axis, constants<T>::almostZero()));
+            assert(is_unit(axis, constants<T>::almost_zero()));
             r = std::cos(angle / T(2.0));
             v = axis * std::sin(angle / T(2.0));
         }
@@ -138,7 +138,7 @@ namespace vm {
          * @return the rotation axis
          */
         vec<T,3> axis() const {
-            if (is_zero(v, constants<T>::almostZero())) {
+            if (is_zero(v, constants<T>::almost_zero())) {
                 return v;
             } else {
                 return v / std::sin(std::acos(r));

@@ -20,8 +20,9 @@
 #ifndef TRENCHBROOM_LINE_DECL
 #define TRENCHBROOM_LINE_DECL
 
-#include "vec.h"
+#include "abstract_line.h"
 #include "mat.h"
+#include "vec.h"
 
 namespace vm {
     /**
@@ -75,14 +76,14 @@ namespace vm {
         /**
          * Returns the origin of this line.
          */
-        constexpr vec<T,S> getOrigin() const {
+        constexpr vec<T,S> get_origin() const {
             return point;
         }
 
         /**
          * Returns the direction of this line.
          */
-        constexpr vec<T,S> getDirection() const {
+        constexpr vec<T,S> get_direction() const {
             return direction;
         }
 
@@ -115,7 +116,7 @@ namespace vm {
          *
          * @return the canonical representation of this line
          */
-        constexpr line<T,S> makeCanonical() const {
+        constexpr line<T,S> make_canonical() const {
             // choose the point such that its support vector is orthogonal to
             // the direction of this line
             const auto distance = dot(point, direction);
@@ -162,8 +163,8 @@ namespace vm {
      */
     template <typename T, size_t S>
     constexpr bool operator==(const line<T,S>& lhs, const line<T,S>& rhs) {
-        const auto lhsC = lhs.makeCanonical();
-        const auto rhsC = rhs.makeCanonical();
+        const auto lhsC = lhs.make_canonical();
+        const auto rhsC = rhs.make_canonical();
         return lhsC.point == rhsC.point && lhsC.direction == rhsC.direction;
     }
 
@@ -178,8 +179,8 @@ namespace vm {
      */
     template <typename T, size_t S>
     constexpr bool operator!=(const line<T,S>& lhs, const line<T,S>& rhs) {
-        const auto lhsC = lhs.makeCanonical();
-        const auto rhsC = rhs.makeCanonical();
+        const auto lhsC = lhs.make_canonical();
+        const auto rhsC = rhs.make_canonical();
         return lhsC.point != rhsC.point || lhsC.direction != rhsC.direction;
     }
 

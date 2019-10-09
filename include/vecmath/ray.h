@@ -23,6 +23,7 @@
 #include "vec.h"
 #include "mat.h"
 
+#include "abstract_line.h"
 #include "scalar.h"
 #include "util.h"
 
@@ -82,14 +83,14 @@ namespace vm {
         /**
          * Returns the origin of this ray.
          */
-        constexpr vec<T,S> getOrigin() const {
+        constexpr vec<T,S> get_origin() const {
             return origin;
         }
 
         /**
          * Returns the direction of this ray.
          */
-        constexpr vec<T,S> getDirection() const {
+        constexpr vec<T,S> get_direction() const {
             return direction;
         }
 
@@ -131,11 +132,11 @@ namespace vm {
          * @param point the point to check
          * @return a value indicating the relative position of the given point
          */
-        constexpr plane_status pointStatus(const vec<T,S>& point) const {
+        constexpr plane_status point_status(const vec<T,S>& point) const {
             const auto scale = dot(direction, point - origin);
-            if (scale >  constants<T>::pointStatusEpsilon()) {
+            if (scale > constants<T>::point_status_epsilon()) {
                 return plane_status::above;
-            } else if (scale < -constants<T>::pointStatusEpsilon()) {
+            } else if (scale < -constants<T>::point_status_epsilon()) {
                 return plane_status::below;
             } else {
                 return plane_status::inside;

@@ -550,7 +550,7 @@ namespace vm {
      * @return the corrected value
      */
     template <typename T>
-    constexpr T correct(const T v, const std::size_t decimals = 0, const T epsilon = constants<T>::correctEpsilon()) {
+    constexpr T correct(const T v, const std::size_t decimals = 0, const T epsilon = constants<T>::correct_epsilon()) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         const T m = static_cast<T>(1 << decimals);
         const T r = round(v * m);
@@ -618,7 +618,7 @@ namespace vm {
     template <typename T>
     constexpr T to_radians(const T d) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return d * constants<T>::piOverStraightAngle();
+        return d * constants<T>::pi() / static_cast<T>(180);
     }
 
     /**
@@ -631,7 +631,7 @@ namespace vm {
     template <typename T>
     constexpr T to_degrees(const T r) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        return r * constants<T>::straightAngleOverPi();
+        return r * static_cast<T>(180) / constants<T>::pi();
     }
 
     /**
@@ -645,7 +645,7 @@ namespace vm {
     constexpr T normalize_radians(T angle) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
         constexpr T z = static_cast<T>(0.0);
-        constexpr T o = constants<T>::twoPi();
+        constexpr T o = constants<T>::two_pi();
         while (angle < z) {
             angle += o;
         }

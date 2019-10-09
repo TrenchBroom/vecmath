@@ -79,7 +79,7 @@ namespace vm {
              * @param end the end of the range
              * @param get the function that transforms the iterated type to a point
              */
-            template <typename I, typename G = vm::identity()>
+            template <typename I, typename G = vm::identity>
             constexpr void add(I cur, I end, G get = G()) {
                 while (cur != end) {
                     add(get(*cur));
@@ -102,7 +102,7 @@ namespace vm {
              * Adds the given box.
              */
             constexpr void add(const bbox& box) {
-                if (initialized()) {
+                if (!initialized()) {
                     m_bounds = box;
                 } else {
                     m_bounds = merge(m_bounds, box);

@@ -22,7 +22,6 @@
 #include <vecmath/forward.h>
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
-#include <vecmath/abstract_line.h>
 #include <vecmath/ray.h>
 #include <vecmath/scalar.h>
 #include <vecmath/util.h>
@@ -51,12 +50,12 @@ namespace vm {
 
     TEST(ray_test, get_origin) {
         const auto r = ray3d(vec3d::one(), vec3d::pos_z());
-        ASSERT_VEC_EQ(r.origin, r.getOrigin());
+        ASSERT_VEC_EQ(r.origin, r.get_origin());
     }
 
     TEST(ray_test, get_direction) {
         const auto r = ray3d(vec3d::one(), vec3d::pos_z());
-        ASSERT_VEC_EQ(r.direction, r.getDirection());
+        ASSERT_VEC_EQ(r.direction, r.get_direction());
     }
 
     TEST(ray_test, transform) {
@@ -65,7 +64,7 @@ namespace vm {
         const auto tm = translation_matrix(vec3d::one());
 
         const auto rt = r.transform(rm * tm);
-        ASSERT_TRUE(is_unit(r.direction, vm::Cd::almostZero()));
+        ASSERT_TRUE(is_unit(r.direction, vm::Cd::almost_zero()));
         ASSERT_VEC_EQ(rm * tm * r.origin, rt.origin);
         ASSERT_VEC_EQ(rm * r.direction, rt.direction);
     }
@@ -76,16 +75,16 @@ namespace vm {
         constexpr auto tm = translation_matrix(vec3d::one());
 
         constexpr auto rt = r.transform_c(sm * tm);
-        CER_ASSERT_TRUE(is_unit_c(r.direction, vm::Cd::almostZero()))
+        CER_ASSERT_TRUE(is_unit_c(r.direction, vm::Cd::almost_zero()))
         CER_ASSERT_VEC_EQ(sm * tm * r.origin, rt.origin)
         CER_ASSERT_VEC_EQ(normalize_c(sm * r.direction), rt.direction)
     }
 
     TEST(ray_test, point_status) {
         constexpr auto ray =  ray3f(vec3f::zero(), vec3f::pos_z());
-        CER_ASSERT_EQ(plane_status::above, ray.pointStatus(vec3f(0.0f, 0.0f, 1.0f)))
-        CER_ASSERT_EQ(plane_status::inside, ray.pointStatus(vec3f(0.0f, 0.0f, 0.0f)))
-        CER_ASSERT_EQ(plane_status::below, ray.pointStatus(vec3f(0.0f, 0.0f, -1.0f)))
+        CER_ASSERT_EQ(plane_status::above, ray.point_status(vec3f(0.0f, 0.0f, 1.0f)))
+        CER_ASSERT_EQ(plane_status::inside, ray.point_status(vec3f(0.0f, 0.0f, 0.0f)))
+        CER_ASSERT_EQ(plane_status::below, ray.point_status(vec3f(0.0f, 0.0f, -1.0f)))
     }
 
     TEST(ray_test, point_at_distance) {
