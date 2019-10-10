@@ -16,7 +16,7 @@ cppcheck --version
 
 mkdir build
 cd build
-cmake .. -GNinja -DCMAKE_BUILD_TYPE="Release" || exit 1 # FIXME: Restore -DCMAKE_CXX_FLAGS="-Werror"
+cmake .. -GNinja -DCMAKE_BUILD_TYPE="Release" -DCMAKE_CXX_FLAGS="-Werror" || exit 1
 
 # cmake --build . --target cppcheck
 # if [[ $? -ne 0 ]] ; then
