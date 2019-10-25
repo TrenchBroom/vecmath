@@ -1,20 +1,28 @@
-# /P: preprocess to file
-# /I: specify include directory for vecmath
-# /C: preserve comments during preprocessing
+function benchmark($cpp_name) {
+    # /P: preprocess to file
+    # /I: specify include directory for vecmath
+    # /C: preserve comments during preprocessing
 
-CL /C /I ..\include /P /std:c++17 compilation_benchmark.cpp
+    $preprocessed_output = ($cpp_name).Replace(".cpp", ".i")
 
-$lines = (Get-Content compilation_benchmark.i | Measure-Object -Line).Lines
-Write-Output "Lines (preprocessed): $lines"
+    CL /C /I ..\include /P /std:c++17 $cpp_name
 
-$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
-$runs = 10
+    $lines = (Get-Content $preprocessed_output | Measure-Object -Line).Lines
+    Write-Output "Lines in $preprocessed_output (preprocessed): $lines"
 
-for ($i=1; $i -le $runs; $i++) {
-    (CL /I ..\include /std:c++17 compilation_benchmark.cpp) 2>&1> $null
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    $runs = 10
+
+    for ($i=1; $i -le $runs; $i++) {
+        (CL /I ..\include /std:c++17 $cpp_name) 2>&1> $null
+    }
+
+    $stopwatch.Stop()
+    $timePerRun = $stopwatch.ElapsedMilliseconds / $runs
+
+    Write-Output "Time to compile $cpp_name (average over $runs runs): $timePerRun ms"
 }
 
-$stopwatch.Stop()
-$timePerRun = $stopwatch.ElapsedMilliseconds / $runs
-
-Write-Output "Time to compile (average over $runs runs): $timePerRun ms"
+benchmark "cmath.cpp"
+benchmark "vecmath_forward.cpp"
+benchmark "vecmath_all.cpp"
