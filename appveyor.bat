@@ -5,6 +5,7 @@ REM Check versions
 cmake --version
 cppcheck --version
 
+set SOURCE_DIR="%cd%"
 mkdir cmakebuild
 cd cmakebuild
 
@@ -28,6 +29,11 @@ cd test\Release
 vecmath-test.exe
 IF ERRORLEVEL 1 GOTO ERROR
 cd "%BUILD_DIR%"
+
+REM run compilation benchmark
+cd "%SOURCE_DIR%"
+cd compilation_benchmark
+powershell ./compilation_benchmark.ps1
 
 GOTO END
 
