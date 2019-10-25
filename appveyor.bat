@@ -33,6 +33,8 @@ cd "%BUILD_DIR%"
 REM run compilation benchmark
 cd "%SOURCE_DIR%"
 cd compilation_benchmark
+REM this is necessary to add CL.exe to PATH (see: https://www.appveyor.com/docs/lang/cpp/)
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 powershell ./compilation_benchmark.ps1
 
 GOTO END
