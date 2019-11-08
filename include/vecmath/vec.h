@@ -1733,7 +1733,7 @@ namespace vm {
 
     template <typename T, std::size_t S>
     std::ostream& operator<<(std::ostream& stream, const vec<T,S>& vec) {
-        if (S > 0) {
+        if constexpr (S > 0) {
             stream << vec[0];
             for (size_t i = 1; i < S; ++i) {
                 stream << " " << vec[i];

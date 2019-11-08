@@ -15,7 +15,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "App
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic)
 elseif(MSVC EQUAL 1)
-    target_compile_options(vecmath INTERFACE /W3 /EHsc /MP)
+    target_compile_options(vecmath INTERFACE /W4 /EHsc /MP)
 else()
     message(FATAL_ERROR "Cannot set compile options for target common")
 endif()
