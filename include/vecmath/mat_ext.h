@@ -363,7 +363,7 @@ namespace vm {
     mat<T, 4, 4> rotation_matrix(const vec<T,3>& axis, const T angle) {
         const auto s = std::sin(-angle);
         const auto c = std::cos(-angle);
-        const auto i = static_cast<T>(1.0 - c);
+        const auto i = static_cast<T>(1.0) - c;
 
         const auto ix  = i  * axis[0];
         const auto ix2 = ix * axis[0];
