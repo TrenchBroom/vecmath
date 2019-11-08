@@ -149,6 +149,8 @@ namespace vm {
         CER_ASSERT_EQ(6, abs_difference(+7, -1))
         CER_ASSERT_EQ(6, abs_difference(-7, +1))
         CER_ASSERT_EQ(6, abs_difference(-7, -1))
+        CER_ASSERT_EQ(6u, abs_difference(7u, 1u))
+        CER_ASSERT_EQ(6u, abs_difference(1u, 7u))
     }
 
     TEST(scalar_test, clamp) {
