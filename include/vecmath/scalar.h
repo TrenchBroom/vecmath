@@ -300,7 +300,11 @@ namespace vm {
      */
     template <typename T>
     constexpr T abs_difference(const T lhs, const T rhs) {
-        return abs(abs(lhs) - abs(rhs));
+        if constexpr (std::is_signed<T>::value) {
+            return abs(abs(lhs) - abs(rhs));
+        } else {
+            return lhs > rhs ? lhs - rhs : rhs - lhs;
+        }
     }
 
     /**
