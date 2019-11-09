@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.12)
 
 project(vecmath VERSION 0.1.0 LANGUAGES CXX)
 
+# instruct cmake not to set default warning levels for MSVC projects (cmake 3.15 or higher)
+if (POLICY CMP0092)
+    cmake_policy(SET CMP0092 NEW)
+endif()
+
 set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(vecmath INTERFACE)
