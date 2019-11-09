@@ -110,13 +110,13 @@ namespace vm {
          * @return the missing component to transform the given point to the point of intersection
          */
         constexpr T at(const vec<T,S-1>& point, const axis::type axis) const {
-            if (is_zero(normal[axis], constants<T>::almost_zero())) {
+            if (normal[axis] == static_cast<T>(0.0)) {
                 return static_cast<T>(0.0);
             }
 
             auto t = static_cast<T>(0.0);
-            std::size_t index = 0;
-            for (std::size_t i = 0; i < S; i++) {
+            std::size_t index = 0u;
+            for (std::size_t i = 0u; i < S; i++) {
                 if (i != axis) {
                     t += normal[i] * point[index++];
                 }

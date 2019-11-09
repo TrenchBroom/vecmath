@@ -8,7 +8,7 @@ cppcheck --version
 mkdir cmakebuild
 cd cmakebuild
 
-cmake .. -G"Visual Studio 15 2017" -T v141 -DCMAKE_BUILD_TYPE=Release
+cmake .. -G"Visual Studio 15 2017" -T v141 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/WX"
 
 REM  -DCMAKE_CXX_FLAGS=/WX
 
