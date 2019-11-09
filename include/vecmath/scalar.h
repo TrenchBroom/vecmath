@@ -553,9 +553,9 @@ namespace vm {
      * @return the corrected value
      */
     template <typename T>
-    constexpr T correct(const T v, const std::size_t decimals = 0, const T epsilon = constants<T>::correct_epsilon()) {
+    constexpr T correct(const T v, const std::size_t decimals = 0u, const T epsilon = constants<T>::correct_epsilon()) {
         static_assert(std::is_floating_point<T>::value, "T must be a floating point type");
-        const T m = static_cast<T>(1 << decimals);
+        const T m = static_cast<T>(1u << decimals);
         const T r = round(v * m);
         if (abs(v - r) < epsilon) {
             return r / m;

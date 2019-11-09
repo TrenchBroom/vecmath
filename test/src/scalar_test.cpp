@@ -547,23 +547,23 @@ namespace vm {
         using c = constants<double>;
 
         assertSolution(
-            { 2, 2.0, -8.0 },
+            { 2u, 2.0, -8.0 },
             solve_quadratic(1.0, 6.0, -16.0, c::almost_zero())
         );
         assertSolution(
-            { 2, -1.0, -9.0 },
+            { 2u, -1.0, -9.0 },
             solve_quadratic(1.0, 10.0, 9.0, c::almost_zero())
         );
         assertSolution(
-            { 2, 7.0, -4.0 },
+            { 2u, 7.0, -4.0 },
             solve_quadratic(0.5, -1.5, -14.0, c::almost_zero())
         );
         assertSolution(
-            { 1, 2.0, nan<double>() },
+            { 1u, 2.0, nan<double>() },
             solve_quadratic(1.0, -4.0, 4.0, c::almost_zero())
         );
         assertSolution(
-            { 0, nan<double>(), nan<double>() },
+            { 0u, nan<double>(), nan<double>() },
             solve_quadratic(1.0, 12.0, 37.0, c::almost_zero())
         );
     }
@@ -572,26 +572,26 @@ namespace vm {
         using c = constants<double>;
 
         assertSolution(
-            { 1, -2.0, nan<double>(), nan<double>() },
+            { 1u, -2.0, nan<double>(), nan<double>() },
             solve_cubic(1.0, 0.0, -2.0, 4.0, c::almost_zero())
         );
         assertSolution(
-            { 1, 7.0 / 9.0, nan<double>(), nan<double>() },
+            { 1u, 7.0 / 9.0, nan<double>(), nan<double>() },
             solve_cubic(9.0, -43.0, 145.0, -91.0, c::almost_zero())
         );
         assertSolution(
-            { 3, 4.464101615, 2.0, -2.464101615 },
+            { 3u, 4.464101615, 2.0, -2.464101615 },
             solve_cubic(1.0, -4.0, -7.0, 22.0, c::almost_zero())
         );
 
 
         // casus irreducibilis
         assertSolution(
-            { 2, -2.0, 1.0, nan<double>() },
+            { 2u, -2.0, 1.0, nan<double>() },
             solve_cubic(1.0, 0.0, -3.0, 2.0, c::almost_zero())
         );
         assertSolution(
-            { 3, 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 },
+            { 3u, 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 },
             solve_cubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almost_zero())
         );
     }
@@ -600,31 +600,31 @@ namespace vm {
         using c = constants<double>;
 
         assertSolution(
-            { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
+            { 0u, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
             solve_quartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almost_zero())
         );
         assertSolution(
-             { 0, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
+             { 0u, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
             solve_quartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almost_zero())
         );
         assertSolution(
-             { 4, -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 },
+             { 4u, -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 },
             solve_quartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almost_zero())
         );
         assertSolution(
-             { 2, 1.5986745079, -1.0, nan<double>(), nan<double>() },
+             { 2u, 1.5986745079, -1.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almost_zero())
         );
         assertSolution(
-             { 2, -1.0, -1.0, nan<double>(), nan<double>() },
+             { 2u, -1.0, -1.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almost_zero())
         );
         assertSolution(
-             { 2, -3.0, 2.0, nan<double>(), nan<double>() },
+             { 2u, -3.0, 2.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almost_zero())
         );
         assertSolution(
-            { 4,
+            { 4u,
                 -1.0 - sqrt(6.0),
                 -1.0 - sqrt(11.0),
                 sqrt(11.0) - 1.0,
