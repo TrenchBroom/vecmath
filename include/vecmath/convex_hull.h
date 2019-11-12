@@ -116,7 +116,7 @@ namespace vm {
 
             axis::type compute_axis(const std::size_t thirdPointIndex) const {
                 const auto axis = cross(m_points[thirdPointIndex] - m_points[0], m_points[1] - m_points[0]);
-                return find_max_component(axis);
+                return find_abs_max_component(axis);
             }
 
             void swizzle(const axis::type axis) {

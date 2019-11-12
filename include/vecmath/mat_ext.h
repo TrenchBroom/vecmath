@@ -559,7 +559,7 @@ namespace vm {
         // and the Z axis is the projection direction
         vec<T, 3> xAxis;
 
-        switch (find_max_component(normal)) {
+        switch (find_abs_max_component(normal)) {
             case axis::x:
                 xAxis = normalize(cross(normal, vec<T, 3>::pos_z()));
                 break;
