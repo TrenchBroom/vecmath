@@ -337,7 +337,11 @@ namespace vm {
     }
 
     TEST(mat_ext_test, plane_projection_matrix) {
-        // I really don't know how to write a test for this right now.
+        const auto m = vm::plane_projection_matrix(-160.0, vec3d(-1.0, -0.0, 0.0));
+
+        // The plane is at x=160, so after transforming, this point should have a z component of 0.
+        // The x and y components could be anything.
+        ASSERT_EQ(0.0, vec3d(m * vec3d(160.0, 1.0, 2.0)).z());
     }
 
     TEST(mat_ext_test, shear_matrix) {
