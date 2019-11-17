@@ -214,7 +214,7 @@ namespace vm {
     TEST(intersection_test, intersect_plane_plane) {
         constexpr auto p1 = plane3f(10.0f, vec3f::pos_z());
         constexpr auto p2 = plane3f(20.0f, vec3f::pos_x());
-        const auto line = intersect_plane_plane(p1, p2);;
+        const auto line = intersect_plane_plane(p1, p2);
 
         ASSERT_TRUE(lineOnPlane(p1, line));
         ASSERT_TRUE(lineOnPlane(p2, line));
@@ -223,7 +223,7 @@ namespace vm {
     TEST(intersection_test, intersect_plane_plane_parallel) {
         constexpr auto p1 = plane3f(10.0f, vec3f::pos_z());
         constexpr auto p2 = plane3f(11.0f, vec3f::pos_z());
-        const line3f line = intersect_plane_plane(p1, p2);;
+        const line3f line = intersect_plane_plane(p1, p2);
 
         ASSERT_EQ(vec3f::zero(), line.direction);
         ASSERT_EQ(vec3f::zero(), line.point);
@@ -243,7 +243,7 @@ namespace vm {
         constexpr auto anchor =  vec3f(100,100,100);
         constexpr auto p1 =  plane3f(anchor, vec3f::pos_x());
         const auto p2 =  plane3f(anchor, quatf(vec3f::neg_y(), to_radians(0.0001f)) * vec3f::pos_x()); // p1 rotated by 0.0001 degrees
-        const auto line = intersect_plane_plane(p1, p2);;
+        const auto line = intersect_plane_plane(p1, p2);
 
         ASSERT_EQ(vec3f::zero(), line.direction);
         ASSERT_EQ(vec3f::zero(), line.point);
