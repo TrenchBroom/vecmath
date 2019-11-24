@@ -25,7 +25,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <ostream>
 #include <type_traits>
 
 namespace vm {

@@ -25,7 +25,6 @@
 #include "scalar.h"
 
 #include <array>
-#include <iostream>
 
 namespace vm {
     /**
