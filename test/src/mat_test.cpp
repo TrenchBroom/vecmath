@@ -876,11 +876,14 @@ namespace vm {
             -5,  1,  0,  0,
             19, 10, 11,  8,
             0,  1, -8,  3);
-        ASSERT_EQ(R"([
+
+        const auto expected = R"([
   65, 12, -3, -5,
   -5, 1, 0, 0,
   19, 10, 11, 8,
   0, 1, -8, 3
-])", str.str());
+])";
+
+        ASSERT_EQ(expected, str.str());
     }
 }
