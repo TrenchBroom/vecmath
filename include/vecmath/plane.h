@@ -441,21 +441,6 @@ namespace vm {
     constexpr plane<T,3> aligned_orthogonal_plane(const vec<T, 3>& position, const vec<T, 3>& direction) {
         return plane<T,3>(position, get_abs_max_component_axis(direction));
     }
-
-    /**
-     * Prints a textual representation of the given plane to the given stream.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param stream the stream
-     * @param plane the plane to print
-     * @return the given stream
-     */
-    template <typename T, std::size_t S>
-    std::ostream& operator<<(std::ostream& stream, const plane<T,S>& plane) {
-        stream << "{ normal: (" << plane.normal << ") distance: " << plane.distance << " }";
-        return stream;
-    }
 }
 
 #endif

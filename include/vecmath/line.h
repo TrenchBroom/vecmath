@@ -182,21 +182,6 @@ namespace vm {
         const auto rhsC = rhs.make_canonical();
         return lhsC.point != rhsC.point || lhsC.direction != rhsC.direction;
     }
-
-    /**
-     * Prints a textual representation of the given line to the given stream.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param stream the stream to print to
-     * @param line the line to print
-     * @return the given stream
-     */
-    template <typename T, size_t S>
-    std::ostream& operator<<(std::ostream& stream, const line<T,S>& line) {
-        stream << "{ point: (" << line.point << "), direction: (" << line.direction << ") }";
-        return stream;
-    }
 }
 
 #endif

@@ -668,21 +668,6 @@ namespace vm {
             return bbox<T,S>(vec<T,S>::zero(), vec<T,S>::zero());
         }
     }
-
-    /**
-     * Prints a textual representation of the given bounding box onto the given stream.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param stream the stream to print to
-     * @param bbox the bounding box to print
-     * @return the given stream
-     */
-    template <typename T, std::size_t S>
-    std::ostream& operator<<(std::ostream& stream, const bbox<T,S>& bbox) {
-        stream << "{ min: (" << bbox.min << "), max: (" << bbox.max << ") }";
-        return stream;
-    }
 }
 
 #endif
