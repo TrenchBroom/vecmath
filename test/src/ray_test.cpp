@@ -22,6 +22,7 @@
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
 #include <vecmath/ray.h>
+#include <vecmath/ray_io.h>
 #include <vecmath/scalar.h>
 #include <vecmath/util.h>
 
@@ -108,5 +109,11 @@ namespace vm {
         CER_ASSERT_FALSE(ray3d() != ray3d())
         CER_ASSERT_FALSE(ray3d(vec3d::zero(), vec3d::pos_z()) != ray3d(vec3d::zero(), vec3d::pos_z()))
         CER_ASSERT_TRUE(ray3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != ray3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
+    }
+
+    TEST(ray_test, stream_insertion) {
+        std::stringstream str;
+        str << ray3d(vec3d::zero(), vec3d::pos_z());
+        ASSERT_EQ("{ origin: (0 0 0), direction: (0 0 1) }", str.str());
     }
 }

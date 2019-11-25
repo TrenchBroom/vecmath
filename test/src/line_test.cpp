@@ -22,9 +22,12 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/line.h>
+#include <vecmath/line_io.h>
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
 #include <vecmath/scalar.h>
+
+#include <sstream>
 
 namespace vm {
     TEST(line_test, constructor_default) {
@@ -115,5 +118,11 @@ namespace vm {
         CER_ASSERT_FALSE(line3d() != line3d())
         CER_ASSERT_FALSE(line3d(vec3d::zero(), vec3d::pos_z()) != line3d(vec3d::zero(), vec3d::pos_z()))
         CER_ASSERT_TRUE(line3d(vec3d(0, 0, 0), vec3d(0, 0, 1)) != line3d(vec3d(1, 0, 0), vec3d(0, 0, 1)))
+    }
+
+    TEST(line_test, stream_insertion) {
+        std::stringstream str;
+        str << line3d(line3d(vec3d::zero(), vec3d::pos_z()));
+        ASSERT_EQ("{ point: (0 0 0), direction: (0 0 1) }", str.str());
     }
 }

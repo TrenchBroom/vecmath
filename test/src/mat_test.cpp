@@ -20,9 +20,12 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/mat.h>
+#include <vecmath/mat_io.h>
 #include <vecmath/vec.h>
 
 #include "test_utils.h"
+
+#include <sstream>
 
 namespace vm {
     TEST(mat_test, constructor_default) {
@@ -864,5 +867,20 @@ namespace vm {
         CER_ASSERT_TRUE(success)
         CER_ASSERT_VEC_EQ(x, x2)
         CER_ASSERT_VEC_EQ(b, A * x2)
+    }
+
+    TEST(mat_test, stream_insertion) {
+        std::stringstream str;
+        str << mat4x4d(
+            65, 12, -3, -5,
+            -5,  1,  0,  0,
+            19, 10, 11,  8,
+            0,  1, -8,  3);
+        ASSERT_EQ(R"([
+  65, 12, -3, -5,
+  -5, 1, 0, 0,
+  19, 10, 11, 8,
+  0, 1, -8, 3
+])", str.str());
     }
 }
