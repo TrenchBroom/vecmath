@@ -20,15 +20,11 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
-#include <vecmath/vec_ext.h>
-#include <vecmath/vec_io.h>
 
 #include "test_utils.h"
 
 #include <array>
 #include <limits>
-#include <string>
-#include <vector>
 
 namespace vm {
     TEST(vec_test, default_constructor) {
@@ -755,11 +751,5 @@ namespace vm {
         ASSERT_FLOAT_EQ(Cf::half_pi(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(3.0f * Cf::half_pi(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
-    }
-
-    TEST(vec_test, stream_insertion) {
-        std::stringstream str;
-        str << vec3d(10, 10, 10);
-        ASSERT_EQ("10 10 10", str.str());
     }
 }
