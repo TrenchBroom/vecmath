@@ -23,12 +23,14 @@
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
 #include <vecmath/plane.h>
+#include <vecmath/plane_io.h>
 #include <vecmath/scalar.h>
 #include <vecmath/constexpr_util.h>
 
 #include "test_utils.h"
 
 #include <array>
+#include <sstream>
 
 namespace vm {
     TEST(plane_test, constructor_default) {
@@ -339,5 +341,11 @@ namespace vm {
         constexpr auto p = aligned_orthogonal_plane(position, direction);
         CER_ASSERT_TRUE(p.point_status(position) == plane_status::inside)
         CER_ASSERT_VEC_EQ(vec3f::neg_z(), p.normal)
+    }
+
+    TEST(plane_test, stream_insertion) {
+        std::stringstream str;
+        str << plane3d(10.0, vec3d::pos_z());
+        ASSERT_EQ("{ normal: (0 0 1), distance: 10 }", str.str());
     }
 }

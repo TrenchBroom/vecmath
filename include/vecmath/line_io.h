@@ -20,6 +20,7 @@
 #define VECMATH_LINE_IO_H
 
 #include "line.h"
+#include "vec_io.h"
 
 #include <ostream>
 

@@ -20,6 +20,7 @@
 #define VECMATH_PLANE_IO_H
 
 #include "plane.h"
+#include "vec_io.h"
 
 #include <ostream>
 
@@ -35,7 +36,7 @@ namespace vm {
      */
     template <typename T, std::size_t S>
     std::ostream& operator<<(std::ostream& stream, const plane<T,S>& plane) {
-        stream << "{ normal: (" << plane.normal << ") distance: " << plane.distance << " }";
+        stream << "{ normal: (" << plane.normal << "), distance: " << plane.distance << " }";
         return stream;
     }
 }

@@ -20,11 +20,13 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/bbox.h>
+#include <vecmath/bbox_io.h>
 #include <vecmath/vec.h>
 #include <vecmath/mat_ext.h>
 
 #include "test_utils.h"
 
+#include <sstream>
 #include <vector>
 
 namespace vm {
@@ -272,6 +274,12 @@ namespace vm {
         CER_ASSERT_EQ(bbox3d(vec3d(0, 0, 0), vec3d(0, 0, 0)), intersect(b1, b3))
         CER_ASSERT_EQ(bbox3d(vec3d(0, 0, 0), vec3d(0, 0, 0)), intersect(b3, b1))
         CER_ASSERT_EQ(bbox3d(vec3d(0, 0, 0), vec3d(0, 0, 0)), intersect(b2, b3))
+    }
+
+    TEST(bbox_test, stream_insertion) {
+        std::stringstream str;
+        str << bbox3d(vec3d(-10, -10, -10), vec3d(10, 10, 10));
+        ASSERT_EQ("{ min: (-10 -10 -10), max: (10 10 10) }", str.str());
     }
 
     TEST(bbox_builder_test, empty) {

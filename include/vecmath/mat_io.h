@@ -16,29 +16,43 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_RAY_IO_H
-#define VECMATH_RAY_IO_H
+#ifndef VECMATH_MAT_IO_H
+#define VECMATH_MAT_IO_H
 
-#include "ray.h"
-#include "vec_io.h"
+#include "mat.h"
 
 #include <ostream>
 
 namespace vm {
     /**
-     * Prints a textual representation of the given ray on the given stream.
+     * Prints a textual representation of the given matrix on the given stream.
      *
      * @tparam T the component type
-     * @tparam S the number of components
+     * @tparam R the number of rows
+     * @tparam C the number of columns
      * @param stream the stream to print to
-     * @param ray the ray to print
+     * @param mat the matrix to print
      * @return the given stream
      */
-    template <typename T, size_t S>
-    std::ostream& operator<<(std::ostream& stream, const ray<T,S>& ray) {
-        stream << "{ origin: (" << ray.origin << "), direction: (" << ray.direction << ") }";
+    template <typename T, size_t R, size_t C>
+    std::ostream& operator<<(std::ostream& stream, const mat<T,R,C>& mat) {
+        stream << "[\n";
+        for (size_t r = 0u; r < R; ++r) {
+            stream << "  ";
+            for (size_t c = 0u; c < C; ++c) {
+                stream << mat[c][r];
+                if (c < C-1u) {
+                    stream << ", ";
+                }
+            }
+            if (r < R-1u) {
+                stream << ",";
+            }
+            stream << "\n";
+        }
+        stream << "]";
         return stream;
     }
 }
 
-#endif //VECMATH_RAY_IO_H
+#endif //VECMATH_MAT_IO_H
