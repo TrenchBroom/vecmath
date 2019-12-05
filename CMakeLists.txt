@@ -21,11 +21,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic)
 elseif(MSVC EQUAL 1)
     target_compile_options(vecmath INTERFACE /W4 /EHsc /MP)
-    
+
     # signed/unsigned mismatch: https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-4-c4365
     target_compile_options(vecmath INTERFACE /w44365)
 else()
-    message(FATAL_ERROR "Cannot set compile options for target common")
+    message(FATAL_ERROR "Cannot set compile options for target")
 endif()
 
 # Prevent overriding the parent project's compiler/linker
