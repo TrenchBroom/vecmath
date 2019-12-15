@@ -22,6 +22,11 @@
 #include <cstddef>
 
 namespace vm {
+    enum class side;
+    enum class direction;
+    enum class rotation_axis;
+    enum class plane_status;
+
     template<typename T, size_t S>
     class vec;
 
