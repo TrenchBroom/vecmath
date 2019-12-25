@@ -826,7 +826,7 @@ namespace vm {
      * matrix is invertible, and if so, the matrix is the inverted given matrix
      */
     template <typename T, std::size_t S>
-    constexpr std::tuple<bool, mat<T, S, S>> invert(const mat<T, S, S>& m) {
+    constexpr std::tuple<bool, mat<T, S, S>> invert_cramer(const mat<T, S, S>& m) {
         const auto det = compute_determinant(m);
         const auto invertible = (det != static_cast<T>(0.0));
         if (!invertible) {
@@ -941,6 +941,39 @@ namespace vm {
         const auto lu = std::get<1>(decomp);
         const auto pi = std::get<2>(decomp);
         return std::make_tuple(true, detail::lup_solve_internal(lu, pi, b));
+    }
+
+    /**
+     * Inverts the given square matrix if possible.
+     *
+     * Uses the technique from "Computing a matrix inverse from an LUP decomposition"
+     * Introduction to Algorithms by Cormen et. al., 2nd. ed. p755.
+     *
+     * @tparam T the component type
+     * @tparam S the number of components
+     * @param m the matrix to invert
+     * @return a pair of a boolean and a matrix such that the boolean indicates whether the
+     * matrix is invertible, and if so, the matrix is the inverted given matrix
+     */
+    template <typename T, std::size_t S>
+    constexpr std::tuple<bool, mat<T,S,S>> invert(const mat<T,S,S>& m) {
+        const auto decomp = detail::lup_find_decomposition(m);
+        const auto success = std::get<0>(decomp);
+        if (!success) {
+            return std::make_tuple(false, mat<T, S, S>::identity());
+        }
+
+        const auto lu = std::get<1>(decomp);
+        const auto pi = std::get<2>(decomp);
+
+        mat<T, S, S> result;
+        for (size_t i = 0; i < S; ++i) {
+            vec<T,S> targetColumn; // ith column of the S by S identity matrix
+            targetColumn[i] = static_cast<T>(1);
+
+            result[i] = detail::lup_solve_internal(lu, pi, targetColumn);
+        }
+        return std::make_tuple(true, result);
     }
 }
 
