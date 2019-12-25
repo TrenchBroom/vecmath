@@ -816,26 +816,6 @@ namespace vm {
         return result;
     }
 
-    /**
-     * Inverts the given square matrix if possible.
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param m the matrix to invert
-     * @return a pair of a boolean and a matrix such that the boolean indicates whether the
-     * matrix is invertible, and if so, the matrix is the inverted given matrix
-     */
-    template <typename T, std::size_t S>
-    constexpr std::tuple<bool, mat<T, S, S>> invert_cramer(const mat<T, S, S>& m) {
-        const auto det = compute_determinant(m);
-        const auto invertible = (det != static_cast<T>(0.0));
-        if (!invertible) {
-            return { false, mat<T, S, S>::identity() };
-        } else {
-            return { true, compute_adjugate(m) / det };
-        }
-    }
-
     namespace detail {
         /**
          * Finds an LUP decomposition of matrix a.
@@ -879,7 +859,7 @@ namespace vm {
                 }
                 for (std::size_t i = k + 1; i < S; ++i) {
                     a[k][i] = a[k][i] / a[k][k];
-                    for (size_t j = k + 1; j < S; ++j) {
+                    for (std::size_t j = k + 1; j < S; ++j) {
                         a[j][i] = a[j][i] - a[k][i] * a[j][k];
                     }
                 }
@@ -903,16 +883,16 @@ namespace vm {
         constexpr vec<T,S> lup_solve_internal(const mat<T,S,S>& lu, const vec<size_t,S>& pi, const vec<T,S>& b) {
             vec<T, S> x;
             vec<T, S> y;
-            for (size_t i = 0; i < S; ++i) {
+            for (std::size_t i = 0; i < S; ++i) {
                 T sum = T(0);
-                for (size_t j = 0; j + 1 <= i; ++j) {
+                for (std::size_t j = 0; j + 1 <= i; ++j) {
                     sum += lu[j][i] * y[j];
                 }
                 y[i] = b[pi[i]] - sum;
             }
-            for (size_t i = S - 1; i < S; --i) {
+            for (std::size_t i = S - 1; i < S; --i) {
                 T sum = T(0);
-                for (size_t j = i+1; j < S; ++j) {
+                for (std::size_t j = i+1; j < S; ++j) {
                     sum += lu[j][i] * x[j];
                 }
                 x[i] = (y[i] - sum) / lu[i][i];
@@ -933,7 +913,7 @@ namespace vm {
     template <typename T, std::size_t S>
     constexpr std::tuple<bool, vec<T,S>> lup_solve(const mat<T,S,S>& a, const vec<T,S>& b) {
         const auto decomp = detail::lup_find_decomposition(a);
-        const auto success = std::get<0>(decomp);
+        const bool success = std::get<0>(decomp);
         if (!success) {
             return std::make_tuple(false, vec<T,S>());
         }
@@ -958,7 +938,7 @@ namespace vm {
     template <typename T, std::size_t S>
     constexpr std::tuple<bool, mat<T,S,S>> invert(const mat<T,S,S>& m) {
         const auto decomp = detail::lup_find_decomposition(m);
-        const auto success = std::get<0>(decomp);
+        const bool success = std::get<0>(decomp);
         if (!success) {
             return std::make_tuple(false, mat<T, S, S>::identity());
         }
@@ -967,7 +947,7 @@ namespace vm {
         const auto pi = std::get<2>(decomp);
 
         mat<T, S, S> result;
-        for (size_t i = 0; i < S; ++i) {
+        for (std::size_t i = 0; i < S; ++i) {
             vec<T,S> targetColumn; // ith column of the S by S identity matrix
             targetColumn[i] = static_cast<T>(1);
 
