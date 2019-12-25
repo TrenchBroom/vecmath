@@ -870,7 +870,7 @@ namespace vm {
                         kPrime = i;
                     }
                 }
-                if (p == 0) {
+                if (p < 1.0e-15) {
                     return { false, mat<T,S,S>(), vec<size_t,S>() };
                 }
                 swap(pi[k], pi[kPrime]);
