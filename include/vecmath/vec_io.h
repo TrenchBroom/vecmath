@@ -28,7 +28,7 @@
 namespace vm {
     namespace detail {
         template <typename T, std::size_t S>
-        bool doParse(const std::string_view& str, size_t& pos, vec<T,S>& result) {
+        bool doParse(const std::string_view str, size_t& pos, vec<T,S>& result) {
             constexpr auto blank = " \t\n\r()";
 
             for (std::size_t i = 0; i < S; ++i) {
@@ -64,7 +64,7 @@ namespace vm {
      * @return the vector parsed from the string
      */
     template <typename T, std::size_t S>
-    vec<T,S> parse(const std::string_view& str, const vec<T,S>& defaultValue = vec<T,S>::zero()) {
+    vec<T,S> parse(const std::string_view str, const vec<T,S>& defaultValue = vec<T,S>::zero()) {
         std::size_t pos = 0;
         vec<T,S> result;
         if (detail::doParse(str, pos, result)) {
@@ -83,7 +83,7 @@ namespace vm {
      * @return whether S components can be parsed
      */
     template <typename T, std::size_t S>
-    bool can_parse(const std::string_view& str) {
+    bool can_parse(const std::string_view str) {
         std::size_t pos = 0;
         vec<T,S> result;
         return detail::doParse(str, pos, result);
@@ -105,7 +105,7 @@ namespace vm {
      * @param out the output iterator add the parsed vectors to
      */
     template <typename T, std::size_t S, typename O>
-    void parse_all(const std::string_view& str, O out) {
+    void parse_all(const std::string_view str, O out) {
         constexpr auto blank = " \t\n\r,;";
 
         std::size_t pos = 0;
