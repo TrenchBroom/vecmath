@@ -20,6 +20,7 @@
 
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
+#include <vecmath/mat_ext.h> // used by rotate_pos_x_by_degrees
 
 #include "test_utils.h"
 
@@ -746,10 +747,22 @@ namespace vm {
         CER_ASSERT_EQ(vec3f(4.0 / 3.0, 4.0 / 3.0, 4.0 / 3.0), average(std::begin(vecs), std::end(vecs)))
     }
 
+    /**
+     * rotates vec3f::pos_x() by the given number of degrees CCW wrt the positive Z axis
+     */
+    static vec3f rotate_pos_x_by_degrees(const float degrees) {
+        const auto M = rotation_matrix(vec3f::pos_z(), to_radians(degrees));
+        const auto rotatedVec = vec3f(M * vec3f::pos_x());
+        return rotatedVec;
+    }
+
     TEST(vec_test, measure_angle) {
         ASSERT_FLOAT_EQ(0.0f, measure_angle(vec3f::pos_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::half_pi(), measure_angle(vec3f::pos_y(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(Cf::pi(), measure_angle(vec3f::neg_x(), vec3f::pos_x(), vec3f::pos_z()));
         ASSERT_FLOAT_EQ(3.0f * Cf::half_pi(), measure_angle(vec3f::neg_y(), vec3f::pos_x(), vec3f::pos_z()));
+        EXPECT_NEAR(0.13f,   to_degrees(measure_angle(rotate_pos_x_by_degrees(0.13f), vec3f::pos_x(), vec3f::pos_z())),   0.001f);
+        EXPECT_NEAR(15.13f,  to_degrees(measure_angle(rotate_pos_x_by_degrees(15.13f), vec3f::pos_x(), vec3f::pos_z())),  0.001f);
+        EXPECT_NEAR(359.95f, to_degrees(measure_angle(rotate_pos_x_by_degrees(359.95f), vec3f::pos_x(), vec3f::pos_z())), 0.002f);
     }
 }
