@@ -10,6 +10,37 @@ endif()
 set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(vecmath INTERFACE)
+
+target_sources(vecmath INTERFACE
+    "${VECMATH_INCLUDE_DIR}/vecmath/abstract_line.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/bbox_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/bbox.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/constants.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/constexpr_util.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/convex_hull.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/distance.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/forward.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/glsh.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/intersection.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/line_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/line.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/mat_ext.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/mat_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/mat.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/plane_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/plane.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/polygon.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/quat.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/ray_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/ray.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/scalar.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/segment.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/util.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/vec_ext.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/vec_io.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/vec.h"
+)
+
 target_compile_features(vecmath INTERFACE cxx_std_17)
 target_include_directories(vecmath INTERFACE
         $<BUILD_INTERFACE:${VECMATH_INCLUDE_DIR}>
