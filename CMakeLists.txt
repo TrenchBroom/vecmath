@@ -16,9 +16,9 @@ target_include_directories(vecmath INTERFACE
         $<INSTALL_INTERFACE:vecmath/include/vecmath>)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic -Wno-c++98-compat -Wno-float-equal)
+    target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic -Wshadow-all -Wno-c++98-compat -Wno-float-equal)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic)
+    target_compile_options(vecmath INTERFACE -Wall -Wextra -pedantic -Wshadow)
 elseif(MSVC EQUAL 1)
     target_compile_options(vecmath INTERFACE /W4 /EHsc /MP)
 
