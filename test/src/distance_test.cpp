@@ -93,6 +93,20 @@ namespace vm {
         ASSERT_FLOAT_EQ(3.0f, segDist.distance);
         ASSERT_FLOAT_EQ(1.0f, segDist.position2);
 
+        // segment parallel, in front of ray, degenerate segment
+        segDist = squared_distance(ray, segment3f(vec3f(1.0f, 1.0f, 5.0f), vec3f(1.0f, 1.0f, 5.0f)));
+        ASSERT_TRUE(segDist.parallel);
+        ASSERT_FLOAT_EQ(5.0f, segDist.position1);
+        ASSERT_FLOAT_EQ(2.0f, segDist.distance);
+        ASSERT_FLOAT_EQ(0.0f, segDist.position2);
+
+        // segment parallel, behind ray, degenerate segment
+        segDist = squared_distance(ray, segment3f(vec3f(1.0f, 1.0f, -1.0f), vec3f(1.0f, 1.0f, -1.0f)));
+        ASSERT_TRUE(segDist.parallel);
+        ASSERT_FLOAT_EQ(0.0f, segDist.position1);
+        ASSERT_FLOAT_EQ(3.0f, segDist.distance);
+        ASSERT_FLOAT_EQ(0.0f, segDist.position2);
+
         // segment perpendicular to ray
         //   R = ray
         //   c = closest point
