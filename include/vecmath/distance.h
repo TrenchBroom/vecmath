@@ -19,6 +19,7 @@
 #ifndef TRENCHBROOM_DISTANCE_H
 #define TRENCHBROOM_DISTANCE_H
 
+#include "abstract_line.h"
 #include "vec.h"
 #include "line.h"
 #include "ray.h"
@@ -193,15 +194,17 @@ namespace vm {
         /**
          * Creates a new instance for the case when the segments are parallel.
          *
-         * @param distance constant distance between the segments
+         * @param i_position1 the value for rayDistance
+         * @param i_distance the value for distance
+         * @param i_position2 the value for lineDistance
          * @return the instance
          */
-        constexpr static line_distance Parallel(const T distance) {
+        constexpr static line_distance Parallel(const T i_position1, const T i_distance, const T i_position2) {
             return {
                 true,
-                nan<T>(),
-                distance,
-                nan<T>()
+                i_position1,
+                i_distance,
+                i_position2
             };
         }
 
@@ -262,9 +265,24 @@ namespace vm {
         const auto D = a * c - b * b;
 
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w, v);
-            const auto z = w - f * v;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T p1OnR = distance_to_projected_point(r, p1);
+            const T p2OnR = distance_to_projected_point(r, p2);
+            const T perpendicularDistSquared = squared_distance(point_at_distance(r, p1OnR), p1);
+
+            if (p1OnR < static_cast<T>(0) && p2OnR < static_cast<T>(0)) {
+                // segment completely behind ray
+                const T segmentLength = sqrt(a);
+                const auto& pointOnSegmentClosestToRay = (p1OnR > p2OnR) ? p1 : p2;
+                return line_distance<T>::Parallel(0, squared_distance(r.origin, pointOnSegmentClosestToRay), segmentLength);
+            } else if (p1OnR > static_cast<T>(0) && p2OnR > static_cast<T>(0)) {
+                // segment completely in front of ray origin
+                return line_distance<T>::Parallel(min(p1OnR, p2OnR), perpendicularDistSquared, 0);
+            } else {
+                // segment straddles ray origin
+                const T roriginOnS = distance_to_projected_point(s, r.origin);
+                return line_distance<T>::Parallel(0, perpendicularDistSquared, roriginOnS);
+            }
         }
 
         T sN, sD = D;
@@ -334,9 +352,14 @@ namespace vm {
         auto tD = D;
 
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w, v);
-            const auto z = w - f * v;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T rhsOriginOnLhs = distance_to_projected_point(lhs, rhs.origin);
+            const T lhsOriginOnRhs = distance_to_projected_point(rhs, lhs.origin);
+            const T perpendicularDistSquared = squared_distance(project_point(lhs, rhs.origin), rhs.origin);
+
+            return line_distance<T>::Parallel(max(static_cast<T>(0), rhsOriginOnLhs),
+                                              perpendicularDistSquared,
+                                              max(static_cast<T>(0), lhsOriginOnRhs));
         }
 
         auto sN = (b * e - c * d);
@@ -394,9 +417,10 @@ namespace vm {
 
         const auto D = a * c - b * b;
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w0, l.direction);
-            const auto z = w0 - f * l.direction;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T perpendicularDistSquared = squared_distance(project_point(r, l.point), l.point);
+            const T rOriginOnL = distance_to_projected_point(l, r.origin); // can be negative
+            return line_distance<T>::Parallel(0, perpendicularDistSquared, rOriginOnL);
         }
 
         const auto sc = max((b * e - c * d) / D, static_cast<T>(0.0));
