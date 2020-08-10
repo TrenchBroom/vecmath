@@ -37,11 +37,14 @@ namespace vm {
     struct point_distance {
         /**
          * The distance from the origin of the line to the orthogonal projection of a point onto the line.
+         * For rays or line segments, this is clamped so it's between the ray/line segment start, and
+         * end (for line segments). Not squared even if squared_distance was used.
          */
         T position;
 
         /**
-         * The distance between the orthogonal projection of a point to the point itself.
+         * The distance between the clamped orthogonal projection of a point to the point itself.
+         * Squared if squared_distance was used.
          */
         T distance;
 
@@ -49,7 +52,7 @@ namespace vm {
          * Creates a new instance with the given values.
          *
          * @param i_position the position of the orthogonal projection of the point onto the line
-         * @param i_distance the value of the distance
+         * @param i_distance the value of the distance, may be squared
          */
         constexpr point_distance(const T i_position, const T i_distance) :
         position(i_position),
@@ -57,13 +60,12 @@ namespace vm {
     };
 
     /**
-     * Computes the minimal squared distance between a given point and a ray. Two values are returned:
+     * Computes the minimal squared distance between a given point and a ray.
+     * After clamping the orthogonal projection of the point onto the ray to not
+     * lie behind the ray origin, two values are returned:
      *
-     * - The squared distance between the closest point on given ray and the given point.
-     * - The distance from the origin of the given ray the closest point on the given ray.
-     *
-     * Thereby, the closest point on the given ray is the orthogonal projection of the given point onto the given
-     * ray.
+     * - The position of the clamped projected point relative to the given ray origin (point_distance::position)
+     * - The squared distance between the clamped projected point on the given ray and the given point (point_distance::distance)
      *
      * @tparam T the component type
      * @tparam S the number of components
@@ -83,13 +85,12 @@ namespace vm {
     }
 
     /**
-     * Computes the minimal distance between a given point and a ray. Two values are returned:
+     * Computes the minimal distance between a given point and a ray.
+     * After clamping the orthogonal projection of the point onto the ray to not
+     * lie behind the ray origin, two values are returned:
      *
-     * - The distance between the closest point on given ray and the given point.
-     * - The distance from the origin of the given ray the closest point on the given ray.
-     *
-     * Thereby, the closest point on the given ray is the orthogonal projection of the given point onto the given
-     * ray.
+     * - The position of the clamped projected point relative to the given ray origin (point_distance::position)
+     * - The squared distance between the clamped projected point on the given ray and the given point (point_distance::distance)
      *
      * @tparam T the component type
      * @tparam S the number of components
@@ -241,12 +242,13 @@ namespace vm {
 
     /**
      * Computes the squared minimal distance of the given ray and the given line segment.
+     * position1 and position2 are not squared.
      *
      * @tparam T the component type
      * @tparam S the number of components
      * @param r the ray
      * @param s the segment
-     * @return the squared minimal distance
+     * @return the squared minimal distance (position1 and position2 are not squared)
      */
     template <typename T, size_t S>
     line_distance<T> squared_distance(const ray<T,S>& r, const segment<T,S>& s) {
