@@ -21,6 +21,7 @@
 #include "test_utils.h"
 
 #include <vecmath/abstract_line.h>
+#include <vecmath/constants.h>
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
 #include <vecmath/distance.h>
@@ -68,7 +69,7 @@ namespace vm {
         const vec3f rhsPoint = point_at_distance(rhs, linedist.position2);
         const float dist = squared_distance(lhsPoint, rhsPoint);
 
-        ASSERT_FLOAT_EQ(dist, linedist.distance);
+        ASSERT_NEAR(dist, linedist.distance, constants<float>::almost_zero());
     }
 
     template <class A, class B>
@@ -77,7 +78,7 @@ namespace vm {
         const vec3f rhsPoint = point_at_distance(rhs, linedist.position2);
         const float dist = distance(lhsPoint, rhsPoint);
 
-        ASSERT_FLOAT_EQ(dist, linedist.distance);
+        ASSERT_NEAR(dist, linedist.distance, constants<float>::almost_zero());
     }
 
     TEST(distance_test, distance_ray_segment) {
