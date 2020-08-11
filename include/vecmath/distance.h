@@ -38,7 +38,7 @@ namespace vm {
         /**
          * The distance from the origin of the line to the orthogonal projection of a point onto the line.
          * For rays or line segments, this is clamped so it's between the ray/line segment start, and
-         * end (for line segments). Not squared even if squared_distance was used.
+         * end (for line segments). Never squared.
          */
         T position;
 
@@ -179,25 +179,28 @@ namespace vm {
 
         /**
          * The distance between the closest point and the origin of the first line.
+         * Never squared.
          */
         T position1;
 
         /**
          * The minimal distance between the segments.
+         * Squared if squared_distance was used.
          */
         T distance;
 
         /**
          * The distance between the closest point and the origin of the second line.
+         * Never squared.
          */
         T position2;
 
         /**
          * Creates a new instance for the case when the segments are parallel.
          *
-         * @param i_position1 the value for rayDistance
+         * @param i_position1 the value for position1
          * @param i_distance the value for distance
-         * @param i_position2 the value for lineDistance
+         * @param i_position2 the value for position2
          * @return the instance
          */
         constexpr static line_distance Parallel(const T i_position1, const T i_distance, const T i_position2) {
@@ -212,9 +215,9 @@ namespace vm {
         /**
          * Creates a new instance for the case when the segments are not parallel.
          *
-         * @param i_position1 the value for rayDistance
+         * @param i_position1 the value for position1
          * @param i_distance the value for distance
-         * @param i_position2 the value for lineDistance
+         * @param i_position2 the value for position2
          * @return the instance
          */
         constexpr static line_distance NonParallel(const T i_position1, const T i_distance, const T i_position2) {
