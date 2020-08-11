@@ -270,18 +270,29 @@ namespace vm {
             // parallel case
             const T p1OnR = distance_to_projected_point(r, p1);
             const T p2OnR = distance_to_projected_point(r, p2);
-            const T perpendicularDistSquared = squared_distance(point_at_distance(r, p1OnR), p1);
 
             if (p1OnR < static_cast<T>(0) && p2OnR < static_cast<T>(0)) {
                 // segment completely behind ray
-                const T segmentLength = sqrt(a);
-                const auto& pointOnSegmentClosestToRay = (p1OnR > p2OnR) ? p1 : p2;
-                return line_distance<T>::Parallel(0, squared_distance(r.origin, pointOnSegmentClosestToRay), segmentLength);
+                if (p1OnR > p2OnR) {
+                    // p1 closer to ray origin
+                    return line_distance<T>::Parallel(0, squared_distance(r.origin, p1), 0);
+                } else {
+                    // p2 closer to ray origin
+                    return line_distance<T>::Parallel(0, squared_distance(r.origin, p2), p2OnR - p1OnR);
+                }
             } else if (p1OnR > static_cast<T>(0) && p2OnR > static_cast<T>(0)) {
                 // segment completely in front of ray origin
-                return line_distance<T>::Parallel(min(p1OnR, p2OnR), perpendicularDistSquared, 0);
+                const T perpendicularDistSquared = squared_distance(point_at_distance(r, p1OnR), p1);
+                if (p1OnR > p2OnR) {
+                    // p2 closer to ray origin
+                    return line_distance<T>::Parallel(p2OnR, perpendicularDistSquared, p1OnR - p2OnR);
+                } else {
+                    // p1 closer to ray origin
+                    return line_distance<T>::Parallel(p1OnR, perpendicularDistSquared, 0);
+                }
             } else {
                 // segment straddles ray origin
+                const T perpendicularDistSquared = squared_distance(point_at_distance(r, p1OnR), p1);
                 const T roriginOnS = distance_to_projected_point(s, r.origin);
                 return line_distance<T>::Parallel(0, perpendicularDistSquared, roriginOnS);
             }

@@ -24,7 +24,9 @@
 #include <vecmath/constants.h>
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
+#include <vecmath/mat.h>
 #include <vecmath/distance.h>
+#include <vecmath/util.h>
 
 namespace vm {
     TEST(distance_test, distance_ray_point) {
@@ -113,6 +115,11 @@ namespace vm {
         ASSERT_FLOAT_EQ(0.0f, segDist.position2);
         assert_line_distance_squared_invariants(segDist, ray, seg);
 
+        // flip previous test case
+        seg = seg.transform(mat4x4f::mirror_z());
+        segDist = squared_distance(ray.transform(mat4x4f::mirror_z()), seg);
+        assert_line_distance_squared_invariants(segDist, ray.transform(mat4x4f::mirror_z()), seg);
+
         // segment parallel, behind ray
         seg = segment3f(vec3f(1.0f, 1.0f, -2.0f), vec3f(1.0f, 1.0f, -1.0f));
         segDist = squared_distance(ray, seg);
@@ -121,6 +128,11 @@ namespace vm {
         ASSERT_FLOAT_EQ(3.0f, segDist.distance);
         ASSERT_FLOAT_EQ(1.0f, segDist.position2);
         assert_line_distance_squared_invariants(segDist, ray, seg);
+
+        // flip previous test case
+        seg = seg.transform(mat4x4f::mirror_z());
+        segDist = squared_distance(ray.transform(mat4x4f::mirror_z()), seg);
+        assert_line_distance_squared_invariants(segDist, ray.transform(mat4x4f::mirror_z()), seg);
 
         // segment parallel, in front of ray, degenerate segment
         seg = segment3f(vec3f(1.0f, 1.0f, 5.0f), vec3f(1.0f, 1.0f, 5.0f));
