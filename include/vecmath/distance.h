@@ -19,6 +19,7 @@
 #ifndef TRENCHBROOM_DISTANCE_H
 #define TRENCHBROOM_DISTANCE_H
 
+#include "abstract_line.h"
 #include "vec.h"
 #include "line.h"
 #include "ray.h"
@@ -36,11 +37,14 @@ namespace vm {
     struct point_distance {
         /**
          * The distance from the origin of the line to the orthogonal projection of a point onto the line.
+         * For rays or line segments, this is clamped so it's between the ray/line segment start, and
+         * end (for line segments). Never squared.
          */
         T position;
 
         /**
-         * The distance between the orthogonal projection of a point to the point itself.
+         * The distance between the clamped orthogonal projection of a point to the point itself.
+         * Squared if squared_distance was used.
          */
         T distance;
 
@@ -48,7 +52,7 @@ namespace vm {
          * Creates a new instance with the given values.
          *
          * @param i_position the position of the orthogonal projection of the point onto the line
-         * @param i_distance the value of the distance
+         * @param i_distance the value of the distance, may be squared
          */
         constexpr point_distance(const T i_position, const T i_distance) :
         position(i_position),
@@ -56,13 +60,12 @@ namespace vm {
     };
 
     /**
-     * Computes the minimal squared distance between a given point and a ray. Two values are returned:
+     * Computes the minimal squared distance between a given point and a ray.
+     * After clamping the orthogonal projection of the point onto the ray to not
+     * lie behind the ray origin, two values are returned:
      *
-     * - The squared distance between the closest point on given ray and the given point.
-     * - The distance from the origin of the given ray the closest point on the given ray.
-     *
-     * Thereby, the closest point on the given ray is the orthogonal projection of the given point onto the given
-     * ray.
+     * - The position of the clamped projected point relative to the given ray origin (point_distance::position)
+     * - The squared distance between the clamped projected point on the given ray and the given point (point_distance::distance)
      *
      * @tparam T the component type
      * @tparam S the number of components
@@ -82,13 +85,12 @@ namespace vm {
     }
 
     /**
-     * Computes the minimal distance between a given point and a ray. Two values are returned:
+     * Computes the minimal distance between a given point and a ray.
+     * After clamping the orthogonal projection of the point onto the ray to not
+     * lie behind the ray origin, two values are returned:
      *
-     * - The distance between the closest point on given ray and the given point.
-     * - The distance from the origin of the given ray the closest point on the given ray.
-     *
-     * Thereby, the closest point on the given ray is the orthogonal projection of the given point onto the given
-     * ray.
+     * - The position of the clamped projected point relative to the given ray origin (point_distance::position)
+     * - The squared distance between the clamped projected point on the given ray and the given point (point_distance::distance)
      *
      * @tparam T the component type
      * @tparam S the number of components
@@ -177,40 +179,45 @@ namespace vm {
 
         /**
          * The distance between the closest point and the origin of the first line.
+         * Never squared.
          */
         T position1;
 
         /**
          * The minimal distance between the segments.
+         * Squared if squared_distance was used.
          */
         T distance;
 
         /**
          * The distance between the closest point and the origin of the second line.
+         * Never squared.
          */
         T position2;
 
         /**
          * Creates a new instance for the case when the segments are parallel.
          *
-         * @param distance constant distance between the segments
+         * @param i_position1 the value for position1
+         * @param i_distance the value for distance
+         * @param i_position2 the value for position2
          * @return the instance
          */
-        constexpr static line_distance Parallel(const T distance) {
+        constexpr static line_distance Parallel(const T i_position1, const T i_distance, const T i_position2) {
             return {
                 true,
-                nan<T>(),
-                distance,
-                nan<T>()
+                i_position1,
+                i_distance,
+                i_position2
             };
         }
 
         /**
          * Creates a new instance for the case when the segments are not parallel.
          *
-         * @param i_position1 the value for rayDistance
+         * @param i_position1 the value for position1
          * @param i_distance the value for distance
-         * @param i_position2 the value for lineDistance
+         * @param i_position2 the value for position2
          * @return the instance
          */
         constexpr static line_distance NonParallel(const T i_position1, const T i_distance, const T i_position2) {
@@ -238,12 +245,13 @@ namespace vm {
 
     /**
      * Computes the squared minimal distance of the given ray and the given line segment.
+     * position1 and position2 are not squared.
      *
      * @tparam T the component type
      * @tparam S the number of components
      * @param r the ray
      * @param s the segment
-     * @return the squared minimal distance
+     * @return the squared minimal distance (position1 and position2 are not squared)
      */
     template <typename T, size_t S>
     line_distance<T> squared_distance(const ray<T,S>& r, const segment<T,S>& s) {
@@ -262,9 +270,35 @@ namespace vm {
         const auto D = a * c - b * b;
 
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w, v);
-            const auto z = w - f * v;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T p1_on_r = distance_to_projected_point(r, p1);
+            const T p2_on_r = distance_to_projected_point(r, p2);
+
+            if (p1_on_r < static_cast<T>(0) && p2_on_r < static_cast<T>(0)) {
+                // segment completely behind ray
+                if (p1_on_r > p2_on_r) {
+                    // p1 closer to ray origin
+                    return line_distance<T>::Parallel(0, squared_distance(r.origin, p1), 0);
+                } else {
+                    // p2 closer to ray origin
+                    return line_distance<T>::Parallel(0, squared_distance(r.origin, p2), p2_on_r - p1_on_r);
+                }
+            } else if (p1_on_r > static_cast<T>(0) && p2_on_r > static_cast<T>(0)) {
+                // segment completely in front of ray origin
+                const T perpendicular_dist_squared = squared_distance(point_at_distance(r, p1_on_r), p1);
+                if (p1_on_r > p2_on_r) {
+                    // p2 closer to ray origin
+                    return line_distance<T>::Parallel(p2_on_r, perpendicular_dist_squared, p1_on_r - p2_on_r);
+                } else {
+                    // p1 closer to ray origin
+                    return line_distance<T>::Parallel(p1_on_r, perpendicular_dist_squared, 0);
+                }
+            } else {
+                // segment straddles ray origin
+                const T perpendicular_dist_squared = squared_distance(point_at_distance(r, p1_on_r), p1);
+                const T r_origin_on_s = distance_to_projected_point(s, r.origin);
+                return line_distance<T>::Parallel(0, perpendicular_dist_squared, r_origin_on_s);
+            }
         }
 
         T sN, sD = D;
@@ -334,9 +368,14 @@ namespace vm {
         auto tD = D;
 
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w, v);
-            const auto z = w - f * v;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T rhs_origin_on_lhs = distance_to_projected_point(lhs, rhs.origin);
+            const T lhs_origin_on_rhs = distance_to_projected_point(rhs, lhs.origin);
+            const T perpendicular_dist_squared = squared_distance(project_point(lhs, rhs.origin), rhs.origin);
+
+            return line_distance<T>::Parallel(max(static_cast<T>(0), rhs_origin_on_lhs),
+                                              perpendicular_dist_squared,
+                                              max(static_cast<T>(0), lhs_origin_on_rhs));
         }
 
         auto sN = (b * e - c * d);
@@ -394,9 +433,10 @@ namespace vm {
 
         const auto D = a * c - b * b;
         if (is_zero(D, constants<T>::almost_zero())) {
-            const auto f = dot(w0, l.direction);
-            const auto z = w0 - f * l.direction;
-            return line_distance<T>::Parallel(squared_length(z));
+            // parallel case
+            const T perpendicular_dist_squared = squared_distance(project_point(r, l.point), l.point);
+            const T r_origin_on_l = distance_to_projected_point(l, r.origin); // can be negative
+            return line_distance<T>::Parallel(0, perpendicular_dist_squared, r_origin_on_l);
         }
 
         const auto sc = max((b * e - c * d) / D, static_cast<T>(0.0));
