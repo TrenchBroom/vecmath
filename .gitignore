@@ -3,6 +3,7 @@ Version.h
 Thumbs.db
 *.sublime-workspace
 
+/.vscode
 /cmake-build-debug
 /cmake-build-release
 /build-debug
