@@ -21,49 +21,10 @@
 
 #include <vecmath/forward.h>
 
-#define CE_ASSERT_TRUE(expr) { constexpr auto _r_r = (expr); ASSERT_TRUE(_r_r); }
-#define CE_ASSERT_FALSE(expr) { constexpr auto _r_r = (expr); ASSERT_FALSE(_r_r); }
-#define CE_ASSERT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_EQ((exp), _r_r); }
-#define CE_ASSERT_NE(exp, expr) { constexpr auto _r_r = (expr); ASSERT_NE((exp), _r_r); }
-#define CE_ASSERT_FLOAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_FLOAT_EQ((exp), _r_r); }
-#define CE_ASSERT_DOUBLE_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_DOUBLE_EQ((exp), _r_r); }
-#define CE_ASSERT_NEAR(exp, expr, epsilon) { constexpr auto _r_r = (expr); ASSERT_NEAR((exp), _r_r, (epsilon)); }
-#define CE_ASSERT_VEC_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_VEC_EQ((exp), _r_r); }
-#define CE_ASSERT_MAT_EQ(exp, expr) { constexpr auto _r_r = (expr); ASSERT_MAT_EQ((exp), _r_r); }
+#define CE_CHECK(expr) { constexpr auto _r_r = (expr); CHECK(_r_r); }
+#define CER_CHECK(expr) CHECK(expr); CE_CHECK(expr);
 
-#define CER_ASSERT_TRUE(expr) ASSERT_TRUE((expr)); CE_ASSERT_TRUE((expr))
-#define CER_ASSERT_FALSE(expr) ASSERT_FALSE((expr)); CE_ASSERT_FALSE((expr))
-#define CER_ASSERT_EQ(exp, expr) ASSERT_EQ((exp), (expr)); CE_ASSERT_EQ((exp), (expr))
-#define CER_ASSERT_NE(exp, expr) ASSERT_NE((exp), (expr)); CE_ASSERT_NE((exp), (expr))
-#define CER_ASSERT_FLOAT_EQ(exp, expr) ASSERT_FLOAT_EQ((exp), (expr)); CE_ASSERT_FLOAT_EQ((exp), (expr))
-#define CER_ASSERT_DOUBLE_EQ(exp, expr) ASSERT_DOUBLE_EQ((exp), (expr)); CE_ASSERT_DOUBLE_EQ((exp), (expr))
-#define CER_ASSERT_NEAR(exp, expr, epsilon) ASSERT_NEAR((exp), (expr), (epsilon)); CE_ASSERT_NEAR((exp), (expr), (epsilon))
-#define CER_ASSERT_VEC_EQ(exp, expr) ASSERT_VEC_EQ((exp), (expr)); CE_ASSERT_VEC_EQ((exp), (expr))
-#define CER_ASSERT_MAT_EQ(exp, expr) ASSERT_MAT_EQ((exp), (expr)); CE_ASSERT_MAT_EQ((exp), (expr))
-
-template <typename T, size_t S>
-void ASSERT_VEC_EQ(const vm::vec<T,S>& lhs, const vm::vec<T,S>& rhs) {
-    ASSERT_TRUE(is_equal(lhs, rhs, static_cast<T>(0.001)));
-}
-
-template <typename T, size_t S>
-void EXPECT_VEC_EQ(const vm::vec<T,S>& lhs, const vm::vec<T,S>& rhs) {
-    EXPECT_TRUE(is_equal(lhs, rhs, static_cast<T>(0.001)));
-}
-
-template <typename T, size_t S>
-void ASSERT_VEC_NE(const vm::vec<T,S>& lhs, const vm::vec<T,S>& rhs) {
-    ASSERT_FALSE(is_equal(lhs, rhs, static_cast<T>(0.001)));
-}
-
-template <typename T, size_t C, size_t R>
-void ASSERT_MAT_EQ(const vm::mat<T,R,C>& lhs, const vm::mat<T,R,C>& rhs) {
-    ASSERT_TRUE(is_equal(lhs, rhs, static_cast<T>(0.001)));
-}
-
-template <typename T, size_t C, size_t R>
-void ASSERT_MAT_NE(const vm::mat<T,R,C>& lhs, const vm::mat<T,R,C>& rhs) {
-    ASSERT_FALSE(is_equal(lhs, rhs, static_cast<T>(0.001)));
-}
+#define CE_CHECK_FALSE(expr) { constexpr auto _r_r = (expr); CHECK_FALSE(_r_r); }
+#define CER_CHECK_FALSE(expr) CHECK_FALSE(expr); CE_CHECK_FALSE(expr);
 
 #endif //VECMATH_TEST_UTILS_H

@@ -25,7 +25,7 @@
 
 
 namespace vm {
-    TEST(vec_io_test, parse_valid_string) {
+    TEST_CASE("vec_io.parse_valid_string") {
         constexpr auto s = "1.0 3 3.5";
 
         const auto success = can_parse<float, 3>(s);
@@ -35,7 +35,7 @@ namespace vm {
         ASSERT_EQ(vec3f(1.0f, 3.0f, 3.5f), result);
     }
 
-    TEST(vec_io_test, parse_short_string) {
+    TEST_CASE("vec_io.parse_short_string") {
         constexpr auto s = "1.0 3";
 
         const auto success = can_parse<float, 3>(s);
@@ -45,7 +45,7 @@ namespace vm {
         ASSERT_EQ(vec3f::zero(), result);
     }
 
-    TEST(vec_io_test, parse_long_string) {
+    TEST_CASE("vec_io.parse_long_string") {
         constexpr auto s = "1.0 3 4 5";
 
         const auto success = can_parse<float, 3>(s);
@@ -55,7 +55,7 @@ namespace vm {
         ASSERT_EQ(vec3f(1.0f, 3.0f, 4.0f), result);
     }
 
-    TEST(vec_io_test, parse_invalid_string) {
+    TEST_CASE("vec_io.parse_invalid_string") {
         constexpr auto s = "asdf";
 
         const auto success = can_parse<float, 3>(s);
@@ -65,7 +65,7 @@ namespace vm {
         ASSERT_EQ(vec3f::zero(), result);
     }
 
-    TEST(vec_io_test, parse_empty_string) {
+    TEST_CASE("vec_io.parse_empty_string") {
         constexpr auto s = "";
 
         const auto success = can_parse<float, 3>(s);
@@ -75,7 +75,7 @@ namespace vm {
         ASSERT_EQ(vec3f::zero(), result);
     }
 
-    TEST(vec_io_test, parse_all) {
+    TEST_CASE("vec_io.parse_all") {
         std::vector<vec3f> result;
 
         parse_all<float, 3>("", std::back_inserter(result));
@@ -103,7 +103,7 @@ namespace vm {
     }
 
 
-    TEST(vec_io_test, stream_insertion) {
+    TEST_CASE("vec_io.stream_insertion") {
         std::stringstream str;
         str << vec3d(10, 10, 10);
         ASSERT_EQ("10 10 10", str.str());

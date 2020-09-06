@@ -16,39 +16,41 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include <vecmath/forward.h>
+#include <vecmath/approx.h>
 #include <vecmath/quat.h>
 #include <vecmath/vec.h>
+#include <vecmath/vec_io.h>
 #include <vecmath/scalar.h>
 
 #include "test_utils.h"
 
+#include <catch2/catch.hpp>
+
 namespace vm {
-    TEST(quat_test, constructor_default) {
+    TEST_CASE("quat.constructor_default") {
         constexpr auto q = quatf();
-        CER_ASSERT_FLOAT_EQ(0.0f, q.r)
-        CER_ASSERT_TRUE(is_zero(q.v, vm::Cf::almost_zero()))
+        CER_CHECK(q.r == 0.0f);
+        CER_CHECK(is_zero(q.v, vm::Cf::almost_zero()));
     }
 
-    TEST(quat_test, construtor_with_rotation) {
+    TEST_CASE("quat.construtor_with_rotation") {
         const auto angle = to_radians(15.0f);
         const auto axis = normalize(vec3f(1, 2, 3));
         const auto q = quatf(axis, angle);
 
-        ASSERT_FLOAT_EQ(std::cos(angle / 2.0f), q.r);
-        ASSERT_VEC_EQ(axis * std::sin(angle / 2.0f), q.v);
+        CHECK(q.r == approx(std::cos(angle / 2.0f)));
+        CHECK(q.v == approx(axis * std::sin(angle / 2.0f)));
     }
 
-    TEST(quat_test, constructor_with_vector_rotation) {
+    TEST_CASE("quat.constructor_with_vector_rotation") {
         const auto from = vec3f(0, 1, 0);
         const auto to = vec3f(1, 0, 0);
         const auto q = quatf(from, to);
-        ASSERT_VEC_EQ(to, q * from);
+        CHECK(q * from == approx(to));
     }
 
-    TEST(quat_test, constructor_with_opposite_vector_rotation) {
+    TEST_CASE("quat.constructor_with_opposite_vector_rotation") {
         for (std::size_t i = 0; i < 3; ++i) {
             auto from = vec3d(0, 0, 0);
             auto to   = vec3d(0, 0, 0);
@@ -57,111 +59,110 @@ namespace vm {
             to[i] = -1.0;
 
             const auto q = quatd(from, to);
-            EXPECT_VEC_EQ(to, q * from);
-
-            // The quaternion axis should be perpendicular to both from and to vectors
-            EXPECT_DOUBLE_EQ(0.0, dot(q.axis(), from));
-            EXPECT_DOUBLE_EQ(0.0, dot(q.axis(), to));
+            CHECK(q * from == approx(to));
+         // The quaternion axis should be perpendicular to both from and to vectors
+            CHECK(dot(q.axis(), from) == approx(0.0));
+            CHECK(dot(q.axis(), to) == approx(0.0));
         }
     }
 
-    TEST(quat_test, constructor_with_equal_vector_rotation) {
+    TEST_CASE("quat.constructor_with_equal_vector_rotation") {
         for (std::size_t i = 0; i < 3; ++i) {
             auto from = vec3d(0, 0, 0);
             from[i] = 1.0;
 
             const auto to = from;
             const auto q = quatd(from, to);
-            EXPECT_VEC_EQ(to, q * from);
+            CHECK(q * from == approx(to));
         }
     }
 
-    TEST(quat_test, angle) {
+    TEST_CASE("quat.angle") {
         const auto angle = to_radians(15.0f);
         const auto q = quatf(vec3f::pos_z(), angle);
 
-        ASSERT_NEAR(angle, q.angle(), 0.001f);
+        CHECK(q.angle() == approx(angle, 0.001f));
     }
 
-    TEST(quat_test, axis) {
-        ASSERT_VEC_EQ(vec3d::zero(), quatd().axis());
-        ASSERT_VEC_EQ(vec3d::pos_z(), quatd(vec3d::pos_z(), to_radians(45.0)).axis());
-        ASSERT_VEC_EQ(normalize(vec3d(1, 1, 0)), quatd(normalize(vec3d(1, 1, 0)), to_radians(25.0)).axis());
+    TEST_CASE("quat.axis") {
+        CHECK(quatd().axis() == approx(vec3d::zero()));
+        CHECK(quatd(vec3d::pos_z(), to_radians(45.0)).axis() == approx(vec3d::pos_z()));
+        CHECK(quatd(normalize(vec3d(1, 1, 0)), to_radians(25.0)).axis() == approx(normalize(vec3d(1, 1, 0))));
     }
 
-    TEST(quat_test, conjugate) {
+    TEST_CASE("quat.conjugate") {
         // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto p = q.conjugate();
 
-        CER_ASSERT_VEC_EQ(-q.v, p.v)
+        CER_CHECK(p.v == approx(-q.v));
     }
 
-    TEST(quat_test, is_equal) {
-        CER_ASSERT_TRUE(is_equal(quatd(), quatd(), 0.0))
+    TEST_CASE("quat.is_equal") {
+        CER_CHECK(is_equal(quatd(), quatd(), 0.0))
 
         // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
-        CER_ASSERT_TRUE(is_equal(q,  q, 0.0f))
-        CER_ASSERT_TRUE(is_equal(q, -q, 0.0f))
+        CER_CHECK(is_equal(q,  q, 0.0f));
+        CER_CHECK(is_equal(q, -q, 0.0f));
     }
 
-    TEST(quat_test, operator_equal) {
-        CER_ASSERT_TRUE(quatd() == quatd())
-
-        // create quaternion with axis pos_z and angle 15.0f to_degrees
-        constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
-        constexpr auto p = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
-
-        CER_ASSERT_TRUE(q == q)
-        CER_ASSERT_TRUE(q == -q)
-        CER_ASSERT_TRUE(p == p)
-        CER_ASSERT_TRUE(p == -p)
-        CER_ASSERT_FALSE(q == p)
-    }
-
-    TEST(quat_test, operator_not_equal) {
-        CER_ASSERT_FALSE(quatd() != quatd())
+    TEST_CASE("quat.operator_equal") {
+        CER_CHECK(quatd() == quatd())
 
         // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
         constexpr auto p = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
 
-        CER_ASSERT_FALSE(q != q)
-        CER_ASSERT_FALSE(q != -q)
-        CER_ASSERT_FALSE(p != p)
-        CER_ASSERT_FALSE(p != -p)
-        CER_ASSERT_TRUE(q != p)
+        CER_CHECK(q == q);
+        CER_CHECK(q == -q);
+        CER_CHECK(p == p);
+        CER_CHECK(p == -p);
+        CER_CHECK_FALSE(q == p);
     }
 
-    TEST(quat_test, operator_unary_plus) {
-        CER_ASSERT_EQ(quatf(), +quatf())
+    TEST_CASE("quat.operator_not_equal") {
+        CER_CHECK_FALSE(quatd() != quatd());
+
+        // create quaternion with axis pos_z and angle 15.0f to_degrees
+        constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
+        constexpr auto p = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
+
+        CER_CHECK_FALSE(q != q);
+        CER_CHECK_FALSE(q != -q);
+        CER_CHECK_FALSE(p != p);
+        CER_CHECK_FALSE(p != -p);
+        CER_CHECK(q != p);
     }
 
-    TEST(quat_test, operator_unary_minus) {
+    TEST_CASE("quat.operator_unary_plus") {
+        CER_CHECK(+quatf() == quatf());
+    }
+
+    TEST_CASE("quat.operator_unary_minus") {
         // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto nq = -q;
 
-        CER_ASSERT_FLOAT_EQ(-(q.r), nq.r)
-        CER_ASSERT_VEC_EQ(q.v, nq.v)
+        CER_CHECK(nq.r == approx(-(q.r)));
+        CER_CHECK(nq.v == approx(q.v));
     }
 
-    TEST(quat_test, operator_multiply_scalar_right) {
+    TEST_CASE("quat.operator_multiply_scalar_right") {
         // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto p = q * 2.0f;
-        CER_ASSERT_FLOAT_EQ(q.r * 2.0f, p.r)
+        CER_CHECK(p.r == approx(q.r * 2.0f));
     }
 
-    TEST(quat_test, operator_multiply_scalar_left) {
+    TEST_CASE("quat.operator_multiply_scalar_left") {
         // create quaternion with axis pos_x and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0.1305262f, 0, 0));
         constexpr auto p = 2.0f * q;
-        CER_ASSERT_FLOAT_EQ(q.r * 2.0f, p.r)
+        CER_CHECK(p.r == approx(q.r * 2.0f));
     }
 
-    TEST(quat_test, operator_multiply_quaternions) {
+    TEST_CASE("quat.operator_multiply_quaternions") {
         // constexpr auto angle1 = to_radians(15.0f);
         // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q1 = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
@@ -177,10 +178,10 @@ namespace vm {
         constexpr auto cos_a1_a2 = 0.906307756f; // std::cos(angle1 + angle2)
         constexpr auto sin_a1_a2 = 0.42261827f; // std::sin(angle1 + angle2)
 
-        CER_ASSERT_VEC_EQ(vec3f(cos_a1_a2, sin_a1_a2, 0.0f), w)
+        CER_CHECK(w == approx(vec3f(cos_a1_a2, sin_a1_a2, 0.0f)));
     }
 
-    TEST(quat_test, operator_multiply_vector) {
+    TEST_CASE("quat.operator_multiply_vector") {
         // constexpr auto angle = to_radians(15.0f);
         // create quaternion with axis pos_z and angle 15.0f to_degrees
         constexpr auto q = quatf(0.991444885f, vec3f(0, 0, 0.1305262f));
@@ -189,6 +190,6 @@ namespace vm {
         constexpr auto cos_a = 0.965925812f; // std::cos(angle);
         constexpr auto sin_a = 0.258819044f; // std::sin(angle);
 
-        CER_ASSERT_VEC_EQ(vec3f(cos_a, sin_a, 0), q * x)
+        CER_CHECK(q * x == approx(vec3f(cos_a, sin_a, 0)));
     }
 }

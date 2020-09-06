@@ -16,44 +16,50 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include <vecmath/forward.h>
+#include <vecmath/approx.h>
 #include <vecmath/vec_ext.h>
+#include <vecmath/vec_io.h>
 
 #include "test_utils.h"
 
 #include <array>
 #include <vector>
 
+#include <catch2/catch.hpp>
+
 namespace vm {
     // ========== operations on ranges of vectors ==========
 
-    TEST(vec_ext_test, operator_plus_vector) {
+    TEST_CASE("vec_ext.operator_plus_vector") {
+        using Catch::Matchers::Equals;
+
         const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
         const auto exp = std::vector<vec3f>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        ASSERT_EQ(exp, in + vec3f(-1, +1, -2));
-        ASSERT_EQ(exp, vec3f(-1, +1, -2) + in);
+        CHECK_THAT(in + vec3f(-1, +1, -2), Equals(exp));
+        CHECK_THAT(vec3f(-1, +1, -2) + in, Equals(exp));
     }
 
-    TEST(vec_ext_test, operator_plus_array) {
+    TEST_CASE("vec_ext.operator_plus_array") {
         constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
         constexpr auto exp = std::array<vec3f, 2>{ vec3f(0, 3, 1), vec3f(1, 4, 2) };
-        CER_ASSERT_EQ(exp, in + vec3f(-1, +1, -2))
-        CER_ASSERT_EQ(exp, vec3f(-1, +1, -2) + in)
+        CHECK(in + vec3f(-1, +1, -2) == exp);
+        CHECK(vec3f(-1, +1, -2) + in == exp);
     }
 
-    TEST(vec_ext_test, operator_multiply_vector) {
+    TEST_CASE("vec_ext.operator_multiply_vector") {
+        using Catch::Matchers::Equals;
+
         const auto in  = std::vector<vec3f>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
         const auto exp = std::vector<vec3f>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        ASSERT_EQ(exp, in * 3.0f);
-        ASSERT_EQ(exp, 3.0f * in);
+        CHECK_THAT(in * 3.0f, Equals(exp));
+        CHECK_THAT(3.0f * in, Equals(exp));
     }
 
-    TEST(vec_ext_test, operator_multiply_array) {
+    TEST_CASE("vec_ext.operator_multiply_array") {
         constexpr auto in  = std::array<vec3f, 2>{ vec3f(1, 2, 3), vec3f(2, 3, 4) };
         constexpr auto exp = std::array<vec3f, 2>{ vec3f(3, 6, 9), vec3f(6, 9, 12) };
-        CER_ASSERT_EQ(exp, in * 3.0f)
-        CER_ASSERT_EQ(exp, 3.0f * in)
+        CHECK(in * 3.0f == exp);
+        CHECK(3.0f * in == exp);
     }
 }

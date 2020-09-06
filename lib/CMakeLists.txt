@@ -1,3 +1,1 @@
-if (NOT TARGET gtest)
-    add_subdirectory(googletest)
-endif()
+add_subdirectory(Catch2)
