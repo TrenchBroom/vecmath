@@ -13,6 +13,7 @@ add_library(vecmath INTERFACE)
 
 target_sources(vecmath INTERFACE
     "${VECMATH_INCLUDE_DIR}/vecmath/abstract_line.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/approx.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/bbox_io.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/bbox.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/constants.h"
