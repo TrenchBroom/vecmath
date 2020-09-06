@@ -402,12 +402,12 @@ namespace vm {
                 return -1;
             } else if (lhsIsNaN && !rhsIsNaN) {
                 return 1;
-            }
-
-            if (lhs[i] < rhs[i] - epsilon) {
-                return -1;
-            } else if (lhs[i] > rhs[i] + epsilon) {
-                return 1;
+            } else if (!lhsIsNaN && !rhsIsNaN) {
+                if (lhs[i] < rhs[i] - epsilon) {
+                    return -1;
+                } else if (lhs[i] > rhs[i] + epsilon) {
+                    return 1;
+                }
             }
         }
         return 0;
