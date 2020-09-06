@@ -24,6 +24,8 @@
 
 #include "test_utils.h"
 
+#include <vector>
+
 namespace vm {
     TEST(convex_hull_test, convex_hull_simple) {
         const vm::vec3d p1(0.0, 0.0, 0.0);
