@@ -16,18 +16,16 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include <vecmath/forward.h>
 #include <vecmath/vec.h>
 #include <vecmath/convex_hull.h>
 
-#include "test_utils.h"
-
 #include <vector>
 
+#include <catch2/catch.hpp>
+
 namespace vm {
-    TEST(convex_hull_test, convex_hull_simple) {
+    TEST_CASE("convex_hull.convex_hull_simple") {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -40,14 +38,14 @@ namespace vm {
         points.push_back(p4);
 
         const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
-        ASSERT_EQ(4u, hull.size());
-        ASSERT_VEC_EQ(p3, hull[0]);
-        ASSERT_VEC_EQ(p2, hull[1]);
-        ASSERT_VEC_EQ(p4, hull[2]);
-        ASSERT_VEC_EQ(p1, hull[3]);
+        CHECK(hull.size() == 4u);
+        CHECK(hull[0] == p3);
+        CHECK(hull[1] == p2);
+        CHECK(hull[2] == p4);
+        CHECK(hull[3] == p1);
     }
 
-    TEST(convex_hull_test, convex_hull_simple_with_internal_point) {
+    TEST_CASE("convex_hull.convex_hull_simple_with_internal_point") {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -62,14 +60,14 @@ namespace vm {
         points.push_back(p5);
 
         const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
-        ASSERT_EQ(4u, hull.size());
-        ASSERT_VEC_EQ(p3, hull[0]);
-        ASSERT_VEC_EQ(p2, hull[1]);
-        ASSERT_VEC_EQ(p4, hull[2]);
-        ASSERT_VEC_EQ(p1, hull[3]);
+        CHECK(hull.size() == 4u);
+        CHECK(hull[0] == p3);
+        CHECK(hull[1] == p2);
+        CHECK(hull[2] == p4);
+        CHECK(hull[3] == p1);
     }
 
-    TEST(convex_hull_test, convex_hull_simple_with_point_on_line) {
+    TEST_CASE("convex_hull.convex_hull_simple_with_point_on_line") {
         const vm::vec3d p1(0.0, 0.0, 0.0);
         const vm::vec3d p2(8.0, 8.0, 0.0);
         const vm::vec3d p3(8.0, 0.0, 0.0);
@@ -84,10 +82,10 @@ namespace vm {
         points.push_back(p5);
 
         const std::vector<vm::vec3d> hull = vm::convex_hull<double>(points);
-        ASSERT_EQ(4u, hull.size());
-        ASSERT_VEC_EQ(p3, hull[0]);
-        ASSERT_VEC_EQ(p2, hull[1]);
-        ASSERT_VEC_EQ(p4, hull[2]);
-        ASSERT_VEC_EQ(p1, hull[3]);
+        CHECK(hull.size() == 4u);
+        CHECK(hull[0] == p3);
+        CHECK(hull[1] == p2);
+        CHECK(hull[2] == p4);
+        CHECK(hull[3] == p1);
     }
 }

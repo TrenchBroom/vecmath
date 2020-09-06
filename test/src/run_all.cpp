@@ -16,13 +16,14 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4365)
+#endif
 
-#include <clocale>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
 
-int main(int argc, char **argv) {
-    // set the locale to US so that we can parse floats attribute
-    std::setlocale(LC_NUMERIC, "C");
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

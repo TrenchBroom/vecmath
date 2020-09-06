@@ -18,7 +18,7 @@ target_sources(vecmath-test PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/run_all.cpp"
         )
 
-target_link_libraries(vecmath-test gtest vecmath)
+target_link_libraries(vecmath-test Catch2::Catch2 vecmath)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     target_compile_options(vecmath-test PRIVATE -Wall -Wextra -Wconversion -pedantic -Wno-c++98-compat -Wno-global-constructors -Wno-zero-as-null-pointer-constant)

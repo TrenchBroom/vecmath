@@ -16,13 +16,14 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include <vecmath/forward.h>
+#include <vecmath/approx.h>
 #include <vecmath/vec.h>
 #include <vecmath/vec_ext.h>
+#include <vecmath/vec_io.h>
 #include <vecmath/mat.h>
 #include <vecmath/mat_ext.h>
+#include <vecmath/mat_io.h>
 #include <vecmath/polygon.h>
 
 #include "test_utils.h"
@@ -30,28 +31,33 @@
 #include <iterator>
 #include <vector>
 
+#include <catch2/catch.hpp>
+
 namespace vm {
-    TEST(polygon_test, constructor_default) {
-        ASSERT_EQ(0u, polygon3d().vertices().size());
+    TEST_CASE("polygon.constructor_default") {
+        CHECK(polygon3d().vertices().size() == 0u);
     }
 
-    TEST(polygon_test, constructor_with_initializer_list) {
+    TEST_CASE("polygon.constructor_with_initializer_list") {
+        using Catch::Matchers::Equals;
+
         const auto expected = std::vector<vec3d> {
             vec3d(-1, -1, 0),
             vec3d(-1, +1, 0),
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0)
         };
-        ASSERT_EQ(expected,
-            polygon3d({
+        CHECK_THAT(polygon3d({
                 vec3d(+1, +1, 0),
                 vec3d(+1, -1, 0),
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0)
-            }).vertices());
+            }).vertices(), Equals(expected));
     }
 
-    TEST(polygon_test, construct_with_vertex_list) {
+    TEST_CASE("polygon.construct_with_vertex_list") {
+        using Catch::Matchers::Equals;
+
         const auto vertices = std::vector<vec3d> {
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -64,10 +70,10 @@ namespace vm {
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0)
         };
-        ASSERT_EQ(expected, polygon3d(vertices).vertices());
+        CHECK_THAT(polygon3d(vertices).vertices(), Equals(expected));
     }
 
-    TEST(polygon_test, has_vertex) {
+    TEST_CASE("polygon.has_vertex") {
         const auto vertices = std::vector<vec3d> {
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -77,13 +83,13 @@ namespace vm {
         const auto p = polygon3d(vertices);
 
         for (const auto& v : vertices) {
-            ASSERT_TRUE(p.hasVertex(v));
+            CHECK(p.hasVertex(v));
         }
 
-        ASSERT_FALSE(p.hasVertex(vec3d::one()));
+        CHECK_FALSE(p.hasVertex(vec3d::one()));
     }
 
-    TEST(polygon_test, vertex_count) {
+    TEST_CASE("polygon.vertex_count") {
         const auto vertices = std::vector<vec3d> {
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -91,11 +97,13 @@ namespace vm {
             vec3d(-1, +1, 0)
         };
         const auto p = polygon3d(vertices);
-        ASSERT_EQ(4u, p.vertexCount());
-        ASSERT_EQ(0u, polygon3d().vertexCount());
+        CHECK(p.vertexCount() == 4u);
+        CHECK(polygon3d().vertexCount() == 0u);
     }
 
-    TEST(polygon_test, vertices) {
+    TEST_CASE("polygon.vertices") {
+        using Catch::Matchers::Equals;
+
         const auto vertices = std::vector<vec3d> {
             vec3d(-1, -1, 0),
             vec3d(-1, +1, 0),
@@ -103,10 +111,10 @@ namespace vm {
             vec3d(+1, -1, 0)
         };
         const auto p = polygon3d(vertices);
-        ASSERT_EQ(vertices, p.vertices());
+        CHECK_THAT(p.vertices(), Equals(vertices));
     }
 
-    TEST(polygon_test, center) {
+    TEST_CASE("polygon.center") {
         const auto vertices = std::vector<vec3d> {
             vec3d(-1, -1, 0),
             vec3d(-1, +1, 0),
@@ -114,10 +122,12 @@ namespace vm {
             vec3d(+1, -1, 0)
         };
         const auto p = polygon3d(vertices);
-        ASSERT_VEC_EQ(vec3d::zero(), p.center());
+        CHECK(p.center() == approx(vec3d::zero()));
     }
 
-    TEST(polygon_test, invert) {
+    TEST_CASE("polygon.invert") {
+        using Catch::Matchers::Equals;
+
         const auto p = polygon3d({
             vec3d(-1, -1, 0),
             vec3d(-1, +1, 0),
@@ -132,10 +142,12 @@ namespace vm {
             vec3d(-1, +1, 0),
         };
 
-        ASSERT_EQ(exp, p.invert().vertices());
+        CHECK_THAT(p.invert().vertices(), Equals(exp));
     }
 
-    TEST(polygon_test, translate) {
+    TEST_CASE("polygon.translate") {
+        using Catch::Matchers::Equals;
+
         const auto p = polygon3d({
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -143,10 +155,12 @@ namespace vm {
             vec3d(-1, +1, 0)
         });
         const auto t = vec3d(1, 2, 3);
-        ASSERT_EQ(p.vertices() + t, p.translate(t).vertices());
+        CHECK_THAT(p.translate(t).vertices(), Equals(p.vertices() + t));
     }
 
-    TEST(polygon_test, transform) {
+    TEST_CASE("polygon.transform") {
+        using Catch::Matchers::Equals;
+
         const auto p = polygon3d({
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -155,10 +169,12 @@ namespace vm {
         });
         const auto t = rotation_matrix(to_radians(14.0), to_radians(13.0), to_radians(44.0)) * translation_matrix(vec3d(1,2,3));
         const auto exp = polygon3d(t * p.vertices());
-        ASSERT_EQ(exp.vertices(), p.transform(t).vertices());
+        CHECK_THAT(p.transform(t).vertices(), Equals(exp.vertices()));
     }
 
-    TEST(polygon_test, get_vertices) {
+    TEST_CASE("polygon.get_vertices") {
+        using Catch::Matchers::Equals;
+
         const auto p1 = polygon3d({
             vec3d(+1, +1, 0),
             vec3d(+1, -1, 0),
@@ -174,18 +190,18 @@ namespace vm {
         auto act = std::vector<vec3d>();
         polygon3d::get_vertices(std::begin(ps), std::end(ps), std::back_inserter(act));
 
-        ASSERT_EQ(exp, act);
+        CHECK_THAT(act, Equals(exp));
     }
 
-    TEST(polygon_test, compare) {
-        ASSERT_TRUE(
+    TEST_CASE("polygon.compare") {
+        CHECK(
             compare(
                 polygon3d(),
                 polygon3d()
             ) == 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -202,7 +218,7 @@ namespace vm {
             ) == 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -220,7 +236,7 @@ namespace vm {
             ) == 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -236,7 +252,7 @@ namespace vm {
             ) < 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -252,7 +268,7 @@ namespace vm {
             ) > 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -268,7 +284,7 @@ namespace vm {
             ) < 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(-1, -1, 0),
@@ -282,7 +298,7 @@ namespace vm {
             ) < 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(+1, -1, 0),
@@ -298,7 +314,7 @@ namespace vm {
             ) > 0
         );
 
-        ASSERT_TRUE(
+        CHECK(
             compare(
                 polygon3d {
                     vec3d(+1, -1, 0),
@@ -313,13 +329,13 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_equal) {
-        ASSERT_TRUE(
+    TEST_CASE("polygon.operator_equal") {
+        CHECK(
             polygon3d() ==
             polygon3d()
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -334,7 +350,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -348,7 +364,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -362,21 +378,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
-            polygon3d ({
-                vec3d(-1, -1, 0),
-                vec3d(-1, +1, 0),
-                vec3d(+1, +1, 0)
-            }) ==
-            polygon3d ({
-                vec3d(+1, -1, 0),
-                vec3d(-1, +1, 0),
-                vec3d(+1, +1, 0),
-                vec3d(+1, -1, 0)
-            })
-        );
-
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -385,10 +387,24 @@ namespace vm {
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
+                vec3d(+1, +1, 0),
+                vec3d(+1, -1, 0)
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
+            polygon3d ({
+                vec3d(-1, -1, 0),
+                vec3d(-1, +1, 0),
+                vec3d(+1, +1, 0)
+            }) ==
+            polygon3d ({
+                vec3d(+1, -1, 0),
+                vec3d(-1, +1, 0),
+            })
+        );
+
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -402,7 +418,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -415,13 +431,13 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_not_equal) {
-        ASSERT_FALSE(
+    TEST_CASE("polygon.operator_not_equal") {
+        CHECK_FALSE(
             polygon3d() !=
             polygon3d()
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -436,7 +452,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -450,7 +466,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -464,21 +480,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
-            polygon3d ({
-                vec3d(-1, -1, 0),
-                vec3d(-1, +1, 0),
-                vec3d(+1, +1, 0)
-            }) !=
-            polygon3d ({
-                vec3d(+1, -1, 0),
-                vec3d(-1, +1, 0),
-                vec3d(+1, +1, 0),
-                vec3d(+1, -1, 0)
-            })
-        );
-
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -487,10 +489,24 @@ namespace vm {
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
+                vec3d(+1, +1, 0),
+                vec3d(+1, -1, 0)
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
+            polygon3d ({
+                vec3d(-1, -1, 0),
+                vec3d(-1, +1, 0),
+                vec3d(+1, +1, 0)
+            }) !=
+            polygon3d ({
+                vec3d(+1, -1, 0),
+                vec3d(-1, +1, 0),
+            })
+        );
+
+        CHECK(
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -504,7 +520,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(+1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -517,8 +533,8 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_less_than) {
-        ASSERT_FALSE(
+    TEST_CASE("polygon.operator_less_than") {
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -533,7 +549,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -547,7 +563,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -562,8 +578,8 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_less_than_or_equal) {
-        ASSERT_TRUE(
+    TEST_CASE("polygon.operator_less_than_or_equal") {
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -578,7 +594,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -592,7 +608,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -607,8 +623,8 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_greater_than) {
-        ASSERT_FALSE(
+    TEST_CASE("polygon.operator_greater_than") {
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -623,7 +639,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -637,7 +653,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -652,8 +668,8 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, operator_greater_than_or_equal) {
-        ASSERT_TRUE(
+    TEST_CASE("polygon.operator_greater_than_or_equal") {
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -668,7 +684,7 @@ namespace vm {
             })
         );
 
-        ASSERT_FALSE(
+        CHECK_FALSE(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -682,7 +698,7 @@ namespace vm {
             })
         );
 
-        ASSERT_TRUE(
+        CHECK(
             polygon3d ({
                 vec3d(-1, -1, 0),
                 vec3d(-1, +1, 0),
@@ -697,23 +713,23 @@ namespace vm {
         );
     }
 
-    TEST(polygon_test, compare_unoriented_empty_polygon) {
+    TEST_CASE("polygon.compare_unoriented_empty_polygon") {
         polygon3d p1{};
-        ASSERT_EQ(compareUnoriented(p1, polygon3d{}), 0);
-        ASSERT_EQ(compareUnoriented(p1, polygon3d{vec3d::zero()}), -1);
+        CHECK(compareUnoriented(p1, polygon3d{}) == 0);
+        CHECK(compareUnoriented(p1, polygon3d{vec3d::zero()}) == -1);
 
         polygon3d p2{vec3d::zero()};
-        ASSERT_EQ(compareUnoriented(p2, p1), +1);
-        ASSERT_EQ(compareUnoriented(p2, polygon3d{vec3d::zero()}), 0);
+        CHECK(compareUnoriented(p2, p1) == +1);
+        CHECK(compareUnoriented(p2, polygon3d{vec3d::zero()}) == 0);
     }
 
-    TEST(polygon_test, testBackwardComparePolygonWithOneVertex) {
+    TEST_CASE("polygon.testBackwardComparePolygonWithOneVertex") {
         polygon3d p2{vec3d::zero()};
-        ASSERT_EQ(compareUnoriented(p2, polygon3d{vec3d::zero()}), 0);
-        ASSERT_EQ(compareUnoriented(p2, polygon3d{vec3d::zero(), vec3d::zero()}), -1);
+        CHECK(compareUnoriented(p2, polygon3d{vec3d::zero()}) == 0);
+        CHECK(compareUnoriented(p2, polygon3d{vec3d::zero(), vec3d::zero()}) == -1);
     }
 
-    TEST(polygon_test, compare_unoriented) {
+    TEST_CASE("polygon.compare_unoriented") {
         polygon3d p1{
                 vec3d(-1.0, -1.0, 0.0),
                 vec3d(+1.0, -1.0, 0.0),
@@ -726,9 +742,9 @@ namespace vm {
                 vec3d(+1.0, -1.0, 0.0),
                 vec3d(-1.0, -1.0, 0.0),
         };
-        ASSERT_EQ(compareUnoriented(p1, p1), 0);
-        ASSERT_EQ(compareUnoriented(p1, p2), 0);
-        ASSERT_EQ(compareUnoriented(p2, p1), 0);
-        ASSERT_EQ(compareUnoriented(p2, p2), 0);
+        CHECK(compareUnoriented(p1, p1) == 0);
+        CHECK(compareUnoriented(p1, p2) == 0);
+        CHECK(compareUnoriented(p2, p1) == 0);
+        CHECK(compareUnoriented(p2, p2) == 0);
     }
 }

@@ -16,614 +16,640 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include "test_utils.h"
 
+#include <vecmath/approx.h>
 #include <vecmath/scalar.h>
 
 #include <array>
 #include <limits>
 
+#include <catch2/catch.hpp>
+
 namespace vm {
-    TEST(scalar_test, identity) {
+    TEST_CASE("scalar.identity") {
         constexpr auto id = identity();
-        CER_ASSERT_EQ(1, id(1))
-        CER_ASSERT_EQ(-1, id(-1))
-        CER_ASSERT_DOUBLE_EQ(1.234, id(1.234))
+        CER_CHECK(id(1) == 1);
+        CER_CHECK(id(-1) == -1);
+        CER_CHECK(id(1.234) == 1.234);
     }
 
-    TEST(scalar_test, is_nan) {
-        CER_ASSERT_TRUE(is_nan(std::numeric_limits<double>::quiet_NaN()))
-        CER_ASSERT_TRUE(is_nan(std::numeric_limits<float>::quiet_NaN()))
-        CER_ASSERT_FALSE(is_nan(1.0))
-        CER_ASSERT_FALSE(is_nan(1.0f))
+    TEST_CASE("scalar.is_nan") {
+        CER_CHECK(is_nan(std::numeric_limits<double>::quiet_NaN()));
+        CER_CHECK(is_nan(std::numeric_limits<float>::quiet_NaN()));
+        CER_CHECK_FALSE(is_nan(1.0));
+        CER_CHECK_FALSE(is_nan(1.0f));
     }
 
-    TEST(scalar_test, is_inf) {
-        CER_ASSERT_TRUE(is_inf(+std::numeric_limits<double>::infinity()))
-        CER_ASSERT_TRUE(is_inf(-std::numeric_limits<double>::infinity()))
-        CER_ASSERT_TRUE(is_inf(+std::numeric_limits<float>::infinity()))
-        CER_ASSERT_TRUE(is_inf(-std::numeric_limits<float>::infinity()))
-        CER_ASSERT_FALSE(is_inf(0.0))
-        CER_ASSERT_FALSE(is_inf(0.0f))
+    TEST_CASE("scalar.is_inf") {
+        CER_CHECK(is_inf(+std::numeric_limits<double>::infinity()));
+        CER_CHECK(is_inf(-std::numeric_limits<double>::infinity()));
+        CER_CHECK(is_inf(+std::numeric_limits<float>::infinity()));
+        CER_CHECK(is_inf(-std::numeric_limits<float>::infinity()));
+        CER_CHECK_FALSE(is_inf(0.0));
+        CER_CHECK_FALSE(is_inf(0.0f));
     }
 
-    TEST(scalar_test, nan) {
-        CER_ASSERT_TRUE(is_nan(nan<double>()))
-        CER_ASSERT_TRUE(is_nan(nan<float>()))
+    TEST_CASE("scalar.nan") {
+        CER_CHECK(is_nan(nan<double>()));
+        CER_CHECK(is_nan(nan<float>()));
     }
 
-    TEST(scalar_test, min) {
-        CER_ASSERT_EQ(+1.0, min(+1.0, +1.0))
-        CER_ASSERT_EQ(+1.0, min(+1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, min(+2.0, +1.0))
-        CER_ASSERT_EQ(-1.0, min(-1.0, +2.0))
-        CER_ASSERT_EQ(-2.0, min(+1.0, -2.0))
-        CER_ASSERT_EQ(-2.0, min(-1.0, -2.0))
-        CER_ASSERT_EQ(-3.0, min(-1.0, -2.0, -3.0))
-        CER_ASSERT_EQ(-3.0, min(-1.0, -3.0, -2.0))
-        CER_ASSERT_EQ(-3.0, min(-2.0, -1.0, -3.0))
-        CER_ASSERT_EQ(-3.0, min(-2.0, -3.0, -1.0))
-        CER_ASSERT_EQ(-3.0, min(-3.0, -1.0, -2.0))
-        CER_ASSERT_EQ(-3.0, min(-3.0, -2.0, -1.0))
+    TEST_CASE("scalar.min") {
+        CER_CHECK(min(+1.0, +1.0) == +1.0);
+        CER_CHECK(min(+1.0, +2.0) == +1.0);
+        CER_CHECK(min(+2.0, +1.0) == +1.0);
+        CER_CHECK(min(-1.0, +2.0) == -1.0);
+        CER_CHECK(min(+1.0, -2.0) == -2.0);
+        CER_CHECK(min(-1.0, -2.0) == -2.0);
+        CER_CHECK(min(-1.0, -2.0, -3.0) == -3.0);
+        CER_CHECK(min(-1.0, -3.0, -2.0) == -3.0);
+        CER_CHECK(min(-2.0, -1.0, -3.0) == -3.0);
+        CER_CHECK(min(-2.0, -3.0, -1.0) == -3.0);
+        CER_CHECK(min(-3.0, -1.0, -2.0) == -3.0);
+        CER_CHECK(min(-3.0, -2.0, -1.0) == -3.0);
     }
 
-    TEST(scalar_test, max) {
-        CER_ASSERT_EQ(+1.0, max(+1.0, +1.0))
-        CER_ASSERT_EQ(+2.0, max(+1.0, +2.0))
-        CER_ASSERT_EQ(+2.0, max(+2.0, +1.0))
-        CER_ASSERT_EQ(+2.0, max(-1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, max(+1.0, -2.0))
-        CER_ASSERT_EQ(-1.0, max(-1.0, -2.0))
-        CER_ASSERT_EQ(-1.0, max(-1.0, -2.0, -3.0))
-        CER_ASSERT_EQ(-1.0, max(-1.0, -3.0, -2.0))
-        CER_ASSERT_EQ(-1.0, max(-2.0, -1.0, -3.0))
-        CER_ASSERT_EQ(-1.0, max(-2.0, -3.0, -1.0))
-        CER_ASSERT_EQ(-1.0, max(-3.0, -1.0, -2.0))
-        CER_ASSERT_EQ(-1.0, max(-3.0, -2.0, -1.0))
+    TEST_CASE("scalar.max") {
+        CER_CHECK(max(+1.0, +1.0) == +1.0);
+        CER_CHECK(max(+1.0, +2.0) == +2.0);
+        CER_CHECK(max(+2.0, +1.0) == +2.0);
+        CER_CHECK(max(-1.0, +2.0) == +2.0);
+        CER_CHECK(max(+1.0, -2.0) == +1.0);
+        CER_CHECK(max(-1.0, -2.0) == -1.0);
+        CER_CHECK(max(-1.0, -2.0, -3.0) == -1.0);
+        CER_CHECK(max(-1.0, -3.0, -2.0) == -1.0);
+        CER_CHECK(max(-2.0, -1.0, -3.0) == -1.0);
+        CER_CHECK(max(-2.0, -3.0, -1.0) == -1.0);
+        CER_CHECK(max(-3.0, -1.0, -2.0) == -1.0);
+        CER_CHECK(max(-3.0, -2.0, -1.0) == -1.0);
     }
 
-    TEST(scalar_test, abs_min) {
-        CER_ASSERT_EQ(+1.0, abs_min(+1.0, +1.0))
-        CER_ASSERT_EQ(+1.0, abs_min(+1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, abs_min(+2.0, +1.0))
-        CER_ASSERT_EQ(-1.0, abs_min(-1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, abs_min(+1.0, -2.0))
-        CER_ASSERT_EQ(-1.0, abs_min(-1.0, -2.0))
-        CER_ASSERT_EQ(+1.0, abs_min(+1.0, -2.0, +3.0))
+    TEST_CASE("scalar.abs_min") {
+        CER_CHECK(abs_min(+1.0, +1.0) == +1.0);
+        CER_CHECK(abs_min(+1.0, +2.0) == +1.0);
+        CER_CHECK(abs_min(+2.0, +1.0) == +1.0);
+        CER_CHECK(abs_min(-1.0, +2.0) == -1.0);
+        CER_CHECK(abs_min(+1.0, -2.0) == +1.0);
+        CER_CHECK(abs_min(-1.0, -2.0) == -1.0);
+        CER_CHECK(abs_min(+1.0, -2.0, +3.0) == +1.0);
     }
 
-    TEST(scalar_test, abs_max) {
-        CER_ASSERT_EQ(+1.0, abs_max(+1.0, +1.0))
-        CER_ASSERT_EQ(+2.0, abs_max(+1.0, +2.0))
-        CER_ASSERT_EQ(+2.0, abs_max(+2.0, +1.0))
-        CER_ASSERT_EQ(+2.0, abs_max(-1.0, +2.0))
-        CER_ASSERT_EQ(-2.0, abs_max(+1.0, -2.0))
-        CER_ASSERT_EQ(-2.0, abs_max(-1.0, -2.0))
-        CER_ASSERT_EQ(-3.0, abs_max(-1.0, -2.0, -3.0))
+    TEST_CASE("scalar.abs_max") {
+        CER_CHECK(abs_max(+1.0, +1.0) == +1.0);
+        CER_CHECK(abs_max(+1.0, +2.0) == +2.0);
+        CER_CHECK(abs_max(+2.0, +1.0) == +2.0);
+        CER_CHECK(abs_max(-1.0, +2.0) == +2.0);
+        CER_CHECK(abs_max(+1.0, -2.0) == -2.0);
+        CER_CHECK(abs_max(-1.0, -2.0) == -2.0);
+        CER_CHECK(abs_max(-1.0, -2.0, -3.0) == -3.0);
     }
 
-    TEST(scalar_test, safe_min) {
-        CER_ASSERT_EQ(+1.0, safe_min(+1.0, +1.0))
-        CER_ASSERT_EQ(+1.0, safe_min(+1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, safe_min(+2.0, +1.0))
-        CER_ASSERT_EQ(-1.0, safe_min(-1.0, +2.0))
-        CER_ASSERT_EQ(-2.0, safe_min(+1.0, -2.0))
-        CER_ASSERT_EQ(-2.0, safe_min(-1.0, -2.0))
-        CER_ASSERT_EQ(-3.0, safe_min(-1.0, -2.0, -3.0))
+    TEST_CASE("scalar.safe_min") {
+        CER_CHECK(safe_min(+1.0, +1.0) == +1.0);
+        CER_CHECK(safe_min(+1.0, +2.0) == +1.0);
+        CER_CHECK(safe_min(+2.0, +1.0) == +1.0);
+        CER_CHECK(safe_min(-1.0, +2.0) == -1.0);
+        CER_CHECK(safe_min(+1.0, -2.0) == -2.0);
+        CER_CHECK(safe_min(-1.0, -2.0) == -2.0);
+        CER_CHECK(safe_min(-1.0, -2.0, -3.0) == -3.0);
 
-        CER_ASSERT_EQ(+1.0, safe_min(+1.0, nan<double>()))
-        CER_ASSERT_EQ(-1.0, safe_min(nan<double>(), -1.0))
-        CER_ASSERT_TRUE(is_nan(safe_min(nan<double>(), nan<double>())))
+        CER_CHECK(safe_min(+1.0, nan<double>()) == +1.0);
+        CER_CHECK(safe_min(nan<double>(), -1.0) == -1.0);
+        CER_CHECK(is_nan(safe_min(nan<double>(), nan<double>())));
 
-        CER_ASSERT_EQ(-2.0, safe_min(nan<double>(), +1.0, -2.0))
-        CER_ASSERT_EQ(-2.0, safe_min(+1.0, nan<double>(), -2.0))
-        CER_ASSERT_EQ(-2.0, safe_min(+1.0, -2.0, nan<double>()))
-        CER_ASSERT_EQ(+1.0, safe_min(+1.0, nan<double>(), nan<double>()))
-        CER_ASSERT_TRUE(is_nan(safe_min(nan<double>(), nan<double>(), nan<double>())))
+        CER_CHECK(safe_min(nan<double>(), +1.0, -2.0) == -2.0)
+        CER_CHECK(safe_min(+1.0, nan<double>(), -2.0) == -2.0)
+        CER_CHECK(safe_min(+1.0, -2.0, nan<double>()) == -2.0)
+        CER_CHECK(safe_min(+1.0, nan<double>(), nan<double>()) == +1.0)
+        CER_CHECK(is_nan(safe_min(nan<double>(), nan<double>(), nan<double>())));
     }
 
-    TEST(scalar_test, safe_max) {
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, +1.0))
-        CER_ASSERT_EQ(+2.0, safe_max(+1.0, +2.0))
-        CER_ASSERT_EQ(+2.0, safe_max(+2.0, +1.0))
-        CER_ASSERT_EQ(+2.0, safe_max(-1.0, +2.0))
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, -2.0))
-        CER_ASSERT_EQ(-1.0, safe_max(-1.0, -2.0))
+    TEST_CASE("scalar.safe_max") {
+        CER_CHECK(safe_max(+1.0, +1.0) == +1.0);
+        CER_CHECK(safe_max(+1.0, +2.0) == +2.0);
+        CER_CHECK(safe_max(+2.0, +1.0) == +2.0);
+        CER_CHECK(safe_max(-1.0, +2.0) == +2.0);
+        CER_CHECK(safe_max(+1.0, -2.0) == +1.0);
+        CER_CHECK(safe_max(-1.0, -2.0) == -1.0);
 
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, nan<double>()))
-        CER_ASSERT_EQ(-1.0, safe_max(nan<double>(), -1.0))
-        CER_ASSERT_TRUE(is_nan(safe_max(nan<double>(), nan<double>())))
+        CER_CHECK(safe_max(+1.0, nan<double>()) == +1.0);
+        CER_CHECK(safe_max(nan<double>(), -1.0) == -1.0);
+        CER_CHECK(is_nan(safe_max(nan<double>(), nan<double>())));
 
-        CER_ASSERT_EQ(+1.0, safe_max(nan<double>(), +1.0, -2.0))
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, nan<double>(), -2.0))
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, -2.0, nan<double>()))
-        CER_ASSERT_EQ(+1.0, safe_max(+1.0, nan<double>(), nan<double>()))
-        CER_ASSERT_TRUE(is_nan(safe_max(nan<double>(), nan<double>(), nan<double>())))
+        CER_CHECK(safe_max(nan<double>(), +1.0, -2.0) == +1.0);
+        CER_CHECK(safe_max(+1.0, nan<double>(), -2.0) == +1.0);
+        CER_CHECK(safe_max(+1.0, -2.0, nan<double>()) == +1.0);
+        CER_CHECK(safe_max(+1.0, nan<double>(), nan<double>()) == +1.0);
+        CER_CHECK(is_nan(safe_max(nan<double>(), nan<double>(), nan<double>())));
     }
 
-    TEST(scalar_test, abs_difference) {
-        CER_ASSERT_EQ(3, abs_difference(+4, +7))
-        CER_ASSERT_EQ(3, abs_difference(+7, +4))
-        CER_ASSERT_EQ(6, abs_difference(+7, -1))
-        CER_ASSERT_EQ(6, abs_difference(-7, +1))
-        CER_ASSERT_EQ(6, abs_difference(-7, -1))
-        CER_ASSERT_EQ(6u, abs_difference(7u, 1u))
-        CER_ASSERT_EQ(6u, abs_difference(1u, 7u))
+    TEST_CASE("scalar.abs_difference") {
+        CER_CHECK(abs_difference(+4, +7) == 3);
+        CER_CHECK(abs_difference(+7, +4) == 3);
+        CER_CHECK(abs_difference(+7, -1) == 6);
+        CER_CHECK(abs_difference(-7, +1) == 6);
+        CER_CHECK(abs_difference(-7, -1) == 6);
+        CER_CHECK(abs_difference(7u, 1u) == 6u);
+        CER_CHECK(abs_difference(1u, 7u) == 6u);
     }
 
-    TEST(scalar_test, clamp) {
-        CER_ASSERT_EQ( 0.0, clamp( 0.0,  0.0, +1.0))
-        CER_ASSERT_EQ(+1.0, clamp(+1.0,  0.0, +1.0))
-        CER_ASSERT_EQ( 0.0, clamp(-1.0,  0.0, +1.0))
-        CER_ASSERT_EQ(+1.0, clamp(+2.0,  0.0, +1.0))
-        CER_ASSERT_EQ(+0.5, clamp(+0.5,  0.0, +1.0))
+    TEST_CASE("scalar.clamp") {
+        CER_CHECK(clamp( 0.0,  0.0, +1.0) ==  0.0);
+        CER_CHECK(clamp(+1.0,  0.0, +1.0) == +1.0);
+        CER_CHECK(clamp(-1.0,  0.0, +1.0) ==  0.0);
+        CER_CHECK(clamp(+2.0,  0.0, +1.0) == +1.0);
+        CER_CHECK(clamp(+0.5,  0.0, +1.0) == +0.5);
 
-        CER_ASSERT_EQ( 0.0, clamp( 0.0, -1.0,  0.0))
-        CER_ASSERT_EQ(-1.0, clamp(-1.0, -1.0,  0.0))
-        CER_ASSERT_EQ( 0.0, clamp(+1.0, -1.0,  0.0))
-        CER_ASSERT_EQ(-1.0, clamp(-2.0, -1.0,  0.0))
-        CER_ASSERT_EQ(-0.5, clamp(-0.5, -1.0,  0.0))
+        CER_CHECK(clamp( 0.0, -1.0,  0.0) ==  0.0);
+        CER_CHECK(clamp(-1.0, -1.0,  0.0) == -1.0);
+        CER_CHECK(clamp(+1.0, -1.0,  0.0) ==  0.0);
+        CER_CHECK(clamp(-2.0, -1.0,  0.0) == -1.0);
+        CER_CHECK(clamp(-0.5, -1.0,  0.0) == -0.5);
 
-        CER_ASSERT_EQ( 0.0, clamp( 0.0, -1.0, +1.0))
-        CER_ASSERT_EQ(-1.0, clamp(-1.0, -1.0, +1.0))
-        CER_ASSERT_EQ(+1.0, clamp(+1.0, -1.0, +1.0))
-        CER_ASSERT_EQ(-1.0, clamp(-2.0, -1.0, +1.0))
-        CER_ASSERT_EQ(+1.0, clamp(+2.0, -1.0, +1.0))
+        CER_CHECK(clamp( 0.0, -1.0, +1.0) ==  0.0);
+        CER_CHECK(clamp(-1.0, -1.0, +1.0) == -1.0);
+        CER_CHECK(clamp(+1.0, -1.0, +1.0) == +1.0);
+        CER_CHECK(clamp(-2.0, -1.0, +1.0) == -1.0);
+        CER_CHECK(clamp(+2.0, -1.0, +1.0) == +1.0);
     }
 
-    TEST(scalar_test, sign) {
-        CER_ASSERT_EQ(-1, sign(-2))
-        CER_ASSERT_EQ(-1, sign(-1))
-        CER_ASSERT_EQ( 0, sign( 0))
-        CER_ASSERT_EQ(+1, sign( 1))
-        CER_ASSERT_EQ(+1, sign( 2))
+    TEST_CASE("scalar.sign") {
+        CER_CHECK(sign(-2) == -1);
+        CER_CHECK(sign(-1) == -1);
+        CER_CHECK(sign( 0) ==  0);
+        CER_CHECK(sign( 1) == +1);
+        CER_CHECK(sign( 2) == +1);
     }
 
-    TEST(scalar_test, step) {
-        CER_ASSERT_EQ(0, step(1, -1))
-        CER_ASSERT_EQ(0, step(1,  0))
-        CER_ASSERT_EQ(1, step(1,  1))
-        CER_ASSERT_EQ(1, step(1,  2))
+    TEST_CASE("scalar.step") {
+        CER_CHECK(step(1, -1) == 0);
+        CER_CHECK(step(1,  0) == 0);
+        CER_CHECK(step(1,  1) == 1);
+        CER_CHECK(step(1,  2) == 1);
     }
 
-    TEST(scalar_test, smoothstep) {
-        CER_ASSERT_DOUBLE_EQ(0.0,     smoothstep(0.0, 1.0, -1.0))
-        CER_ASSERT_DOUBLE_EQ(0.0,     smoothstep(0.0, 1.0,  0.0))
-        CER_ASSERT_DOUBLE_EQ(0.15625, smoothstep(0.0, 1.0,  0.25))
-        CER_ASSERT_DOUBLE_EQ(0.5,     smoothstep(0.0, 1.0,  0.5))
-        CER_ASSERT_DOUBLE_EQ(0.84375, smoothstep(0.0, 1.0,  0.75))
-        CER_ASSERT_DOUBLE_EQ(1.0,     smoothstep(0.0, 1.0,  1.0))
-        CER_ASSERT_DOUBLE_EQ(1.0,     smoothstep(0.0, 1.0,  2.0))
+    TEST_CASE("scalar.smoothstep") {
+        CER_CHECK(smoothstep(0.0, 1.0, -1.0) == approx(0.0));
+        CER_CHECK(smoothstep(0.0, 1.0,  0.0) == approx(0.0));
+        CER_CHECK(smoothstep(0.0, 1.0,  0.25) == approx(0.15625));
+        CER_CHECK(smoothstep(0.0, 1.0,  0.5) == approx(0.5));
+        CER_CHECK(smoothstep(0.0, 1.0,  0.75) == approx(0.84375));
+        CER_CHECK(smoothstep(0.0, 1.0,  1.0) == approx(1.0));
+        CER_CHECK(smoothstep(0.0, 1.0,  2.0) == approx(1.0));
     }
 
-    TEST(scalar_test, mod) {
-        CER_ASSERT_DOUBLE_EQ( 0.0, mod(+4.0, +2.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, mod(+5.0, +2.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, mod(-5.0, +2.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, mod(+5.0, -2.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, mod(-5.0, -2.0))
-        CER_ASSERT_DOUBLE_EQ(+1.5, mod(+5.5, +2.0))
+    TEST_CASE("scalar.mod") {
+        CER_CHECK(mod(+4.0, +2.0) == approx( 0.0));
+        CER_CHECK(mod(+5.0, +2.0) == approx(+1.0));
+        CER_CHECK(mod(-5.0, +2.0) == approx(-1.0));
+        CER_CHECK(mod(+5.0, -2.0) == approx(+1.0));
+        CER_CHECK(mod(-5.0, -2.0) == approx(-1.0));
+        CER_CHECK(mod(+5.5, +2.0) == approx(+1.5));
     }
 
-    TEST(scalar_test, floor) {
-        CER_ASSERT_DOUBLE_EQ(-1.0, floor(-0.7))
-        CER_ASSERT_DOUBLE_EQ(-1.0, floor(-0.5))
-        CER_ASSERT_DOUBLE_EQ(-1.0, floor(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, floor( 0.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, floor( 0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, floor( 0.6))
-        CER_ASSERT_DOUBLE_EQ( 1.0, floor( 1.0))
+    TEST_CASE("scalar.floor") {
+        CER_CHECK(floor(-0.7) == approx(-1.0));
+        CER_CHECK(floor(-0.5) == approx(-1.0));
+        CER_CHECK(floor(-0.4) == approx(-1.0));
+        CER_CHECK(floor( 0.0) == approx( 0.0));
+        CER_CHECK(floor( 0.4) == approx( 0.0));
+        CER_CHECK(floor( 0.6) == approx( 0.0));
+        CER_CHECK(floor( 1.0) == approx( 1.0));
     }
 
-    TEST(scalar_test, ceil) {
-        CER_ASSERT_DOUBLE_EQ(-1.0, ceil(-1.1))
-        CER_ASSERT_DOUBLE_EQ( 0.0, ceil(-0.7))
-        CER_ASSERT_DOUBLE_EQ( 0.0, ceil(-0.5))
-        CER_ASSERT_DOUBLE_EQ( 0.0, ceil(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, ceil( 0.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, ceil( 0.4))
-        CER_ASSERT_DOUBLE_EQ( 1.0, ceil( 0.6))
-        CER_ASSERT_DOUBLE_EQ( 1.0, ceil( 1.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, ceil( 1.1))
+    TEST_CASE("scalar.ceil") {
+        CER_CHECK(ceil(-1.1) == approx(-1.0));
+        CER_CHECK(ceil(-0.7) == approx( 0.0));
+        CER_CHECK(ceil(-0.5) == approx( 0.0));
+        CER_CHECK(ceil(-0.4) == approx( 0.0));
+        CER_CHECK(ceil( 0.0) == approx( 0.0));
+        CER_CHECK(ceil( 0.4) == approx( 1.0));
+        CER_CHECK(ceil( 0.6) == approx( 1.0));
+        CER_CHECK(ceil( 1.0) == approx( 1.0));
+        CER_CHECK(ceil( 1.1) == approx( 2.0));
     }
 
-    TEST(scalar_test, trunc) {
-        CER_ASSERT_DOUBLE_EQ(-1.0, trunc(-1.1))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc(-0.7))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc(-0.5))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc( 0.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc( 0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, trunc( 0.6))
-        CER_ASSERT_DOUBLE_EQ(+1.0, trunc( 1.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, trunc( 1.1))
+    TEST_CASE("scalar.trunc") {
+        CER_CHECK(trunc(-1.1) == approx(-1.0));
+        CER_CHECK(trunc(-0.7) == approx( 0.0));
+        CER_CHECK(trunc(-0.5) == approx( 0.0));
+        CER_CHECK(trunc(-0.4) == approx( 0.0));
+        CER_CHECK(trunc( 0.0) == approx( 0.0));
+        CER_CHECK(trunc( 0.4) == approx( 0.0));
+        CER_CHECK(trunc( 0.6) == approx( 0.0));
+        CER_CHECK(trunc( 1.0) == approx(+1.0));
+        CER_CHECK(trunc( 1.1) == approx(+1.0));
     }
 
-    TEST(scalar_test, mix) {
-        CER_ASSERT_DOUBLE_EQ(1.0, mix(1.0, 2.0, 0.0))
-        CER_ASSERT_DOUBLE_EQ(2.0, mix(1.0, 2.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ(1.5, mix(1.0, 2.0, 0.5))
+    TEST_CASE("scalar.mix") {
+        CER_CHECK(mix(1.0, 2.0, 0.0) == approx(1.0));
+        CER_CHECK(mix(1.0, 2.0, 1.0) == approx(2.0));
+        CER_CHECK(mix(1.0, 2.0, 0.5) == approx(1.5));
 
-        CER_ASSERT_DOUBLE_EQ(-1.0, mix(-1.0, 2.0, 0.0))
-        CER_ASSERT_DOUBLE_EQ(+2.0, mix(-1.0, 2.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ(+0.5, mix(-1.0, 2.0, 0.5))
+        CER_CHECK(mix(-1.0, 2.0, 0.0) == approx(-1.0));
+        CER_CHECK(mix(-1.0, 2.0, 1.0) == approx(+2.0));
+        CER_CHECK(mix(-1.0, 2.0, 0.5) == approx(+0.5));
 
-        CER_ASSERT_DOUBLE_EQ(-1.0, mix(-1.0, -2.0, 0.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, mix(-1.0, -2.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.5, mix(-1.0, -2.0, 0.5))
+        CER_CHECK(mix(-1.0, -2.0, 0.0) == approx(-1.0));
+        CER_CHECK(mix(-1.0, -2.0, 1.0) == approx(-2.0));
+        CER_CHECK(mix(-1.0, -2.0, 0.5) == approx(-1.5));
     }
 
-    TEST(scalar_test, fract) {
-        CER_ASSERT_DOUBLE_EQ(-0.2, fract(-1.2))
-        CER_ASSERT_DOUBLE_EQ( 0.0, fract(-1.0))
-        CER_ASSERT_DOUBLE_EQ(-0.7, fract(-0.7))
-        CER_ASSERT_DOUBLE_EQ( 0.0, fract( 0.0))
-        CER_ASSERT_DOUBLE_EQ(+0.7, fract(+0.7))
-        CER_ASSERT_DOUBLE_EQ( 0.0, fract(+1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.2, fract(+1.2))
+    TEST_CASE("scalar.fract") {
+        CER_CHECK(fract(-1.2) == approx(-0.2));
+        CER_CHECK(fract(-1.0) == approx( 0.0));
+        CER_CHECK(fract(-0.7) == approx(-0.7));
+        CER_CHECK(fract( 0.0) == approx( 0.0));
+        CER_CHECK(fract(+0.7) == approx(+0.7));
+        CER_CHECK(fract(+1.0) == approx( 0.0));
+        CER_CHECK(fract(+1.2) == approx( 0.2));
     }
 
-    TEST(scalar_test, round) {
-        CER_ASSERT_DOUBLE_EQ(-1.0, round(-1.1))
-        CER_ASSERT_DOUBLE_EQ(-1.0, round(-0.7))
-        CER_ASSERT_DOUBLE_EQ(-1.0, round(-0.5))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round( 0.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round( 0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round( 0.6))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round( 1.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round( 1.1))
+    TEST_CASE("scalar.round") {
+        CER_CHECK(round(-1.1) == approx(-1.0));
+        CER_CHECK(round(-0.7) == approx(-1.0));
+        CER_CHECK(round(-0.5) == approx(-1.0));
+        CER_CHECK(round(-0.4) == approx( 0.0));
+        CER_CHECK(round( 0.0) == approx( 0.0));
+        CER_CHECK(round( 0.4) == approx( 0.0));
+        CER_CHECK(round( 0.6) == approx(+1.0));
+        CER_CHECK(round( 1.0) == approx(+1.0));
+        CER_CHECK(round( 1.1) == approx(+1.0));
     }
 
-    TEST(scalar_test, round_up) {
-        CER_ASSERT_DOUBLE_EQ(-2.0, round_up(-1.1))
-        CER_ASSERT_DOUBLE_EQ(-1.0, round_up(-0.7))
-        CER_ASSERT_DOUBLE_EQ(-1.0, round_up(-0.5))
-        CER_ASSERT_DOUBLE_EQ(-1.0, round_up(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_up(0.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round_up(0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round_up(0.6))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round_up(1.0))
-        CER_ASSERT_DOUBLE_EQ(+2.0, round_up(1.1))
+    TEST_CASE("scalar.round_up") {
+        CER_CHECK(round_up(-1.1) == approx(-2.0));
+        CER_CHECK(round_up(-0.7) == approx(-1.0));
+        CER_CHECK(round_up(-0.5) == approx(-1.0));
+        CER_CHECK(round_up(-0.4) == approx(-1.0));
+        CER_CHECK(round_up(0.0) == approx( 0.0));
+        CER_CHECK(round_up(0.4) == approx(+1.0));
+        CER_CHECK(round_up(0.6) == approx(+1.0));
+        CER_CHECK(round_up(1.0) == approx(+1.0));
+        CER_CHECK(round_up(1.1) == approx(+2.0));
     }
 
-    TEST(scalar_test, round_down) {
-        CER_ASSERT_DOUBLE_EQ(-1.0, round_down(-1.1))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(-0.7))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(-0.5))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(-0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(0.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(0.4))
-        CER_ASSERT_DOUBLE_EQ( 0.0, round_down(0.6))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round_down(1.0))
-        CER_ASSERT_DOUBLE_EQ(+1.0, round_down(1.1))
+    TEST_CASE("scalar.round_down") {
+        CER_CHECK(round_down(-1.1) == approx(-1.0));
+        CER_CHECK(round_down(-0.7) == approx( 0.0));
+        CER_CHECK(round_down(-0.5) == approx( 0.0));
+        CER_CHECK(round_down(-0.4) == approx( 0.0));
+        CER_CHECK(round_down(0.0) == approx( 0.0));
+        CER_CHECK(round_down(0.4) == approx( 0.0));
+        CER_CHECK(round_down(0.6) == approx( 0.0));
+        CER_CHECK(round_down(1.0) == approx(+1.0));
+        CER_CHECK(round_down(1.1) == approx(+1.0));
     }
 
-    TEST(scalar_test, snap) {
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap( 0.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(+0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snap(+0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snap(+0.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(-0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snap(-0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snap(-0.6, 1.0))
+    TEST_CASE("scalar.snap") {
+        CER_CHECK(snap( 0.0, 1.0) == approx( 0.0));
+        CER_CHECK(snap(+0.4, 1.0) == approx( 0.0));
+        CER_CHECK(snap(+0.5, 1.0) == approx( 1.0));
+        CER_CHECK(snap(+0.6, 1.0) == approx( 1.0));
+        CER_CHECK(snap(-0.4, 1.0) == approx( 0.0));
+        CER_CHECK(snap(-0.5, 1.0) == approx(-1.0));
+        CER_CHECK(snap(-0.6, 1.0) == approx(-1.0));
 
-        CER_ASSERT_DOUBLE_EQ( 1.0, snap(+1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snap(+1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snap(+1.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snap(-1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snap(-1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snap(-1.6, 1.0))
+        CER_CHECK(snap(+1.4, 1.0) == approx( 1.0));
+        CER_CHECK(snap(+1.5, 1.0) == approx( 2.0));
+        CER_CHECK(snap(+1.6, 1.0) == approx( 2.0));
+        CER_CHECK(snap(-1.4, 1.0) == approx(-1.0));
+        CER_CHECK(snap(-1.5, 1.0) == approx(-2.0));
+        CER_CHECK(snap(-1.6, 1.0) == approx(-2.0));
 
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap( 0.0, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(+0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(+0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(+0.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(-0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(-0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snap(-0.6, 2.0))
+        CER_CHECK(snap( 0.0, 2.0) == approx( 0.0));
+        CER_CHECK(snap(+0.4, 2.0) == approx( 0.0));
+        CER_CHECK(snap(+0.5, 2.0) == approx( 0.0));
+        CER_CHECK(snap(+0.6, 2.0) == approx( 0.0));
+        CER_CHECK(snap(-0.4, 2.0) == approx( 0.0));
+        CER_CHECK(snap(-0.5, 2.0) == approx( 0.0));
+        CER_CHECK(snap(-0.6, 2.0) == approx( 0.0));
 
-        CER_ASSERT_DOUBLE_EQ( 2.0, snap(+1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snap(+1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snap(+1.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snap(-1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snap(-1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snap(-1.6, 2.0))
+        CER_CHECK(snap(+1.4, 2.0) == approx( 2.0));
+        CER_CHECK(snap(+1.5, 2.0) == approx( 2.0));
+        CER_CHECK(snap(+1.6, 2.0) == approx( 2.0));
+        CER_CHECK(snap(-1.4, 2.0) == approx(-2.0));
+        CER_CHECK(snap(-1.5, 2.0) == approx(-2.0));
+        CER_CHECK(snap(-1.6, 2.0) == approx(-2.0));
     }
 
-    TEST(scalar_test, snapUp) {
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapUp( 0.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapUp(+0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapUp(+0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapUp(+0.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapUp(-0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapUp(-0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapUp(-0.6, 1.0))
+    TEST_CASE("scalar.snapUp") {
+        CER_CHECK(snapUp( 0.0, 1.0) == approx( 0.0));
+        CER_CHECK(snapUp(+0.4, 1.0) == approx( 1.0));
+        CER_CHECK(snapUp(+0.5, 1.0) == approx( 1.0));
+        CER_CHECK(snapUp(+0.6, 1.0) == approx( 1.0));
+        CER_CHECK(snapUp(-0.4, 1.0) == approx(-1.0));
+        CER_CHECK(snapUp(-0.5, 1.0) == approx(-1.0));
+        CER_CHECK(snapUp(-0.6, 1.0) == approx(-1.0));
 
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.6, 1.0))
+        CER_CHECK(snapUp(+1.4, 1.0) == approx( 2.0));
+        CER_CHECK(snapUp(+1.5, 1.0) == approx( 2.0));
+        CER_CHECK(snapUp(+1.6, 1.0) == approx( 2.0));
+        CER_CHECK(snapUp(-1.4, 1.0) == approx(-2.0));
+        CER_CHECK(snapUp(-1.5, 1.0) == approx(-2.0));
+        CER_CHECK(snapUp(-1.6, 1.0) == approx(-2.0));
 
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapUp( 0.0, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+0.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-0.6, 2.0))
+        CER_CHECK(snapUp( 0.0, 2.0) == approx( 0.0));
+        CER_CHECK(snapUp(+0.4, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(+0.5, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(+0.6, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(-0.4, 2.0) == approx(-2.0));
+        CER_CHECK(snapUp(-0.5, 2.0) == approx(-2.0));
+        CER_CHECK(snapUp(-0.6, 2.0) == approx(-2.0));
 
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 2.0, snapUp(+1.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ(-2.0, snapUp(-1.6, 2.0))
+        CER_CHECK(snapUp(+1.4, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(+1.5, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(+1.6, 2.0) == approx( 2.0));
+        CER_CHECK(snapUp(-1.4, 2.0) == approx(-2.0));
+        CER_CHECK(snapUp(-1.5, 2.0) == approx(-2.0));
+        CER_CHECK(snapUp(-1.6, 2.0) == approx(-2.0));
     }
 
-    TEST(scalar_test, snapDown) {
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown( 0.0, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.6, 1.0))
+    TEST_CASE("scalar.snapDown") {
+        CER_CHECK(snapDown( 0.0, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.4, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.5, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.6, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.4, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.5, 1.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.6, 1.0) == approx( 0.0));
 
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapDown(+1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapDown(+1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ( 1.0, snapDown(+1.6, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapDown(-1.4, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapDown(-1.5, 1.0))
-        CER_ASSERT_DOUBLE_EQ(-1.0, snapDown(-1.6, 1.0))
+        CER_CHECK(snapDown(+1.4, 1.0) == approx( 1.0));
+        CER_CHECK(snapDown(+1.5, 1.0) == approx( 1.0));
+        CER_CHECK(snapDown(+1.6, 1.0) == approx( 1.0));
+        CER_CHECK(snapDown(-1.4, 1.0) == approx(-1.0));
+        CER_CHECK(snapDown(-1.5, 1.0) == approx(-1.0));
+        CER_CHECK(snapDown(-1.6, 1.0) == approx(-1.0));
 
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown( 0.0, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+0.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-0.6, 2.0))
+        CER_CHECK(snapDown( 0.0, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.4, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.5, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(+0.6, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.4, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.5, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-0.6, 2.0) == approx( 0.0));
 
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(+1.6, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-1.4, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-1.5, 2.0))
-        CER_ASSERT_DOUBLE_EQ( 0.0, snapDown(-1.6, 2.0))
+        CER_CHECK(snapDown(+1.4, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(+1.5, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(+1.6, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-1.4, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-1.5, 2.0) == approx( 0.0));
+        CER_CHECK(snapDown(-1.6, 2.0) == approx( 0.0));
     }
 
-    TEST(scalar_test, correct) {
-        CER_ASSERT_DOUBLE_EQ(+1.1, correct(+1.1))
+    TEST_CASE("scalar.correct") {
+        CER_CHECK(correct(+1.1) == approx(+1.1));
 
-        CER_ASSERT_DOUBLE_EQ(+1.0, correct(+1.1, 0, 0.4))
-        CER_ASSERT_DOUBLE_EQ(-1.0, correct(-1.1, 0, 0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.0, correct(+1.3, 0, 0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.4, correct(+1.4, 0, 0.3))
+        CER_CHECK(correct(+1.1, 0, 0.4) == approx(+1.0));
+        CER_CHECK(correct(-1.1, 0, 0.4) == approx(-1.0));
+        CER_CHECK(correct(+1.3, 0, 0.4) == approx(+1.0));
+        CER_CHECK(correct(+1.4, 0, 0.3) == approx(+1.4));
 
-        CER_ASSERT_DOUBLE_EQ(+1.1, correct(+1.1, 1, 0.4))
-        CER_ASSERT_DOUBLE_EQ(-1.1, correct(-1.1, 1, 0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.3, correct(+1.3, 1, 0.4))
-        CER_ASSERT_DOUBLE_EQ(+1.4, correct(+1.4, 1, 0.3))
+        CER_CHECK(correct(+1.1, 1, 0.4) == approx(+1.1));
+        CER_CHECK(correct(-1.1, 1, 0.4) == approx(-1.1));
+        CER_CHECK(correct(+1.3, 1, 0.4) == approx(+1.3));
+        CER_CHECK(correct(+1.4, 1, 0.3) == approx(+1.4));
     }
 
-    TEST(scalar_test, is_equal) {
-        CER_ASSERT_TRUE(is_equal(+1.0, +1.0, 0.0))
-        CER_ASSERT_TRUE(is_equal(-1.0, -1.0, 0.0))
-        CER_ASSERT_TRUE(is_equal(-1.001, -1.001, 0.0))
-        CER_ASSERT_TRUE(is_equal(+1.0, +1.001, 0.1))
-        CER_ASSERT_TRUE(is_equal(+1.0, +1.0999, 0.1))
+    TEST_CASE("scalar.is_equal") {
+        CER_CHECK(is_equal(+1.0, +1.0, 0.0));
+        CER_CHECK(is_equal(-1.0, -1.0, 0.0));
+        CER_CHECK(is_equal(-1.001, -1.001, 0.0));
+        CER_CHECK(is_equal(+1.0, +1.001, 0.1));
+        CER_CHECK(is_equal(+1.0, +1.0999, 0.1));
 
-        CER_ASSERT_FALSE(is_equal(+1.0, +1.11, 0.1))
-        CER_ASSERT_FALSE(is_equal(+1.0, +1.1, 0.09))
-        CER_ASSERT_FALSE(is_equal(-1.0, +1.11, 0.1))
-        CER_ASSERT_FALSE(is_equal(+1.0, +1.1, 0.0))
+        CER_CHECK_FALSE(is_equal(+1.0, +1.11, 0.1));
+        CER_CHECK_FALSE(is_equal(+1.0, +1.1, 0.09));
+        CER_CHECK_FALSE(is_equal(-1.0, +1.11, 0.1));
+        CER_CHECK_FALSE(is_equal(+1.0, +1.1, 0.0));
     }
 
-    TEST(scalar_test, is_zero) {
-        CER_ASSERT_TRUE(is_zero(0.0, 0.0))
-        CER_ASSERT_TRUE(is_zero(0.0, 0.1))
-        CER_ASSERT_TRUE(is_zero(0.099, 0.1))
-        CER_ASSERT_TRUE(is_zero(-0.099, 0.1))
-        CER_ASSERT_FALSE(is_zero(0.099, 0.0))
-        CER_ASSERT_FALSE(is_zero(-1.0, 0.0))
+    TEST_CASE("scalar.is_zero") {
+        CER_CHECK(is_zero(0.0, 0.0));
+        CER_CHECK(is_zero(0.0, 0.1));
+        CER_CHECK(is_zero(0.099, 0.1));
+        CER_CHECK(is_zero(-0.099, 0.1));
+        CER_CHECK_FALSE(is_zero(0.099, 0.0));
+        CER_CHECK_FALSE(is_zero(-1.0, 0.0));
     }
 
-    TEST(scalar_test, contains) {
-        CER_ASSERT_TRUE(contains(0.0, 0.0, 1.0))
-        CER_ASSERT_TRUE(contains(1.0, 0.0, 1.0))
-        CER_ASSERT_TRUE(contains(0.0, 1.0, 0.0))
-        CER_ASSERT_TRUE(contains(1.0, 1.0, 0.0))
+    TEST_CASE("scalar.contains") {
+        CER_CHECK(contains(0.0, 0.0, 1.0));
+        CER_CHECK(contains(1.0, 0.0, 1.0));
+        CER_CHECK(contains(0.0, 1.0, 0.0));
+        CER_CHECK(contains(1.0, 1.0, 0.0));
 
-        CER_ASSERT_FALSE(contains(+1.1, 0.0, 1.0))
-        CER_ASSERT_FALSE(contains(+1.1, 1.0, 0.0))
-        CER_ASSERT_FALSE(contains(-0.1, 0.0, 1.0))
-        CER_ASSERT_FALSE(contains(-0.1, 1.0, 0.0))
+        CER_CHECK_FALSE(contains(+1.1, 0.0, 1.0));
+        CER_CHECK_FALSE(contains(+1.1, 1.0, 0.0));
+        CER_CHECK_FALSE(contains(-0.1, 0.0, 1.0));
+        CER_CHECK_FALSE(contains(-0.1, 1.0, 0.0));
     }
 
-    TEST(scalar_test, to_radians) {
+    TEST_CASE("scalar.to_radians") {
         using c = constants<double>;
 
-        CER_ASSERT_EQ(0.0, to_radians(0.0))
-        CER_ASSERT_EQ(c::half_pi(), to_radians(90.0))
-        CER_ASSERT_EQ(c::pi(), to_radians(180.0))
-        CER_ASSERT_EQ(c::two_pi(), to_radians(360.0))
-        CER_ASSERT_EQ(-c::pi(), to_radians(-180.0))
-        CER_ASSERT_EQ(-c::two_pi(), to_radians(-360.0))
+        CER_CHECK(to_radians(0.0) == 0.0);
+        CER_CHECK(to_radians(90.0) == c::half_pi());
+        CER_CHECK(to_radians(180.0) == c::pi());
+        CER_CHECK(to_radians(360.0) == c::two_pi());
+        CER_CHECK(to_radians(-180.0) == -c::pi());
+        CER_CHECK(to_radians(-360.0) == -c::two_pi());
     }
 
-    TEST(scalar_test, to_degrees) {
+    TEST_CASE("scalar.to_degrees") {
         using c = constants<double>;
 
-        CER_ASSERT_EQ(0.0, to_degrees(0.0))
-        CER_ASSERT_EQ(90.0, to_degrees(c::half_pi()))
-        CER_ASSERT_EQ(180.0, to_degrees(c::pi()))
-        CER_ASSERT_EQ(360.0, to_degrees(c::two_pi()))
-        CER_ASSERT_EQ(-180.0, to_degrees(-c::pi()))
-        CER_ASSERT_EQ(-360.0, to_degrees(-c::two_pi()))
+        CER_CHECK(to_degrees(0.0) == 0.0);
+        CER_CHECK(to_degrees(c::half_pi()) == 90.0);
+        CER_CHECK(to_degrees(c::pi()) == 180.0);
+        CER_CHECK(to_degrees(c::two_pi()) == 360.0);
+        CER_CHECK(to_degrees(-c::pi()) == -180.0);
+        CER_CHECK(to_degrees(-c::two_pi()) == -360.0);
     }
 
-    TEST(scalar_test, normalize_radians) {
+    TEST_CASE("scalar.normalize_radians") {
         using c = constants<double>;
 
-        CER_ASSERT_EQ(0.0, normalize_radians(c::two_pi()))
-        CER_ASSERT_EQ(c::half_pi(), normalize_radians(c::half_pi()))
-        CER_ASSERT_EQ(c::three_half_pi(), normalize_radians(-c::half_pi()))
-        CER_ASSERT_EQ(c::half_pi(), normalize_radians(c::half_pi() + c::two_pi()))
+        CER_CHECK(normalize_radians(c::two_pi()) == 0.0);
+        CER_CHECK(normalize_radians(c::half_pi()) == c::half_pi());
+        CER_CHECK(normalize_radians(-c::half_pi()) == c::three_half_pi());
+        CER_CHECK(normalize_radians(c::half_pi() + c::two_pi()) == c::half_pi());
     }
 
-    TEST(scalar_test, normalize_degrees) {
-        CER_ASSERT_EQ(0.0, normalize_degrees(0.0))
-        CER_ASSERT_EQ(0.0, normalize_degrees(360.0))
-        CER_ASSERT_EQ(90.0, normalize_degrees(90.0))
-        CER_ASSERT_EQ(270.0, normalize_degrees(-90.0))
-        CER_ASSERT_EQ(90.0, normalize_degrees(360.0 + 90.0))
+    TEST_CASE("scalar.normalize_degrees") {
+        CER_CHECK(normalize_degrees(0.0) == 0.0);
+        CER_CHECK(normalize_degrees(360.0) == 0.0);
+        CER_CHECK(normalize_degrees(90.0) == 90.0);
+        CER_CHECK(normalize_degrees(-90.0) == 270.0);
+        CER_CHECK(normalize_degrees(360.0 + 90.0) == 90.0);
     }
 
-    TEST(scalar_test, succ) {
-        CER_ASSERT_EQ(0u, succ(0u, 1u))
-        CER_ASSERT_EQ(1u, succ(0u, 2u))
-        CER_ASSERT_EQ(0u, succ(1u, 2u))
-        CER_ASSERT_EQ(2u, succ(0u, 3u, 2u))
-        CER_ASSERT_EQ(1u, succ(2u, 3u, 2u))
+    TEST_CASE("scalar.succ") {
+        CER_CHECK(succ(0u, 1u) == 0u);
+        CER_CHECK(succ(0u, 2u) == 1u);
+        CER_CHECK(succ(1u, 2u) == 0u);
+        CER_CHECK(succ(0u, 3u, 2u) == 2u);
+        CER_CHECK(succ(2u, 3u, 2u) == 1u);
     }
 
-    TEST(scalar_test, pred) {
-        CER_ASSERT_EQ(0u, pred(0u, 1u))
-        CER_ASSERT_EQ(1u, pred(0u, 2u))
-        CER_ASSERT_EQ(0u, pred(1u, 2u))
-        CER_ASSERT_EQ(1u, pred(0u, 3u, 2u))
-        CER_ASSERT_EQ(0u, pred(2u, 3u, 2u))
+    TEST_CASE("scalar.pred") {
+        CER_CHECK(pred(0u, 1u) == 0u);
+        CER_CHECK(pred(0u, 2u) == 1u);
+        CER_CHECK(pred(1u, 2u) == 0u);
+        CER_CHECK(pred(0u, 3u, 2u) == 1u);
+        CER_CHECK(pred(2u, 3u, 2u) == 0u);
     }
 
-    TEST(scalar_test, nextgreater) {
-        ASSERT_TRUE(+1.0 < nextgreater(+1.0));
-        ASSERT_TRUE(-1.0 < nextgreater(-1.0));
+    TEST_CASE("scalar.nextgreater") {
+        CHECK(+1.0 < nextgreater(+1.0));
+        CHECK(-1.0 < nextgreater(-1.0));
     }
 
-#define ASSERT_SQRT(v) ASSERT_DOUBLE_EQ(std::sqrt((v)), sqrt((v)));
+#define CHECK_SQRT(v) CHECK(sqrt(v) == approx(std::sqrt(v)));
 
-    TEST(scalar_test, sqrt) {
+    TEST_CASE("scalar.sqrt") {
         for (double v = 0.0; v < 20.0; v += 0.1) {
-            ASSERT_SQRT(v)
+            CHECK_SQRT(v)
         }
 
-        ASSERT_TRUE(is_nan(sqrt(nan<double>())));
-        ASSERT_TRUE(is_nan(sqrt(-1.0)));
-        ASSERT_SQRT(std::numeric_limits<double>::infinity());
+        CHECK(is_nan(sqrt(nan<double>())));
+        CHECK(is_nan(sqrt(-1.0)));
+        CHECK_SQRT(std::numeric_limits<double>::infinity());
     }
 
-#define CE_ASSERT_SQRT(v) CE_ASSERT_DOUBLE_EQ(std::sqrt((v)), sqrt_c((v)))
+#define CE_CHECK_SQRT(v) CHECK(sqrt_c(v) == approx(std::sqrt(v)))
 
-    TEST(scalar_test, sqrt_c) {
-        CE_ASSERT_SQRT(0.0)
-        CE_ASSERT_SQRT(0.2)
-        CE_ASSERT_SQRT(1.0)
-        CE_ASSERT_SQRT(2.0)
-        CE_ASSERT_SQRT(4.0)
-        CE_ASSERT_SQRT(5.2)
-        CE_ASSERT_SQRT(5.2394839489348)
-        CE_ASSERT_SQRT(223235.2394839489348)
-        CE_ASSERT_SQRT(std::numeric_limits<double>::infinity())
+    TEST_CASE("scalar.sqrt_c") {
+        CE_CHECK_SQRT(0.0);
+        CE_CHECK_SQRT(0.2);
+        CE_CHECK_SQRT(1.0);
+        CE_CHECK_SQRT(2.0);
+        CE_CHECK_SQRT(4.0);
+        CE_CHECK_SQRT(5.2);
+        CE_CHECK_SQRT(5.2394839489348);
+        CE_CHECK_SQRT(223235.2394839489348);
+        CE_CHECK_SQRT(std::numeric_limits<double>::infinity());
 
-        CE_ASSERT_TRUE(is_nan(sqrt_c(nan<double>())))
-        CE_ASSERT_TRUE(is_nan(sqrt_c(-1.0)))
+        CE_CHECK(is_nan(sqrt_c(nan<double>())));
+        CE_CHECK(is_nan(sqrt_c(-1.0)));
     }
 
     template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T>& expected, const std::tuple<std::size_t, T, T>& actual);
+    static void checkSolution(const std::tuple<std::size_t, T, T>& expected, const std::tuple<std::size_t, T, T>& actual) {
+        const auto expectedNum = std::get<0>(expected);
+        const auto actualNum   = std::get<0>(actual);
+
+        CHECK(actualNum == expectedNum);
+        if (expectedNum > 0) {
+            CHECK(std::get<1>(actual) == approx(std::get<1>(expected), 0.00000001));
+        }
+        if (expectedNum > 1) {
+            CHECK(std::get<2>(actual) == approx(std::get<2>(expected), 0.00000001));
+        }
+    }
 
     template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T, T>& expected, const std::tuple<std::size_t, T, T, T>& actual);
+    static void checkSolution(const std::tuple<std::size_t, T, T, T>& expected, const std::tuple<std::size_t, T, T, T>& actual) {
+        checkSolution<T>(
+            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected) },
+            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual) } );
+
+        if (std::get<0>(expected) > 2) {
+            CHECK(std::get<3>(actual) == approx(std::get<3>(expected), 0.00000001));
+        }
+    }
 
     template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T, T, T>& expected, const std::tuple<std::size_t, T, T, T, T>& actual);
+    static void checkSolution(const std::tuple<std::size_t, T, T, T, T>& expected, const std::tuple<std::size_t, T, T, T, T>& actual) {
+        checkSolution<T>(
+            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected), std::get<3>(expected) },
+            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual),   std::get<3>(actual) } );
 
-    TEST(scalar_test, solve_quadratic) {
+        if (std::get<0>(expected) > 3) {
+            CHECK(std::get<4>(actual) == approx(std::get<4>(expected), 0.00000001));
+        }
+    }    TEST_CASE("scalar.solve_quadratic") {
         using c = constants<double>;
 
-        assertSolution(
+        checkSolution(
             { 2u, 2.0, -8.0 },
             solve_quadratic(1.0, 6.0, -16.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 2u, -1.0, -9.0 },
             solve_quadratic(1.0, 10.0, 9.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 2u, 7.0, -4.0 },
             solve_quadratic(0.5, -1.5, -14.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 1u, 2.0, nan<double>() },
             solve_quadratic(1.0, -4.0, 4.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 0u, nan<double>(), nan<double>() },
             solve_quadratic(1.0, 12.0, 37.0, c::almost_zero())
         );
     }
 
-    TEST(scalar_test, solve_cubic) {
+    TEST_CASE("scalar.solve_cubic") {
         using c = constants<double>;
 
-        assertSolution(
+        checkSolution(
             { 1u, -2.0, nan<double>(), nan<double>() },
             solve_cubic(1.0, 0.0, -2.0, 4.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 1u, 7.0 / 9.0, nan<double>(), nan<double>() },
             solve_cubic(9.0, -43.0, 145.0, -91.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 3u, 4.464101615, 2.0, -2.464101615 },
             solve_cubic(1.0, -4.0, -7.0, 22.0, c::almost_zero())
         );
 
 
         // casus irreducibilis
-        assertSolution(
+        checkSolution(
             { 2u, -2.0, 1.0, nan<double>() },
             solve_cubic(1.0, 0.0, -3.0, 2.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 3u, 4.0 / 3.0, 1.0 / 3.0, -10.0 / 6.0 },
             solve_cubic(1.0, 0.0, -7.0 / 3.0, 20.0 / 27.0, c::almost_zero())
         );
     }
 
-    TEST(scalar_test, solve_quartic) {
+    TEST_CASE("scalar.solve_quartic") {
         using c = constants<double>;
 
-        assertSolution(
+        checkSolution(
             { 0u, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
             solve_quartic(1.0, 1.0, 1.0, 1.0, 1.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
              { 0u, nan<double>(), nan<double>(), nan<double>(), nan<double>() },
             solve_quartic(1.0, -1.0, 1.0, -1.0, 1.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
              { 4u, -0.203258341626567109, -4.91984728399109344, 2.76090563295441601, 0.362199992663244539 },
             solve_quartic(1.0, 2.0, -14.0, 2.0, 1.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
              { 2u, 1.5986745079, -1.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 3.0, 0.0, -8.0, -6.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
              { 2u, -1.0, -1.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 4.0, 6.0, 4.0, 1.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
              { 2u, -3.0, 2.0, nan<double>(), nan<double>() },
             solve_quartic(1.0, 2.0, -11.0, -12.0, 36.0, c::almost_zero())
         );
-        assertSolution(
+        checkSolution(
             { 4u,
                 -1.0 - sqrt(6.0),
                 -1.0 - sqrt(11.0),
@@ -632,42 +658,5 @@ namespace vm {
             },
             solve_quartic(1.0, 4.0, -11.0, -30.0, 50.0, c::almost_zero())
         );
-    }
-
-
-    template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T>& expected, const std::tuple<std::size_t, T, T>& actual) {
-        const auto expectedNum = std::get<0>(expected);
-        const auto actualNum   = std::get<0>(actual);
-
-        ASSERT_EQ(expectedNum, actualNum);
-        if (expectedNum > 0) {
-            ASSERT_NEAR(std::get<1>(expected), std::get<1>(actual), 0.00000001);
-        }
-        if (expectedNum > 1) {
-            ASSERT_NEAR(std::get<2>(expected), std::get<2>(actual), 0.00000001);
-        }
-    }
-
-    template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T, T>& expected, const std::tuple<std::size_t, T, T, T>& actual) {
-        assertSolution<T>(
-            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected) },
-            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual) } );
-
-        if (std::get<0>(expected) > 2) {
-            ASSERT_NEAR(std::get<3>(expected), std::get<3>(actual), 0.00000001);
-        }
-    }
-
-    template <typename T>
-    void assertSolution(const std::tuple<std::size_t, T, T, T, T>& expected, const std::tuple<std::size_t, T, T, T, T>& actual) {
-        assertSolution<T>(
-            { std::get<0>(expected), std::get<1>(expected), std::get<2>(expected), std::get<3>(expected) },
-            { std::get<0>(actual),   std::get<1>(actual),   std::get<2>(actual),   std::get<3>(actual) } );
-
-        if (std::get<0>(expected) > 3) {
-            ASSERT_NEAR(std::get<4>(expected), std::get<4>(actual), 0.00000001);
-        }
     }
 }
