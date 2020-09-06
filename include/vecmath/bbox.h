@@ -613,7 +613,7 @@ namespace vm {
      * @return the repaired bounding box
      */
     template <typename T, std::size_t S>
-    bbox<T,S> repair(const bbox<T,S>& box) {
+    constexpr bbox<T,S> repair(const bbox<T,S>& box) {
         return bbox<T,S>(
             min(box.min, box.max),
             max(box.min, box.max)
