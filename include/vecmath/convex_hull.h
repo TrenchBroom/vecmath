@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <vector>
 
 namespace vm {
     namespace detail {
