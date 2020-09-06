@@ -16,8 +16,8 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TRENCHBROOM_MAT_EXT_H
-#define TRENCHBROOM_MAT_EXT_H
+#ifndef VECMATH_MAT_EXT_H
+#define VECMATH_MAT_EXT_H
 
 #include "vec.h"
 #include "mat.h"
@@ -778,4 +778,4 @@ namespace vm {
     }
 }
 
-#endif //TRENCHBROOM_MAT_EXT_H
+#endif //VECMATH_MAT_EXT_H
