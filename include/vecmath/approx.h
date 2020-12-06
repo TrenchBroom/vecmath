@@ -15,8 +15,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_APPROX_H
-#define VECMATH_APPROX_H
+#pragma once
 
 #include <vecmath/forward.h>
 #include <vecmath/scalar.h>

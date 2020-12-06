@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_POLYGON_DECL_H
-#define VECMATH_POLYGON_DECL_H
+#pragma once
 
 #include <vecmath/vec.h>
 #include <vecmath/vec_ext.h>

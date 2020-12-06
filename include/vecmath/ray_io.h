@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_RAY_IO_H
-#define VECMATH_RAY_IO_H
+#pragma once
 
 #include "ray.h"
 #include "vec_io.h"

@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_DISTANCE_H
-#define VECMATH_DISTANCE_H
+#pragma once
 
 #include "abstract_line.h"
 #include "vec.h"

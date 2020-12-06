@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_LINE_IO_H
-#define VECMATH_LINE_IO_H
+#pragma once
 
 #include "line.h"
 #include "vec_io.h"
