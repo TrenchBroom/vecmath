@@ -289,4 +289,3 @@ namespace vm {
     }
 }
 
-#endif

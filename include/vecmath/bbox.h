@@ -669,4 +669,3 @@ namespace vm {
     }
 }
 
-#endif

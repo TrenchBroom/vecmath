@@ -463,4 +463,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_DISTANCE_H

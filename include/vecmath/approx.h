@@ -205,4 +205,3 @@ template <typename T>
     };
 }
 
-#endif //VECMATH_APPROX_H

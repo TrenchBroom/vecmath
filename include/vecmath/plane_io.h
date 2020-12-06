@@ -40,4 +40,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_PLANE_IO_H

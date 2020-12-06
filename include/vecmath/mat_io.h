@@ -54,4 +54,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_MAT_IO_H

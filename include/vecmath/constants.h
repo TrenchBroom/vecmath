@@ -138,4 +138,3 @@ namespace vm {
     using Cd = constants<double>;
 }
 
-#endif //VECMATH_CONSTANTS_H

@@ -79,4 +79,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_ABSTRACT_LINE_H

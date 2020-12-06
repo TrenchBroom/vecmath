@@ -57,4 +57,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_UTIL_H

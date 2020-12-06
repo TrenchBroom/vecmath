@@ -40,4 +40,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_LINE_IO_H

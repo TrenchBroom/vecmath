@@ -40,4 +40,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_RAY_IO_H

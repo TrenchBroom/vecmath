@@ -777,4 +777,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_MAT_EXT_H

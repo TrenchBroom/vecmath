@@ -186,4 +186,3 @@ namespace vm {
     }
 }
 
-#endif

@@ -548,4 +548,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_RAYTRACE_H

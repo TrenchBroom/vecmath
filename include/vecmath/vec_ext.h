@@ -157,4 +157,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_VEC_EXT_H

@@ -118,4 +118,3 @@ namespace vm {
     using polygon3d = polygon<double,3>;
 }
 
-#endif //VECMATH_FORWARD_H

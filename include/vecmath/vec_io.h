@@ -140,4 +140,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_VEC_IO_H
