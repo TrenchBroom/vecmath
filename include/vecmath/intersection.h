@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_RAYTRACE_H
-#define VECMATH_RAYTRACE_H
+#pragma once
 
 #include "vec.h"
 #include "ray.h"
@@ -549,4 +548,3 @@ namespace vm {
     }
 }
 
-#endif //VECMATH_RAYTRACE_H

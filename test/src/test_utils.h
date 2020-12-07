@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_TEST_UTILS_H
-#define VECMATH_TEST_UTILS_H
+#pragma once
 
 #include <vecmath/forward.h>
 
@@ -27,4 +26,3 @@
 #define CE_CHECK_FALSE(expr) { constexpr auto _r_r = (expr); CHECK_FALSE(_r_r); }
 #define CER_CHECK_FALSE(expr) CHECK_FALSE(expr); CE_CHECK_FALSE(expr);
 
-#endif //VECMATH_TEST_UTILS_H

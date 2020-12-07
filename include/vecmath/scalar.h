@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_SCALAR_h
-#define VECMATH_SCALAR_h
+#pragma once
 
 #include "constants.h"
 
@@ -988,4 +987,3 @@ namespace vm {
     }
 }
 
-#endif

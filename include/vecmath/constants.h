@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_CONSTANTS_H
-#define VECMATH_CONSTANTS_H
+#pragma once
 
 namespace vm {
     template <typename T>
@@ -139,4 +138,3 @@ namespace vm {
     using Cd = constants<double>;
 }
 
-#endif //VECMATH_CONSTANTS_H

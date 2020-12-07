@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_PLANE_DECL_H
-#define VECMATH_PLANE_DECL_H
+#pragma once
 
 #include "vec.h"
 #include "mat.h"
@@ -443,4 +442,3 @@ namespace vm {
     }
 }
 
-#endif

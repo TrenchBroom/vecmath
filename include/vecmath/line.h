@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_LINE_DECL
-#define VECMATH_LINE_DECL
+#pragma once
 
 #include "abstract_line.h"
 #include "mat.h"
@@ -184,4 +183,3 @@ namespace vm {
     }
 }
 
-#endif

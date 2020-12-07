@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_SEGMENT_DECL_H
-#define VECMATH_SEGMENT_DECL_H
+#pragma once
 
 #include "abstract_line.h"
 #include "vec.h"
@@ -357,4 +356,3 @@ namespace vm {
     }
 }
 
-#endif

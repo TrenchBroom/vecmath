@@ -16,8 +16,7 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef VECMATH_FORWARD_H
-#define VECMATH_FORWARD_H
+#pragma once
 
 #include <cstddef>
 
@@ -119,4 +118,3 @@ namespace vm {
     using polygon3d = polygon<double,3>;
 }
 
-#endif //VECMATH_FORWARD_H
