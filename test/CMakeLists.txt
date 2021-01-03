@@ -15,6 +15,7 @@ target_sources(vecmath-test PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/segment_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/vec_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/vec_ext_test.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/vec_io_test.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/run_all.cpp"
         )
 

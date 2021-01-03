@@ -20,6 +20,7 @@
 
 #include "vec.h"
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -27,21 +28,22 @@
 namespace vm {
     namespace detail {
         template <typename T, std::size_t S>
-        bool doParse(const std::string_view str, size_t& pos, vec<T,S>& result) {
+        std::optional<vec<T,S>> doParse(const std::string_view str, size_t& pos) {
             constexpr auto blank = " \t\n\r()";
 
+            auto result = vec<T,S>{};
             for (std::size_t i = 0; i < S; ++i) {
                 if ((pos = str.find_first_not_of(blank, pos)) == std::string::npos) {
-                    return false;
+                    return std::nullopt;
                 }
                 result[i] = static_cast<T>(std::atof(str.data() + pos));
                 if ((pos = str.find_first_of(blank, pos)) == std::string::npos) {
                     if (i < S-1) {
-                        return false;
+                        return std::nullopt;
                     }
                 }
             }
-            return true;
+            return result;
         }
     }
 
@@ -63,29 +65,9 @@ namespace vm {
      * @return the vector parsed from the string
      */
     template <typename T, std::size_t S>
-    vec<T,S> parse(const std::string_view str, const vec<T,S>& defaultValue = vec<T,S>::zero()) {
+    std::optional<vec<T,S>> parse(const std::string_view str) {
         std::size_t pos = 0;
-        vec<T,S> result;
-        if (detail::doParse(str, pos, result)) {
-            return result;
-        } else {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Returns whether parse() can parse S components from the given string
-     *
-     * @tparam T the component type
-     * @tparam S the number of components
-     * @param str the string to parse
-     * @return whether S components can be parsed
-     */
-    template <typename T, std::size_t S>
-    bool can_parse(const std::string_view str) {
-        std::size_t pos = 0;
-        vec<T,S> result;
-        return detail::doParse(str, pos, result);
+        return detail::doParse<T,S>(str, pos);
     }
 
     /**
@@ -109,9 +91,8 @@ namespace vm {
 
         std::size_t pos = 0;
         while (pos != std::string::npos) {
-            vec<T,S> temp;
-            if (detail::doParse(str, pos, temp)) {
-                out = temp;
+            if (const auto result = detail::doParse<T,S>(str, pos)) {
+                out = *result;
                 ++out;
             }
             pos = str.find_first_of(blank, pos);

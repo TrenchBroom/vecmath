@@ -16,96 +16,98 @@
  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-
 #include <vecmath/forward.h>
 #include <vecmath/vec_io.h>
 
+#include <sstream>
+
 #include "test_utils.h"
 
+#include <catch2/catch.hpp>
 
 namespace vm {
     TEST_CASE("vec_io.parse_valid_string") {
         constexpr auto s = "1.0 3 3.5";
 
-        const auto success = can_parse<float, 3>(s);
-        ASSERT_TRUE(success);
-
         const auto result = parse<float, 3>(s);
-        ASSERT_EQ(vec3f(1.0f, 3.0f, 3.5f), result);
+        CHECK(result.has_value());
+        CHECK(*result == vec3f(1.0f, 3.0f, 3.5f));
     }
 
     TEST_CASE("vec_io.parse_short_string") {
         constexpr auto s = "1.0 3";
 
-        const auto success = can_parse<float, 3>(s);
-        ASSERT_FALSE(success);
-
         const auto result = parse<float, 3>(s);
-        ASSERT_EQ(vec3f::zero(), result);
+        CHECK_FALSE(result.has_value());
     }
 
     TEST_CASE("vec_io.parse_long_string") {
         constexpr auto s = "1.0 3 4 5";
 
-        const auto success = can_parse<float, 3>(s);
-        ASSERT_TRUE(success);
-
         const auto result = parse<float, 3>(s);
-        ASSERT_EQ(vec3f(1.0f, 3.0f, 4.0f), result);
+        CHECK(result.has_value());
+        CHECK(*result == vec3f(1.0f, 3.0f, 4.0f));
     }
 
     TEST_CASE("vec_io.parse_invalid_string") {
         constexpr auto s = "asdf";
 
-        const auto success = can_parse<float, 3>(s);
-        ASSERT_FALSE(success);
-
         const auto result = parse<float, 3>(s);
-        ASSERT_EQ(vec3f::zero(), result);
+        CHECK_FALSE(result.has_value());
     }
 
     TEST_CASE("vec_io.parse_empty_string") {
         constexpr auto s = "";
 
-        const auto success = can_parse<float, 3>(s);
-        ASSERT_FALSE(success);
-
         const auto result = parse<float, 3>(s);
-        ASSERT_EQ(vec3f::zero(), result);
+        CHECK_FALSE(result.has_value());
     }
 
     TEST_CASE("vec_io.parse_all") {
         std::vector<vec3f> result;
 
         parse_all<float, 3>("", std::back_inserter(result));
-        ASSERT_TRUE(result.empty());
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{}));
 
         result.clear();
         parse_all<float, 3>("1.0 3 3.5 2.0 2.0 2.0", std::back_inserter(result));
-        ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{
+            vec3f(1, 3, 3.5), 
+            vec3f(2, 2, 2),
+        }));
 
         result.clear();
         parse_all<float, 3>("(1.0 3 3.5) (2.0 2.0 2.0)", std::back_inserter(result));
-        ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{
+            vec3f(1, 3, 3.5), 
+            vec3f(2, 2, 2),
+        }));
 
         result.clear();
         parse_all<float, 3>("(1.0 3 3.5), (2.0 2.0 2.0)", std::back_inserter(result));
-        ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{
+            vec3f(1, 3, 3.5), 
+            vec3f(2, 2, 2),
+        }));
 
         result.clear();
         parse_all<float, 3>("(1.0 3 3.5); (2.0 2.0 2.0)", std::back_inserter(result));
-        ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{
+            vec3f(1, 3, 3.5), 
+            vec3f(2, 2, 2),
+        }));
 
         result.clear();
         parse_all<float, 3>("1.0 3 3.5, 2.0 2.0 2.0", std::back_inserter(result));
-        ASSERT_EQ(std::vector<vec3f>({ vec3f(1, 3, 3.5), vec3f(2, 2, 2) }), result);
+        CHECK_THAT(result, Catch::Equals(std::vector<vec3f>{
+            vec3f(1, 3, 3.5), 
+            vec3f(2, 2, 2),
+        }));
     }
-
 
     TEST_CASE("vec_io.stream_insertion") {
         std::stringstream str;
         str << vec3d(10, 10, 10);
-        ASSERT_EQ("10 10 10", str.str());
+        CHECK(str.str() == "10 10 10");
     }
 }
