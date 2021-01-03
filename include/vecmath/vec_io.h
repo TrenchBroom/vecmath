@@ -56,12 +56,9 @@ namespace vm {
      *    WS ::= " " | \\t | \\n | \\r | "(" | ")";
      * FLOAT ::= any floating point number parseable by std::atof
      *
-     * Note that this method does not signal if the string could actually be parsed.
-     *
      * @tparam T the component type
      * @tparam S the number of components
      * @param str the string to parse
-     * @param defaultValue the default value to return if parsing fails
      * @return the vector parsed from the string
      */
     template <typename T, std::size_t S>

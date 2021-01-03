@@ -20,9 +20,48 @@
 
 #include "mat.h"
 
+#include <optional>
 #include <ostream>
 
 namespace vm {
+    /**
+     * Parses the given string representation. The syntax of the given string is as follows
+     *
+     *   MAT ::= R * C * COMP;
+     *     R ::= number of rows
+     *     C ::= number of columns
+     *  COMP ::= WS, FLOAT;
+     *    WS ::= " " | \\t | \\n | \\r | "(" | ")";
+     * FLOAT ::= any floating point number parseable by std::atof
+     *
+     * @tparam T the component type
+     * @tparam R the number of rows
+     * @tparam C the number of columns
+     * @param str the string to parse
+     * @return the matrix parsed from the string
+     */
+    template <typename T, std::size_t R, std::size_t C>
+    std::optional<mat<T,R,C>> parse(const std::string_view str) {
+        constexpr auto blank = " \t\n\r()";
+
+        auto result = mat<T,R,C>{};
+        std::size_t pos = 0u;
+        for (std::size_t r = 0u; r < R; ++r) {
+            for (std::size_t c = 0u; c < C; ++c) {
+                if ((pos = str.find_first_not_of(blank, pos)) == std::string::npos) {
+                    return std::nullopt;
+                }
+                result[c][r] = static_cast<T>(std::atof(str.data() + pos));
+                if ((pos = str.find_first_of(blank, pos)) == std::string::npos) {
+                    if ((r * C) + c < R*C-1u) {
+                        return std::nullopt;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * Prints a textual representation of the given matrix on the given stream.
      *
@@ -35,21 +74,17 @@ namespace vm {
      */
     template <typename T, size_t R, size_t C>
     std::ostream& operator<<(std::ostream& stream, const mat<T,R,C>& mat) {
-        stream << "[\n";
         for (size_t r = 0u; r < R; ++r) {
-            stream << "  ";
             for (size_t c = 0u; c < C; ++c) {
                 stream << mat[c][r];
                 if (c < C-1u) {
-                    stream << ", ";
+                    stream << " ";
                 }
             }
             if (r < R-1u) {
-                stream << ",";
+                stream << " ";
             }
-            stream << "\n";
         }
-        stream << "]";
         return stream;
     }
 }

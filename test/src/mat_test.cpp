@@ -869,22 +869,4 @@ namespace vm {
         CER_CHECK(x2 == approx(x));
         CER_CHECK(A * x2 == approx(b));
     }
-
-    TEST_CASE("mat.stream_insertion") {
-        std::stringstream str;
-        str << mat4x4d(
-            65, 12, -3, -5,
-            -5,  1,  0,  0,
-            19, 10, 11,  8,
-            0,  1, -8,  3);
-
-        const auto expected = R"([
-  65, 12, -3, -5,
-  -5, 1, 0, 0,
-  19, 10, 11, 8,
-  0, 1, -8, 3
-])";
-
-        CHECK(str.str() == expected);
-    }
 }
