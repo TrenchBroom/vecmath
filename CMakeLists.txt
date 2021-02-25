@@ -16,6 +16,7 @@ target_sources(vecmath INTERFACE
     "${VECMATH_INCLUDE_DIR}/vecmath/approx.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/bbox_io.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/bbox.h"
+    "${VECMATH_INCLUDE_DIR}/vecmath/bezier_surface.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/constants.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/constexpr_util.h"
     "${VECMATH_INCLUDE_DIR}/vecmath/convex_hull.h"
