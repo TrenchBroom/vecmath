@@ -25,15 +25,30 @@
 #include <catch2/catch.hpp>
 
 namespace vm {
-    TEST_CASE("mat_io.parse_valid_string") {
-        constexpr auto s = "1.0 2 3 4.5";
+    TEST_CASE("mat_io.parse_valid_string_square") {
+        SECTION("Parse 2x2 matrix") {
+            constexpr auto s = "1.0 2 3 4.5";
 
-        const auto result = parse<float, 2, 2>(s);
-        CHECK(result.has_value());
-        CHECK(*result == mat2x2f{
-            1.0f, 2.0f, 
-            3.0f, 4.5f
-        });
+            const auto result = parse<float, 2, 2>(s);
+            CHECK(result.has_value());
+            CHECK(*result == mat2x2f{
+                1.0f, 2.0f, 
+                3.0f, 4.5f
+            });
+        }
+
+        SECTION("Parse 4x4 matrix") {
+            constexpr auto s = "1 0 0 2 0 1 0 0 0 0 1 0 0 0 0 1";
+
+            const auto result = parse<float, 4, 4>(s);
+            CHECK(result.has_value());
+            CHECK(*result == mat4x4f{
+                1.0f, 0.0f, 0.0f, 2.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                0.0f, 0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            });
+        }
     }
 
     TEST_CASE("mat_io.parse_valid_string_non_square") {
