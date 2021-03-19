@@ -82,7 +82,7 @@ template <typename T>
         }
 
         friend std::ostream& operator<<(std::ostream& str, const approx<T>& a) {
-            str << "approx(" << a.m_value << ", " << a.m_epsilon << ")";
+            str << a.m_value;
             return str;
         }
     };
@@ -175,7 +175,7 @@ template <typename T>
         }
 
         friend std::ostream& operator<<(std::ostream& str, const approx<vec<T, S>>& a) {
-            str << "approx(" << a.m_value << ", " << a.m_epsilon << ")";
+            str << a.m_value;
             return str;
         }
     };
@@ -206,7 +206,7 @@ template <typename T>
         }
 
         friend std::ostream& operator<<(std::ostream& str, const approx<mat<T, R, C>>& a) {
-            str << "approx(" << a.m_value << ", " << a.m_epsilon << ")";
+            str << a.m_value;
             return str;
         }
     };
@@ -229,7 +229,7 @@ template <typename T>
         }
 
         friend std::ostream& operator<<(std::ostream& str, const approx<line<T, S>>& a) {
-            str << "approx(" << a.m_value << ", " << a.m_epsilon << ")";
+            str << a.m_value;
             return str;
         }
     };
