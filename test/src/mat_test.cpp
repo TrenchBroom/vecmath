@@ -724,6 +724,40 @@ namespace vm {
                  4,  8, 12, 16));
     }
 
+    constexpr mat2x2d slice(const mat4x4d& m, std::size_t r, std::size_t c) {
+        return slice<2, 2>(m, r, c);
+    }
+
+    TEST_CASE("mat.slice") {
+        CER_CHECK(
+        slice(mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16), 1, 1) ==
+            mat2x2d(
+                 6,  7,
+                10, 11));
+        CER_CHECK(
+        slice(mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16), 2, 1) ==
+            mat2x2d(
+                10, 11,
+                14, 15));
+        CER_CHECK(
+        slice(mat4x4d(
+                 1,  2,  3,  4,
+                 5,  6,  7,  8,
+                 9, 10, 11, 12,
+                13, 14, 15, 16), 2, 2) ==
+            mat2x2d(
+                11, 12,
+                15, 16));
+    }
+
     TEST_CASE("mat.extractMinor") {
         constexpr auto m = mat4x4d(
              1,  2,  3,  4,

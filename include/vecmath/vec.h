@@ -551,6 +551,30 @@ namespace vm {
         return compare(lhs, rhs) >= 0;
     }
 
+    /* ========== slicing ========== */
+
+    /**
+     * Extracts a slice of the given vector.
+     *
+     * @tparam RS the number of components of the slice
+     * @tparam T the component type
+     * @tparam S the number of components of the given vector
+     * @param vector the vector to slice
+     * @param offset the index of the first element of the slice
+     * @return the slice
+     */
+    template <std::size_t RS, typename T, std::size_t S>
+    constexpr vec<T, RS> slice(const vec<T, S>& vector, const std::size_t offset) {
+        static_assert(RS <= S, "slice must not exceed vector");
+        assert(offset <= S - RS);
+
+        vec<T, RS> result;
+        for (std::size_t i = 0u; i < RS; ++i) {
+            result[i] = vector[i + offset];
+        }
+        return result;
+    }
+
     /* ========== sorting and finding components ========== */
 
     namespace detail {

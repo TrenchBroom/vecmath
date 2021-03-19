@@ -682,6 +682,31 @@ namespace vm {
         return result;
     }
 
+    /**
+     * Extracts a slice, or sub matrix, of the given matrix.
+     *
+     * @tparam RR the number of rows of the slice
+     * @tparam RC the number of columns of the slice
+     * @tparam T the element type
+     * @tparam R the number of rows of the given matrix
+     * @tparam C the number of columns of the given matrix
+     * @param m the matrix to slice
+     * @param r the first row of the slice
+     * @param c the first column of the slice
+     * @return the slice
+     */
+    template <std::size_t RR, std::size_t RC, typename T, std::size_t R, std::size_t C>
+    constexpr mat<T, RR, RC> slice(const mat<T, R, C>& m, const size_t r, const size_t c) {
+        static_assert(RR <= R && RC <= R, "slice must not exceed matrix");
+        assert(r <= R - RR && c <= C - RC);
+        mat<T, RR, RC> result;
+        for (std::size_t row = 0u; row < RR; ++row) {
+            for (std::size_t col = 0u; col < RC; ++col) {
+                result[col][row] = m[col + c][row + r];
+            }
+        }
+        return result;
+    }
 
     /**
      * Computes a minor of the given matrix. The minor of a matrix is obtained by erasing one column and one row from

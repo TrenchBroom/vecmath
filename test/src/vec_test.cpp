@@ -282,6 +282,18 @@ namespace vm {
         CER_CHECK(vec3f(1, 2, 4) >= vec3f(1, 2, 2));
     }
 
+    /* ========== slicing ========== */
+
+    constexpr vec2d slice(const vec4d& vector, const std::size_t offset) {
+        return slice<2>(vector, offset);
+    }
+
+    TEST_CASE("vec.slice") {
+        CER_CHECK(slice(vec4d(1, 2, 3, 4), 0) == vec2d(1, 2));
+        CER_CHECK(slice(vec4d(1, 2, 3, 4), 1) == vec2d(2, 3));
+        CER_CHECK(slice(vec4d(1, 2, 3, 4), 2) == vec2d(3, 4));
+    }
+
     /* ========== finding components ========== */
 
     TEST_CASE("vec.find_max_component") {
