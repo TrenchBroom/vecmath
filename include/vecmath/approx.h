@@ -87,6 +87,36 @@ template <typename T>
         }
     };
 
+    template <typename T>
+    bool operator==(const std::vector<T>& lhs, const std::vector<approx<T>>& rhs) {
+        if (lhs.size() != rhs.size()) {
+            return false;
+        }
+
+        for (size_t i = 0u; i < lhs.size(); ++i) {
+            if (lhs[i] != rhs[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    template <typename T>
+    bool operator==(const std::vector<approx<T>>& lhs, const std::vector<T>& rhs) {
+        return rhs == lhs;
+    };
+
+    template <typename T>
+    bool operator!=(const std::vector<T>& lhs, const std::vector<approx<T>>& rhs) {
+        return !(lhs == rhs);
+    }
+    
+    template <typename T>
+    bool operator!=(const std::vector<approx<T>>& lhs, const std::vector<T>& rhs) {
+        return !(lhs == rhs);
+    };
+
     template <typename T, std::size_t S>
     class approx<vec<T, S>> {
     private:
