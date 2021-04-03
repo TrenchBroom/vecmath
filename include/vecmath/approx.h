@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <ostream>
+#include <vector>
 
 namespace vm {
 template <typename T>
@@ -100,12 +101,12 @@ template <typename T>
         }
 
         return true;
-    };
+    }
 
     template <typename T>
     bool operator==(const std::vector<approx<T>>& lhs, const std::vector<T>& rhs) {
         return rhs == lhs;
-    };
+    }
 
     template <typename T>
     bool operator!=(const std::vector<T>& lhs, const std::vector<approx<T>>& rhs) {
@@ -115,7 +116,7 @@ template <typename T>
     template <typename T>
     bool operator!=(const std::vector<approx<T>>& lhs, const std::vector<T>& rhs) {
         return !(lhs == rhs);
-    };
+    }
 
     template <typename T, std::size_t S>
     class approx<vec<T, S>> {
