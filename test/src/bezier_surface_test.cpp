@@ -29,6 +29,7 @@ namespace vm {
     TEST_CASE("evaluate_quadratic_bezier_surface") {
         using T = std::tuple<std::array<vec3d, 9>, double, double, vec3d>;
 
+        // clang-format off
         const auto [ points,                                             u,   v,   expected       ] = GENERATE(values<T>({
                    // the surface reproduces the control points in the corners
                    { { vec3d{0, 0, 0}, vec3d{1, 0, 1}, vec3d{2, 0, 0},
@@ -61,14 +62,17 @@ namespace vm {
                        vec3d{0, 1, 1}, vec3d{1, 1, 2}, vec3d{2, 1, 1},
                        vec3d{0, 2, 0}, vec3d{1, 2, 1}, vec3d{2, 2, 0} }, 0.5, 0.5, vec3d{1, 1, 1} },
         }));
+        // clang-format on
 
         CAPTURE(points, u, v);
 
+        // clang-format off
         const auto controlPoints = std::array<std::array<vm::vec3d, 3>, 3>{
             std::array<vm::vec3d, 3>{ points[0], points[1], points[2] },
             std::array<vm::vec3d, 3>{ points[3], points[4], points[5] },
             std::array<vm::vec3d, 3>{ points[6], points[7], points[8] },
         };
+        // clang-format on
 
         CHECK(evaluate_quadratic_bezier_surface(controlPoints, u, v) == expected);
     }
