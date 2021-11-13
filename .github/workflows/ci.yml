@@ -1,0 +1,54 @@
+on:
+  # Run on pushes to tags, the "master" branch, and PR's
+  push:
+    tags:
+      - '**'
+    branches:
+      - master
+  pull_request:
+
+name: CI
+
+jobs:
+  # Job key
+  ci:
+    # Label displayed in UI
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # Don't cancel the macOS build if the Linux build fails, etc.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-18.04, macos-10.15, windows-2019]
+    env:
+      # Record pull request head commit SHA
+      TB_PULL_REQUEST_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      # See: https://github.com/actions/checkout
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      # Dependencies
+
+      - name: Install Linux dependencies
+        if: ${{ matrix.os == 'ubuntu-18.04' }}
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt update
+          sudo apt install gcc build-essential cmake ninja-build
+
+      # Run build script
+
+      - name: Linux build
+        if: ${{ matrix.os == 'ubuntu-18.04' }}
+        run: ./CI-linux.sh
+
+      - name: macOS build
+        if: ${{ matrix.os == 'macos-10.15' }}
+        run: ./CI-macos.sh
+
+      - name: Windows build
+        if: ${{ matrix.os == 'windows-2019' }}
+        run: cmd.exe /c CI-windows.bat
