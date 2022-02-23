@@ -366,8 +366,7 @@ public:
     return vm::max(min, vm::min(max, point));
   }
 
-  enum class Corner
-  {
+  enum class Corner {
     min,
     max
   };
@@ -400,8 +399,7 @@ public:
     return corner(c);
   }
 
-  enum class Range
-  {
+  enum class Range {
     less,
     within,
     greater
