@@ -23,15 +23,13 @@
 #include <cstddef>
 
 namespace vm {
-enum class side
-{
+enum class side {
   front,
   back,
   both
 };
 
-enum class direction
-{
+enum class direction {
   forward,
   backward,
   left,
@@ -40,15 +38,13 @@ enum class direction
   down
 };
 
-enum class rotation_axis
-{
+enum class rotation_axis {
   roll,
   pitch,
   yaw
 };
 
-enum class plane_status
-{
+enum class plane_status {
   above,
   below,
   inside
