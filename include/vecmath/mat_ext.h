@@ -657,7 +657,7 @@ constexpr mat<T, 4, 4> shear_bbox_matrix(
   // grab any vertex on side that is opposite the one being sheared.
   const auto sideOppositeToShearSide = -sideToShear;
   vec<T, 3> vertOnOppositeSide;
-  bool didGrab = false;
+  [[maybe_unused]] bool didGrab = false;
   auto visitor = [&](
                    const vec<T, 3>& p0, const vec<T, 3>&, const vec<T, 3>&, const vec<T, 3>&,
                    const vec<T, 3>& n) {
