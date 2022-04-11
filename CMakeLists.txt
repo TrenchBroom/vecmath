@@ -9,6 +9,10 @@ endif()
 
 set(VECMATH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_library(vecmath INTERFACE)
 
 target_sources(vecmath INTERFACE
@@ -43,7 +47,6 @@ target_sources(vecmath INTERFACE
     "${VECMATH_INCLUDE_DIR}/vecmath/vec.h"
 )
 
-target_compile_features(vecmath INTERFACE cxx_std_17)
 target_include_directories(vecmath INTERFACE
         $<BUILD_INTERFACE:${VECMATH_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:vecmath/include/vecmath>)
